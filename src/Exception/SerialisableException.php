@@ -64,4 +64,27 @@ class SerialisableException extends \Exception {
         return "\\".get_class($this);
     }
 
+
+    /**
+     * Return web service serialisable data
+     *
+     * @return array
+     */
+    public function returnWebServiceSerialisableData(){
+
+        $serialisableMap = $this->__getSerialisablePropertyMap();
+
+        unset($serialisableMap["trace"]);
+        unset($serialisableMap["file"]);
+        unset($serialisableMap["line"]);
+        unset($serialisableMap["traceAsString"]);
+        unset($serialisableMap["previous"]);
+        $serialisableMap["code"] = $this->getSourceException() ? $this->getSourceException()["code"] : $this->getCode();
+        $serialisableMap["message"] = $this->getSourceException() ? $this->getSourceException()["message"] : $this->getMessage();
+        unset($serialisableMap["sourceException"]);
+
+        return $serialisableMap;
+
+    }
+
 }
