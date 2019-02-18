@@ -71,7 +71,7 @@ class HttpRemoteRequest {
             $queryParams = http_build_query($this->parameters);
 
         if ($this->payload) {
-            $payload = urlencode($this->payload);
+            $payload = $this->payload;
         } else {
             $payload = null;
         }
