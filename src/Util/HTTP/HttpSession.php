@@ -3,6 +3,7 @@
 namespace Kinikit\Core\Util\HTTP;
 
 use Kinikit\Core\Configuration;
+use Kinikit\Core\Util\Logging\Logger;
 
 /**
  * NB:  THIS CLASS IS REPLACING THE OLD SESSION CLASS TO WORK AROUND A CLASS CLASH WITH OTHER SOFTWARE
@@ -106,6 +107,22 @@ class HttpSession {
 
         $cookieDomain = Configuration::instance()->getParameter('session.cookie.domain');
         if ($cookieDomain) {
+
+            if ($cookieDomain == "WILDCARD") {
+                $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
+                Logger::log($host);
+                if ($host) {
+                    $splitHost = explode(".", $host);
+                    $tld = array_pop($splitHost);
+                    $domain = array_pop($splitHost);
+                    $cookieDomain = ".$domain.$tld";
+                } else {
+                    return;
+                }
+            }
+
+
+
             ini_set("session.cookie_domain", $cookieDomain);
         }
 
