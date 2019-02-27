@@ -110,7 +110,6 @@ class HttpSession {
 
             if ($cookieDomain == "WILDCARD") {
                 $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
-                Logger::log($host);
                 if ($host) {
                     $splitHost = explode(".", $host);
                     $tld = array_pop($splitHost);
