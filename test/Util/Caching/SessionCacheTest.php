@@ -5,13 +5,14 @@ namespace Kinikit\Core\Util\Caching;
 
 
 use Kinikit\Core\Util\HTTP\HttpSession;
+use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
 
 /**
  * Test cases for the session cache.
  */
-class SessionCacheTest extends \PHPUnit\Framework\TestCase {
+class SessionCacheTest extends TestCase {
 
     private $sessionCache;
 
