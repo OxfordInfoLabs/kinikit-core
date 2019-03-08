@@ -44,20 +44,25 @@ class CachingHeaders {
 
         // Add cache control header if revalidate
         $numberOfSeconds = $numberOfMinutes * 60;
+        $header = "Cache-Control: public, max-age=" . ($numberOfSeconds);
         if ($mustRevalidate)
-            header("Cache-Control: max-age=" . ($numberOfSeconds) . " must-revalidate");
-        else
-            header("Cache-Control: max-age=" . ($numberOfSeconds));
+            $header .= ", must-revalidate";
+
+        header($header);
 
         // Add the Expires header.
         $expStr = "Expires: " . gmdate("D, d M Y H:i:s", time() + $numberOfSeconds) . " GMT";
         header($expStr);
 
         // Add the last modified header.
-        $lastModified = "Last-Modified: " . gmdate("D, d M Y H:i:s", time()) + " GMT";
+        $lastModified = "Last-Modified: " . gmdate("D, d M Y H:i:s", time()) . " GMT";
         header($lastModified);
 
         header_remove("Pragma");
+
+        $etag = '"' . filemtime(__FILE__) . '.' . date("U") . '"';
+        header("ETag: $etag");
+
 
     }
 
