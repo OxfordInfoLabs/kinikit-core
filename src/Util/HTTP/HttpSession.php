@@ -99,8 +99,7 @@ class HttpSession {
         if (session_id() == "" || session_id() == null) {
             if (isset ($_REQUEST ["HTTPSESSID"])) {
                 session_id($_REQUEST ["HTTPSESSID"]);
-            }
-            else if (isset ($_REQUEST ["PHPSESSID"])) {
+            } else if (isset ($_REQUEST ["PHPSESSID"])) {
                 session_id($_REQUEST ["PHPSESSID"]);
             }
         }
@@ -121,7 +120,6 @@ class HttpSession {
             }
 
 
-
             ini_set("session.cookie_domain", $cookieDomain);
         }
 
@@ -137,12 +135,12 @@ class HttpSession {
      */
     public static function instance() {
 
-        if (HttpSession::$instance == null) {
-            HttpSession::$instance = new HttpSession ();
+        if (self::$instance == null) {
+            $class = get_class(new static());
+            self::$instance = new $class();
         }
 
-
-        return HttpSession::$instance;
+        return self::$instance;
     }
 
 }

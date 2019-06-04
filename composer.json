@@ -17,7 +17,8 @@
     "php": "^5.6|^7.0",
     "ext-iconv": "*",
     "ext-libxml": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "phpmailer/phpmailer": "*"
   },
   "autoload": {
     "psr-4": {
