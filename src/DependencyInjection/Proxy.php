@@ -15,7 +15,7 @@ class Proxy {
     private $object;
 
     /**
-     * @var \Kinikit\Core\DependencyInjection\MethodInterceptor[]
+     * @var \Kinikit\Core\DependencyInjection\MethodInterceptors
      */
     private $interceptors;
 
@@ -37,14 +37,14 @@ class Proxy {
         $this->interceptors = $interceptors;
         $this->classAnnotations = $classAnnotations;
 
-        $interceptorAnnotations = $classAnnotations->getClassAnnotationForMatchingTag("interceptor");
-
-        if ($interceptorAnnotations) {
-            foreach ($interceptorAnnotations as $interceptor) {
-                $interceptorClass = $interceptor->getValue();
-                $this->interceptors[] = new $interceptorClass();
-            }
-        }
+//        $interceptorAnnotations = $classAnnotations->getClassAnnotationForMatchingTag("interceptor");
+//
+//        if ($interceptorAnnotations) {
+//            foreach ($interceptorAnnotations as $interceptor) {
+//                $interceptorClass = $interceptor->getValue();
+//                $this->interceptors[] = new $interceptorClass();
+//            }
+//        }
 
     }
 
@@ -70,24 +70,37 @@ class Proxy {
      */
     public function __call($name, $arguments) {
 
+        $interceptors = $this->interceptors->getInterceptors();
+
         // Evaluate before method interceptors.
-        foreach ($this->interceptors as $interceptor) {
+        foreach ($interceptors as $interceptor) {
             $interceptor->beforeMethod($this->object, $name, $arguments, $this->classAnnotations);
         }
 
         // Make the main call, wrap in exception handling
         try {
-            $returnValue = call_user_func_array(array($this->object, $name), $arguments);
+
+            $callable = function () use ($name, $arguments) {
+                return call_user_func_array(array($this->object, $name), $arguments);
+            };
 
             // Evaluate after method interceptors.
-            foreach ($this->interceptors as $interceptor) {
+            foreach ($interceptors as $interceptor) {
+                $callable = $interceptor->methodCallable($callable, $name, $arguments, $this->classAnnotations);
+            }
+
+            // Actually call the callable and get the return value.
+            $returnValue = $callable();
+
+            // Evaluate after method interceptors.
+            foreach ($interceptors as $interceptor) {
                 $interceptor->afterMethod($this->object, $name, $arguments, $returnValue, $this->classAnnotations);
             }
 
             return $returnValue;
 
         } catch (\Throwable $e) {
-            foreach ($this->interceptors as $interceptor) {
+            foreach ($interceptors as $interceptor) {
                 $interceptor->onException($this->object, $name, $arguments, $e, $this->classAnnotations);
             }
 

@@ -13,7 +13,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanCreateSimpleClassWithNoDependencies() {
 
-        $simpleService = Container::instance()->createInstance("Kinikit\Core\DependencyInjection\SimpleService");
+        $simpleService = Container::instance()->get("Kinikit\Core\DependencyInjection\SimpleService");
         $this->assertTrue($simpleService instanceof Proxy);
         $this->assertEquals(new SimpleService(), $simpleService->__getObject());
         $this->assertEquals("Hello wonderful world of fun", $simpleService->getName());
@@ -21,7 +21,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
 
         // Check singleton behaviour
-        $simpleService2 = Container::instance()->createInstance("Kinikit\Core\DependencyInjection\SimpleService");
+        $simpleService2 = Container::instance()->get("Kinikit\Core\DependencyInjection\SimpleService");
         $this->assertTrue($simpleService === $simpleService2);
 
     }
@@ -29,13 +29,13 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanCreateDeepClassWithInjectedRecursiveDependencies() {
 
-        $complexService = Container::instance()->createInstance("Kinikit\Core\DependencyInjection\ComplexService");
+        $complexService = Container::instance()->get("Kinikit\Core\DependencyInjection\ComplexService");
         $this->assertTrue($complexService instanceof Proxy);
         $this->assertTrue($complexService->__getObject() instanceof ComplexService);
         $this->assertEquals("Hello wonderful world of fun", $complexService->getTitle());
 
-        $this->assertEquals(Container::instance()->createInstance("Kinikit\Core\DependencyInjection\SimpleService"), $complexService->getSimpleService());
-        $this->assertEquals(Container::instance()->createInstance("Kinikit\Core\DependencyInjection\SecondaryService"), $complexService->getSecondaryService());
+        $this->assertEquals(Container::instance()->get("Kinikit\Core\DependencyInjection\SimpleService"), $complexService->getSimpleService());
+        $this->assertEquals(Container::instance()->get("Kinikit\Core\DependencyInjection\SecondaryService"), $complexService->getSecondaryService());
         $this->assertEquals($complexService, $complexService->getSecondaryService()->getComplexService());
 
     }
@@ -47,7 +47,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         $methodInterceptor = new TestMethodInterceptor();
         $container->addMethodInterceptor($methodInterceptor);
 
-        $complexService = $container->createInstance("Kinikit\Core\DependencyInjection\ComplexService");
+        $complexService = $container->get("Kinikit\Core\DependencyInjection\ComplexService");
 
         // Get a title
         $complexService->getTitle();

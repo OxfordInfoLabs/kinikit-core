@@ -26,9 +26,15 @@ class Container {
     /**
      * Global interceptors
      *
-     * @var \Kinikit\Core\DependencyInjection\MethodInterceptor[]
+     * @var \Kinikit\Core\DependencyInjection\MethodInterceptors
      */
-    private $methodInterceptors = array();
+    private $methodInterceptors;
+
+
+    // Constructor
+    private function __construct() {
+        $this->methodInterceptors = new MethodInterceptors();
+    }
 
 
     /**
@@ -46,11 +52,11 @@ class Container {
 
 
     /**
-     * Create an instance of the supplied class.
+     * Get an instance of a supplied class.
      *
      * @param string $className
      */
-    public function createInstance($className) {
+    public function get($className) {
 
         // Remove leading \'s.
         $className = ltrim($className, "\\");
@@ -73,7 +79,7 @@ class Container {
             $constructorParams = $classAnnotations->getMethodAnnotationsForMatchingTag("param", "__construct");
             foreach ($constructorParams as $param) {
                 $dependentClass = trim(preg_replace("/\\$[a-zA-Z0-9_]+/", "", $param->getValue()));
-                $params[] = $this->createInstance($dependentClass);
+                $params[] = $this->get($dependentClass);
             }
         }
 
@@ -86,14 +92,14 @@ class Container {
     }
 
     /**
-     * @return MethodInterceptor[]
+     * @return MethodInterceptors
      */
     public function getMethodInterceptors() {
         return $this->methodInterceptors;
     }
 
     /**
-     * @param MethodInterceptor[] $methodInterceptors
+     * @param MethodInterceptors $methodInterceptors
      */
     public function setMethodInterceptors($methodInterceptors) {
         $this->methodInterceptors = $methodInterceptors;
@@ -106,8 +112,9 @@ class Container {
      * @param $methodInterceptor
      */
     public function addMethodInterceptor($methodInterceptor) {
-        $this->methodInterceptors[] = $methodInterceptor;
+        $this->methodInterceptors->addInterceptor($methodInterceptor);
     }
+
 
 
 }

@@ -17,8 +17,8 @@ class HttpSession {
     private static $instance;
     private $sessionData = null;
 
-    // Private constructor - should use instance method
-    private function __construct() {
+    // Public constructor if auto wiring
+    public function __construct() {
     }
 
     /**

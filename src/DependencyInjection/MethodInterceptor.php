@@ -26,6 +26,19 @@ class MethodInterceptor {
 
 
     /**
+     * Intercept the method callable just before it is executed and return another callable if required.
+     *
+     * @param callable $callable
+     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
+     *
+     * @return callable
+     */
+    public function methodCallable($callable, $methodName, $params, $classAnnotations) {
+        return $callable;
+    }
+
+
+    /**
      * After method interceptor for objects.  This is called after every method
      * is invoked.  Useful for logging etc or final checking based upon results of method.
      *
