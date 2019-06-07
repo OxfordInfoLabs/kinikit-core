@@ -72,6 +72,7 @@ class Proxy {
 
         $interceptors = $this->interceptors->getInterceptors();
 
+
         // Evaluate before method interceptors.
         foreach ($interceptors as $interceptor) {
             $interceptor->beforeMethod($this->object, $name, $arguments, $this->classAnnotations);
