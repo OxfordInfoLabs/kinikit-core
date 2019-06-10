@@ -4,9 +4,20 @@ namespace Kinikit\Core\DependencyInjection;
 
 
 /**
- * Method Interceptor base class for intercepting method calls on the proxy object.
+ * Object Interceptor base class for intercepting object creations and method calls on the proxy object.
  */
-class MethodInterceptor {
+class ObjectInterceptor {
+
+
+    /**
+     * Intercept the creation of this object.  This should either do nothing or throw an exception to
+     * veto this create.  This is particularly useful when we want whole objects to be permission restricted.
+     *
+     * @param $objectInstance
+     */
+    public function afterCreate($objectInstance) {
+    }
+
 
     /**
      * Method level interceptor for objects.  This is called before every method

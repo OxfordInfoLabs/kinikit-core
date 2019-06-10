@@ -15,7 +15,7 @@ class Proxy {
     private $object;
 
     /**
-     * @var \Kinikit\Core\DependencyInjection\MethodInterceptors
+     * @var \Kinikit\Core\DependencyInjection\ObjectInterceptors
      */
     private $interceptors;
 
@@ -29,7 +29,7 @@ class Proxy {
      * Internal function called by Container to populate with bits required.
      *
      * @param $object
-     * @param \Kinikit\Core\DependencyInjection\MethodInterceptor[] $interceptors
+     * @param \Kinikit\Core\DependencyInjection\ObjectInterceptor[] $interceptors
      * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
      */
     public function __populate($object, $interceptors, $classAnnotations) {
@@ -46,6 +46,10 @@ class Proxy {
 //            }
 //        }
 
+        $interceptors = $this->interceptors->getInterceptors();
+        foreach ($interceptors as $interceptor) {
+            $interceptor->afterCreate($this->object);
+        }
     }
 
 

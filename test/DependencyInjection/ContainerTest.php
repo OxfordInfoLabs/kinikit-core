@@ -41,10 +41,21 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testMethodInterceptorsAreCalledForPreAndPostMethodCallsAndOnExceptions() {
+    public function testObjectInterceptorsAreCalledOnObjectCreation() {
+        $container = new Container();
+        $methodInterceptor = new TestObjectInterceptor();
+        $container->addMethodInterceptor($methodInterceptor);
+
+        $complexService = $container->get("Kinikit\Core\DependencyInjection\ComplexService");
+
+        $this->assertTrue(in_array("Kinikit\Core\DependencyInjection\ComplexService", $methodInterceptor->afterCreates));
+    }
+
+
+    public function testObjectInterceptorsAreCalledForPreAndPostMethodCallsAndOnExceptions() {
 
         $container = new Container();
-        $methodInterceptor = new TestMethodInterceptor();
+        $methodInterceptor = new TestObjectInterceptor();
         $container->addMethodInterceptor($methodInterceptor);
 
         $complexService = $container->get("Kinikit\Core\DependencyInjection\ComplexService");

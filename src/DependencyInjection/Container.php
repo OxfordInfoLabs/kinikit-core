@@ -26,14 +26,14 @@ class Container {
     /**
      * Global interceptors
      *
-     * @var \Kinikit\Core\DependencyInjection\MethodInterceptors
+     * @var \Kinikit\Core\DependencyInjection\ObjectInterceptors
      */
     private $methodInterceptors;
 
 
     // Constructor
-    private function __construct() {
-        $this->methodInterceptors = new MethodInterceptors();
+    public function __construct() {
+        $this->methodInterceptors = new ObjectInterceptors();
     }
 
 
@@ -85,6 +85,8 @@ class Container {
 
         $newObject = $reflectionClass->newInstanceArgs($params);
 
+
+
         $newProxy->__populate($newObject, $this->methodInterceptors, $classAnnotations);
 
         return $newProxy;
@@ -92,14 +94,14 @@ class Container {
     }
 
     /**
-     * @return MethodInterceptors
+     * @return ObjectInterceptors
      */
     public function getMethodInterceptors() {
         return $this->methodInterceptors;
     }
 
     /**
-     * @param MethodInterceptors $methodInterceptors
+     * @param ObjectInterceptors $methodInterceptors
      */
     public function setMethodInterceptors($methodInterceptors) {
         $this->methodInterceptors = $methodInterceptors;
