@@ -16,12 +16,13 @@ class MethodInterceptor {
      *
      * @param object $objectInstance - The object being called
      * @param string $methodName - The method name
-     * @param array $params - The parameters passed to the method
+     * @param string[string] $params - The parameters passed to the method as name => value pairs.
      * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations - The class annotations for convenience for e.g. role based enforcement.
      *
+     * @return string[string] - The params array either intact or modified if required.
      */
     public function beforeMethod($objectInstance, $methodName, $params, $classAnnotations) {
-
+        return $params;
     }
 
 
@@ -50,9 +51,11 @@ class MethodInterceptor {
      * @param $returnValue - The return value from the method
      * @param $classAnnotations - The class annotations for the controller class for convenience.
      *
+     * @return $string - The return value, modified if required.
+     *
      */
     public function afterMethod($objectInstance, $methodName, $params, $returnValue, $classAnnotations) {
-
+        return $returnValue;
     }
 
 

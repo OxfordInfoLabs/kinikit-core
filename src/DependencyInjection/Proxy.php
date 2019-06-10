@@ -72,37 +72,50 @@ class Proxy {
 
         $interceptors = $this->interceptors->getInterceptors();
 
+        // If we have interceptors, calculate the parameters
+        $params = array();
 
-        // Evaluate before method interceptors.
+        $reflectionClass = new \ReflectionClass($this->object);
+        $method = $reflectionClass->getMethod($name);
+        if ($method) {
+            $reflectionParams = $method->getParameters();
+            foreach ($reflectionParams as $index => $param) {
+                $params[$param->getName()] = isset($arguments[$index]) ? $arguments[$index] :
+                    ($param->isOptional() ? $param->getDefaultValue() : null);
+            }
+        }
+
+
+        // Evaluate before method interceptors - return input parameters
         foreach ($interceptors as $interceptor) {
-            $interceptor->beforeMethod($this->object, $name, $arguments, $this->classAnnotations);
+            $params = $interceptor->beforeMethod($this->object, $name, $params, $this->classAnnotations);
         }
 
         // Make the main call, wrap in exception handling
         try {
 
-            $callable = function () use ($name, $arguments) {
-                return call_user_func_array(array($this->object, $name), $arguments);
+            $callable = function () use ($name, $params) {
+                return call_user_func_array(array($this->object, $name), array_values($params));
             };
 
             // Evaluate after method interceptors.
             foreach ($interceptors as $interceptor) {
-                $callable = $interceptor->methodCallable($callable, $name, $arguments, $this->classAnnotations);
+                $callable = $interceptor->methodCallable($callable, $name, $params, $this->classAnnotations);
             }
 
             // Actually call the callable and get the return value.
             $returnValue = $callable();
 
-            // Evaluate after method interceptors.
+            // Evaluate after method interceptors, return a return value
             foreach ($interceptors as $interceptor) {
-                $interceptor->afterMethod($this->object, $name, $arguments, $returnValue, $this->classAnnotations);
+                $returnValue = $interceptor->afterMethod($this->object, $name, $params, $returnValue, $this->classAnnotations);
             }
 
             return $returnValue;
 
         } catch (\Throwable $e) {
             foreach ($interceptors as $interceptor) {
-                $interceptor->onException($this->object, $name, $arguments, $e, $this->classAnnotations);
+                $interceptor->onException($this->object, $name, $params, $e, $this->classAnnotations);
             }
 
             throw ($e);
