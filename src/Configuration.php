@@ -16,7 +16,8 @@ class Configuration extends ConfigFile {
 
     // private only constructor here, since we should only access this through other instance methods.
     public function __construct() {
-        parent::__construct("Config/config.txt");
+        $envVariable = getenv("KINIKIT_CONFIG_FILE");
+        parent::__construct("Config/" . ($envVariable ? $envVariable : "config.txt"));
     }
 
     /**
@@ -24,8 +25,8 @@ class Configuration extends ConfigFile {
      *
      * @return Configuration
      */
-    public static function instance() {
-        if (Configuration::$instance == null) {
+    public static function instance($newInstance = false) {
+        if (Configuration::$instance == null || $newInstance) {
             Configuration::$instance = new Configuration ();
         }
 
