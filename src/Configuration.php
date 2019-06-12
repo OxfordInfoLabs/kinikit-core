@@ -1,6 +1,7 @@
 <?php
 
 namespace Kinikit\Core;
+
 use Kinikit\Core\Util\Configuration\ConfigFile;
 
 /**
@@ -15,7 +16,7 @@ class Configuration extends ConfigFile {
 
     // private only constructor here, since we should only access this through other instance methods.
     public function __construct() {
-        parent::__construct("config/config.txt");
+        parent::__construct("Config/config.txt");
     }
 
     /**
