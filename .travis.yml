@@ -2,5 +2,6 @@ language: php
 php:
   - '7.2'
 
-script: phpunit test
+before_script: cd test
+script: phpunit *
 
