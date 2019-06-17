@@ -15,7 +15,7 @@ include_once "autoloader.php";
  */
 class LoggerTest extends \PHPUnit\Framework\TestCase {
 
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
         passthru("rm -rf /tmp/ooacorelog.log");
     }

@@ -17,7 +17,7 @@ class XMLToObjectConverterTest extends \PHPUnit\Framework\TestCase {
     private $converter;
     private $objectToXMLConverter;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->converter = new XMLToObjectConverter ();
         $this->objectToXMLConverter = new ObjectToXMLConverter ();
     }

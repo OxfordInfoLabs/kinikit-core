@@ -3,7 +3,6 @@
 namespace Kinikit\Core\Util\Caching;
 
 
-
 use Kinikit\Core\Util\HTTP\HttpSession;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +15,7 @@ class SessionCacheTest extends TestCase {
 
     private $sessionCache;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->sessionCache = new SessionCache();
     }
 
