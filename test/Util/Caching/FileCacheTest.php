@@ -11,7 +11,7 @@ class FileCacheTest extends \PHPUnit\Framework\TestCase {
      */
     private $fileCache;
 
-    public function setUp() {
+    public function setUp():void {
         // Remove cache upfront
         passthru("rm -rf /tmp/filecache");
 
