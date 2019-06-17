@@ -123,7 +123,8 @@ class HttpSession {
             ini_set("session.cookie_domain", $cookieDomain);
         }
 
-        @session_start();
+        if (!headers_sent())
+            @session_start();
 
     }
 
