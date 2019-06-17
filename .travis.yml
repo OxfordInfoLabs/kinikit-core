@@ -7,8 +7,8 @@ script: phpunit .
 
 
 after_success:
-  - ./trigger_travis_build.sh kinikit-mvc
-  - ./trigger_travis_build.sh kinikit-persistence
+  - ../trigger_travis_build.sh kinikit-mvc
+  - ../trigger_travis_build.sh kinikit-persistence
 
 env:
   global:
