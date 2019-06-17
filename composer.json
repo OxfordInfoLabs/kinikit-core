@@ -18,7 +18,8 @@
     "ext-iconv": "*",
     "ext-libxml": "*",
     "ext-mbstring": "*",
-    "phpmailer/phpmailer": "*"
+    "mustache/mustache": "*",
+    "twig/twig": "*"
   },
   "autoload": {
     "psr-4": {
