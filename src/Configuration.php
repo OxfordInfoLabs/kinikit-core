@@ -23,7 +23,7 @@ class Configuration extends ConfigFile {
     /**
      * Get the singleton configuration instance.
      *
-     * @return Configuration
+     * @return Configuration   
      */
     public static function instance($newInstance = false) {
         if (Configuration::$instance == null || $newInstance) {
