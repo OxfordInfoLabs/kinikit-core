@@ -105,15 +105,17 @@ class FileUtils {
      * @param $src
      * @param $dst
      */
-    public static function copy($src, $dst) {
+    public static function copy($src, $dst, $overwrite = true) {
         $dir = opendir($src);
-        @mkdir($dst);
+        if (!file_exists($dst))
+            @mkdir($dst);
         while (false !== ($file = readdir($dir))) {
             if (($file != '.') && ($file != '..')) {
                 if (is_dir($src . '/' . $file)) {
-                    self::copy($src . '/' . $file, $dst . '/' . $file);
+                    self::copy($src . '/' . $file, $dst . '/' . $file, $overwrite);
                 } else {
-                    copy($src . '/' . $file, $dst . '/' . $file);
+                    if ($overwrite || !file_exists($dst . '/' . $file))
+                        copy($src . '/' . $file, $dst . '/' . $file);
                 }
             }
         }
