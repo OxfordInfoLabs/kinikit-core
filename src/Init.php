@@ -53,6 +53,10 @@ class Init {
         if (Configuration::readParameter("application.namespace")) {
             $class = str_replace(Configuration::readParameter("application.namespace") . "\\", "", $class);
             $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+
+            if (Configuration::readParameter("application.namespace.root"))
+                $file = Configuration::readParameter("application.namespace.root") . "/$file";
+
             if (file_exists($file)) {
                 require $file;
                 return true;
