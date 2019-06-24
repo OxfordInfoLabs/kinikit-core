@@ -37,14 +37,15 @@ class Proxy {
         $this->interceptors = $interceptors;
         $this->classAnnotations = $classAnnotations;
 
-//        $interceptorAnnotations = $classAnnotations->getClassAnnotationForMatchingTag("interceptor");
-//
-//        if ($interceptorAnnotations) {
-//            foreach ($interceptorAnnotations as $interceptor) {
-//                $interceptorClass = $interceptor->getValue();
-//                $this->interceptors[] = new $interceptorClass();
-//            }
-//        }
+        $interceptorAnnotations = $classAnnotations->getClassAnnotationsForMatchingTag("interceptor");
+
+        if ($interceptorAnnotations) {
+
+            foreach ($interceptorAnnotations as $interceptor) {
+                $interceptorClass = $interceptor->getValue();
+                $this->interceptors->addInterceptor(new $interceptorClass());
+            }
+        }
 
         $interceptors = $this->interceptors->getInterceptors();
         foreach ($interceptors as $interceptor) {

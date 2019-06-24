@@ -86,6 +86,20 @@ class ClassAnnotations {
         $this->methodAnnotations = $methodAnnotations;
     }
 
+
+    /**
+     * Get class annotations (when expecting multiple) for matching tag.
+     *
+     * @param $tag
+     * @return mixed
+     */
+    public function getClassAnnotationsForMatchingTag($tag) {
+        if (isset($this->classAnnotations[$tag])) {
+            return $this->classAnnotations[$tag];
+        }
+    }
+
+
     /**
      * Get any class annotations with a matching tag.  Return these indexed by field name.
      *

@@ -35,7 +35,14 @@ class HttpRequest {
 
         // Convert get params
         foreach ($_GET as $key => $value) {
-            $decoded = urldecode($value);
+
+            if (is_array($value)) {
+                $decoded = array();
+                foreach ($value as $valueEntry) {
+                    $decoded[] = urldecode($valueEntry);
+                }
+            } else
+                $decoded = urldecode($value);
 
             // Handle booleans.
             if ($decoded == "false") {
@@ -71,7 +78,7 @@ class HttpRequest {
     }
 
     /**
-     * Get a session value by key
+     * Get a request parameter by key
      *
      * @param string $key
      */
