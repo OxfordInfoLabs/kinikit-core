@@ -13,11 +13,11 @@ class ServiceWithExplicitType {
      * Construct with explicitly typed arguments
      *
      * @param SimpleService $simpleService
-     * @param ComplexService $complexService
+     * @param SecondaryService $secondaryService
      */
-    public function __construct(SimpleService $simpleService, ComplexService $complexService) {
+    public function __construct(SimpleService $simpleService, SecondaryService $secondaryService) {
         $this->simpleService = $simpleService;
-        $this->complexService = $complexService;
+        $this->secondaryService = $secondaryService;
     }
 
 
@@ -33,15 +33,15 @@ class ServiceWithExplicitType {
     /**
      * @return SimpleService
      */
-    public function getSimpleService() {
+    public function getSimpleService(): SimpleService {
         return $this->simpleService;
     }
 
     /**
-     * @return ComplexService
+     * @return SecondaryService
      */
-    public function getComplexService() {
-        return $this->complexService;
+    public function getSecondaryService(): SecondaryService {
+        return $this->secondaryService;
     }
 
 

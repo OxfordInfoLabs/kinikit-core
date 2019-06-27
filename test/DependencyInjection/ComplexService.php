@@ -8,16 +8,19 @@ class ComplexService {
 
     private $simpleService;
     private $secondaryService;
+    private $complexService;
 
     /**
      * ComplexService constructor.
      *
      * @param \Kinikit\Core\DependencyInjection\SimpleService $simpleService
      * @param \Kinikit\Core\DependencyInjection\SecondaryService $secondaryService
+     * @param ComplexService $complexService
      */
-    public function __construct($simpleService, $secondaryService) {
+    public function __construct($simpleService, $secondaryService, $complexService) {
         $this->simpleService = $simpleService;
         $this->secondaryService = $secondaryService;
+        $this->complexService = $complexService;
     }
 
     /**

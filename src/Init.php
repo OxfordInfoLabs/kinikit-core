@@ -4,9 +4,9 @@
 namespace Kinikit\Core;
 
 use ErrorException;
-use Kinikit\Core\Util\HTTP\HttpSession;
 use Kinikit\Core\Util\Logging\Logger;
-use Kinikit\MVC\Framework\SourceBaseManager;
+use Kinikit\MVC\Framework\HTTP\HttpSession;
+
 
 /**
  * Generic initialiser.  This should be called to initialise the framework with default setup stuff.

@@ -2,7 +2,8 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use PHPMailer\PHPMailer\Exception;
+use Kinikit\Core\Util\Reflection\ClassInspector;
+
 
 /**
  * Wrapper proxy class - this is injected instead of the real object to avoid circular dependency issues
@@ -10,34 +11,32 @@ use PHPMailer\PHPMailer\Exception;
  *
  * Class Proxy
  */
-class Proxy {
-
-    private $object;
+trait Proxy {
 
     /**
-     * @var \Kinikit\Core\DependencyInjection\ObjectInterceptors
+     * @var ObjectInterceptor[]
      */
     private $interceptors;
 
+
     /**
-     * @var \Kinikit\Core\Util\Annotation\ClassAnnotations
+     * @var ClassInspector
      */
-    private $classAnnotations;
+    private $classInspector;
 
 
     /**
      * Internal function called by Container to populate with bits required.
      *
-     * @param $object
-     * @param \Kinikit\Core\DependencyInjection\ObjectInterceptor[] $interceptors
-     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
+     * @param ObjectInterceptor[] $interceptors
+     * @param ClassInspector $classInspector
      */
-    public function __populate($object, $interceptors, $classAnnotations) {
-        $this->object = $object;
+    public function __populate($interceptors, $classInspector) {
         $this->interceptors = $interceptors;
-        $this->classAnnotations = $classAnnotations;
+        $this->classInspector = $classInspector;
 
-        $interceptorAnnotations = $classAnnotations->getClassAnnotationsForMatchingTag("interceptor");
+        $interceptorAnnotations = isset($classInspector->getClassAnnotations()["interceptor"]) ?
+            $classInspector->getClassAnnotations()["interceptor"] : array();
 
         if ($interceptorAnnotations) {
 
@@ -49,22 +48,15 @@ class Proxy {
 
         $interceptors = $this->interceptors->getInterceptors();
         foreach ($interceptors as $interceptor) {
-            $interceptor->afterCreate($this->object);
+            $interceptor->afterCreate($this, $classInspector);
         }
     }
 
 
     /**
-     * Internal framwork use and for testing to get the dependency object.
      *
-     * @return mixed
-     */
-    public function __getObject() {
-        return $this->object;
-    }
-
-
-    /**
+     *
+     * /**
      * Catch every method call for this dependency and forward to the object invoking any interceptors
      * as defined.
      *
@@ -80,7 +72,7 @@ class Proxy {
         // If we have interceptors, calculate the parameters
         $params = array();
 
-        $reflectionClass = new \ReflectionClass($this->object);
+        $reflectionClass = new \ReflectionClass($this);
         $method = $reflectionClass->getMethod($name);
         if ($method) {
             $reflectionParams = $method->getParameters();
@@ -93,34 +85,35 @@ class Proxy {
 
         // Evaluate before method interceptors - return input parameters
         foreach ($interceptors as $interceptor) {
-            $params = $interceptor->beforeMethod($this->object, $name, $params, $this->classAnnotations);
+            $params = $interceptor->beforeMethod($this, $name, $params, $this->classInspector);
         }
 
         // Make the main call, wrap in exception handling
         try {
 
-            $callable = function () use ($name, $params) {
-                return call_user_func_array(array($this->object, $name), array_values($params));
+            $callable = function () use ($name, $params, $reflectionClass) {
+                return $reflectionClass->getParentClass()->getMethod($name)->invokeArgs($this, array_values($params));
             };
 
             // Evaluate after method interceptors.
             foreach ($interceptors as $interceptor) {
-                $callable = $interceptor->methodCallable($callable, $name, $params, $this->classAnnotations);
+                $callable = $interceptor->methodCallable($callable, $name, $params, $this->classInspector);
             }
 
             // Actually call the callable and get the return value.
             $returnValue = $callable();
 
+
             // Evaluate after method interceptors, return a return value
             foreach ($interceptors as $interceptor) {
-                $returnValue = $interceptor->afterMethod($this->object, $name, $params, $returnValue, $this->classAnnotations);
+                $returnValue = $interceptor->afterMethod($this, $name, $params, $returnValue, $this->classInspector);
             }
 
             return $returnValue;
 
         } catch (\Throwable $e) {
             foreach ($interceptors as $interceptor) {
-                $interceptor->onException($this->object, $name, $params, $e, $this->classAnnotations);
+                $interceptor->onException($this, $name, $params, $e, $this->classInspector);
             }
 
             throw ($e);

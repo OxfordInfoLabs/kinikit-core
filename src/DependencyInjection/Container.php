@@ -2,8 +2,13 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Util\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Exception\RecursiveDependencyException;
+use Kinikit\Core\Annotation\ClassAnnotationParser;
 use Kinikit\Core\Util\ArrayUtils;
+use Kinikit\Core\Util\Primitive;
+use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\MethodInspector;
+use Kinikit\Core\Reflection\Parameter;
 
 /**
  * Standard Inversion of Control (IOC) dependency injection container.  This is a singleton class which
@@ -30,10 +35,18 @@ class Container {
      */
     private $methodInterceptors;
 
+    /**
+     * Proxy generator
+     *
+     * @var ProxyGenerator
+     */
+    private $proxyGenerator;
+
 
     // Constructor
     public function __construct() {
         $this->methodInterceptors = new ObjectInterceptors();
+        $this->proxyGenerator = new ProxyGenerator();
     }
 
 
@@ -57,39 +70,7 @@ class Container {
      * @param string $className
      */
     public function get($className) {
-
-        // Remove leading \'s.
-        $className = ltrim($className, "\\");
-
-        // Shortcut if we already have this instance.
-        if (isset($this->proxies[$className])) {
-            return $this->proxies[$className];
-        }
-
-        // Create a new proxy and ensure that we add it to our collection up front.
-        $newProxy = new Proxy();
-        $this->proxies[$className] = $newProxy;
-
-        $reflectionClass = new \ReflectionClass($className);
-
-        $classAnnotations = ClassAnnotationParser::instance()->parse($className);
-
-        $params = array();
-        if ($reflectionClass->getConstructor() && $reflectionClass->getConstructor()->getNumberOfRequiredParameters() > 0) {
-            $constructorParams = $classAnnotations->getMethodAnnotationsForMatchingTag("param", "__construct");
-            foreach ($constructorParams as $param) {
-                $dependentClass = trim(preg_replace("/\\$[a-zA-Z0-9_]+/", "", $param->getValue()));
-                $params[] = $this->get($dependentClass);
-            }
-        }
-
-        $newObject = $reflectionClass->newInstanceArgs($params);
-
-
-
-        $newProxy->__populate($newObject, $this->methodInterceptors, $classAnnotations);
-
-        return $newProxy;
+        return $this->__doGet($className);
 
     }
 
@@ -117,6 +98,53 @@ class Container {
         $this->methodInterceptors->addInterceptor($methodInterceptor);
     }
 
+    /**
+     * @param $className
+     * @return object
+     * @throws \ReflectionException
+     */
+    public function __doGet($className, $dependentClasses = array()) {
+
+        // Remove leading \'s.
+        $className = "\\" . ltrim(trim($className), "\\");
+
+        $dependentClasses[] = $className;
+
+        // Shortcut if we already have this instance.
+        if (isset($this->proxies[$className])) {
+            return $this->proxies[$className];
+        }
+
+        // Create a new proxy and ensure that we add it to our collection up front.
+        $classInspector = new ClassInspector($className);
+
+        // Create a proxy class
+        $proxyClass = $this->proxyGenerator->generateProxy($className);
+
+        $params = array();
+        if ($constructor = $classInspector->getConstructor()) {
+            foreach ($constructor->getParameters() as $param) {
+                if (!in_array($param->getType(), Primitive::TYPES)) {
+                    if (in_array($param->getType(), $dependentClasses))
+                        throw new RecursiveDependencyException($param->getType());
+
+                    $params[] = $this->get($param->getType(), $dependentClasses);
+                }
+            }
+        }
+
+        // Create the proxy object
+        $reflectionClass = new \ReflectionClass($proxyClass);
+        $proxy = $reflectionClass->newInstanceArgs($params);
+
+        // Populate with base functionality.
+        $proxy->__populate($this->methodInterceptors, $classInspector);
+
+        // Store for future efficiency.
+        $this->proxies[$className] = $proxy;
+
+        return $proxy;
+    }
 
 
 }

@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
+use Kinikit\Core\Exception\RecursiveDependencyException;
 use PHPMailer\PHPMailer\Exception;
 
 include_once "autoloader.php";
@@ -11,11 +12,11 @@ include_once "autoloader.php";
  */
 class ContainerTest extends \PHPUnit\Framework\TestCase {
 
+
     public function testCanCreateSimpleClassWithNoDependencies() {
 
         $simpleService = Container::instance()->get("Kinikit\Core\DependencyInjection\SimpleService");
-        $this->assertTrue($simpleService instanceof Proxy);
-        $this->assertEquals(new SimpleService(), $simpleService->__getObject());
+        $this->assertTrue($simpleService instanceof SimpleService);
         $this->assertEquals("Hello wonderful world of fun", $simpleService->getName());
         $this->assertEquals(array("Bob", 1, 4, 9), $simpleService->echoParams("Bob", 1, 4, 9));
 
@@ -27,21 +28,15 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testCanCreateDeepClassWithInjectedRecursiveDependencies() {
+    public function testCannotCreateDeepClassWithInjectedRecursiveDependencies() {
 
-        $complexService = Container::instance()->get("Kinikit\Core\DependencyInjection\ComplexService");
-        $this->assertTrue($complexService instanceof Proxy);
-        $this->assertTrue($complexService->__getObject() instanceof ComplexService);
-        $this->assertEquals("Hello wonderful world of fun", $complexService->getTitle());
-
-        $this->assertEquals(Container::instance()->get("Kinikit\Core\DependencyInjection\SimpleService"), $complexService->getSimpleService());
-        $this->assertEquals(Container::instance()->get("Kinikit\Core\DependencyInjection\SecondaryService"), $complexService->getSecondaryService());
-        $this->assertEquals($complexService, $complexService->getSecondaryService()->getComplexService());
-
+        try {
+            Container::instance()->get("Kinikit\Core\DependencyInjection\ComplexService");
+            $this->fail("Should have thrown here");
+        } catch (RecursiveDependencyException $e) {
+            $this->assertTrue(true);
+        }
     }
-
-
-
 
 
     public function testObjectInterceptorsAreCalledOnObjectCreation() {
@@ -49,9 +44,9 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         $methodInterceptor = new TestObjectInterceptor();
         $container->addMethodInterceptor($methodInterceptor);
 
-        $complexService = $container->get("Kinikit\Core\DependencyInjection\ComplexService");
+        $complexService = $container->get("Kinikit\Core\DependencyInjection\SecondaryService");
 
-        $this->assertTrue(in_array("Kinikit\Core\DependencyInjection\ComplexService", $methodInterceptor->afterCreates));
+        $this->assertTrue(in_array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", $methodInterceptor->afterCreates));
     }
 
 
@@ -61,25 +56,25 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         $methodInterceptor = new TestObjectInterceptor();
         $container->addMethodInterceptor($methodInterceptor);
 
-        $complexService = $container->get("Kinikit\Core\DependencyInjection\ComplexService");
+        $complexService = $container->get("Kinikit\Core\DependencyInjection\SecondaryService");
 
         // Get a title
-        $complexService->getTitle();
+        $complexService->ok();
 
         $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
-        $this->assertEquals(array("Kinikit\Core\DependencyInjection\ComplexService", "getTitle"), $methodInterceptor->beforeCalls[0]);
+        $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "ok"), $methodInterceptor->beforeCalls[0]);
 
         $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
-        $this->assertEquals(array("Kinikit\Core\DependencyInjection\ComplexService", "getTitle"), $methodInterceptor->afterCalls[0]);
+        $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "ok"), $methodInterceptor->afterCalls[0]);
 
 
         try {
-            $complexService->getSecondaryService()->throwException();
+            $complexService->throwException();
             $this->fail("Should have thrown here");
         } catch (\Exception $e) {
 
             $this->assertEquals(1, sizeof($methodInterceptor->exceptionCalls));
-            $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryService", "throwException"), $methodInterceptor->exceptionCalls[0]);
+            $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "throwException"), $methodInterceptor->exceptionCalls[0]);
 
 
         }

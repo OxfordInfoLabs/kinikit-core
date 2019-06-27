@@ -14,10 +14,10 @@ use Kinikit\Core\Exception\SerialisableException;
 use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Logging\Logger;
 use Kinikit\Core\Util\SerialisableArrayUtils;
-use Kinikit\Core\Util\Serialisation\JSON\JSONToObjectConverter;
-use Kinikit\Core\Util\Serialisation\JSON\ObjectToJSONConverter;
-use Kinikit\Core\Util\Serialisation\XML\ObjectToXMLConverter;
-use Kinikit\Core\Util\Serialisation\XML\XMLToObjectConverter;
+use Kinikit\Core\Serialisation\JSON\JSONToObjectConverter;
+use Kinikit\Core\Serialisation\JSON\ObjectToJSONConverter;
+use Kinikit\Core\Serialisation\XML\ObjectToXMLConverter;
+use Kinikit\Core\Serialisation\XML\XMLToObjectConverter;
 
 class WebServiceProxy {
 

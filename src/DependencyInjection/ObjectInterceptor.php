@@ -3,6 +3,8 @@
 namespace Kinikit\Core\DependencyInjection;
 
 
+use Kinikit\Core\Util\Reflection\ClassInspector;
+
 /**
  * Object Interceptor base class for intercepting object creations and method calls on the proxy object.
  */
@@ -14,8 +16,9 @@ class ObjectInterceptor {
      * veto this create.  This is particularly useful when we want whole objects to be permission restricted.
      *
      * @param $objectInstance
+     * @param ClassInspector $classInspector
      */
-    public function afterCreate($objectInstance) {
+    public function afterCreate($objectInstance, $classInspector) {
     }
 
 
@@ -28,11 +31,11 @@ class ObjectInterceptor {
      * @param object $objectInstance - The object being called
      * @param string $methodName - The method name
      * @param string[string] $params - The parameters passed to the method as name => value pairs.
-     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations - The class annotations for convenience for e.g. role based enforcement.
+     * @param ClassInspector $classInspector - The class inspector instance for this class
      *
      * @return string[string] - The params array either intact or modified if required.
      */
-    public function beforeMethod($objectInstance, $methodName, $params, $classAnnotations) {
+    public function beforeMethod($objectInstance, $methodName, $params, $classInspector) {
         return $params;
     }
 
@@ -41,11 +44,11 @@ class ObjectInterceptor {
      * Intercept the method callable just before it is executed and return another callable if required.
      *
      * @param callable $callable
-     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
+     * @param ClassInspector $classInspector
      *
      * @return callable
      */
-    public function methodCallable($callable, $methodName, $params, $classAnnotations) {
+    public function methodCallable($callable, $methodName, $params, $classInspector) {
         return $callable;
     }
 
@@ -60,12 +63,12 @@ class ObjectInterceptor {
      * @param $methodName - The method name being called.
      * @param $params - The input params to the method
      * @param $returnValue - The return value from the method
-     * @param $classAnnotations - The class annotations for the controller class for convenience.
+     * @param ClassInspector $classInspector - The class inspector for the class for convenience.
      *
      * @return $string - The return value, modified if required.
      *
      */
-    public function afterMethod($objectInstance, $methodName, $params, $returnValue, $classAnnotations) {
+    public function afterMethod($objectInstance, $methodName, $params, $returnValue, $classInspector) {
         return $returnValue;
     }
 
@@ -80,9 +83,9 @@ class ObjectInterceptor {
      * @param $methodName - The method being called
      * @param $params - The input params to the method.
      * @param \Throwable $exception - The exception object thrown
-     * @param $classAnnotations - The class annotations for the controller class for convenience.
+     * @param ClassInspector $classInspector - The class inspector instance for this class for convenience.
      */
-    public function onException($objectInstance, $methodName, $params, $exception, $classAnnotations) {
+    public function onException($objectInstance, $methodName, $params, $exception, $classInspector) {
 
     }
 

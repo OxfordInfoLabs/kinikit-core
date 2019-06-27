@@ -6,14 +6,14 @@ namespace Kinikit\Core\DependencyInjection;
 
 class SecondaryService {
 
-    private $complexService;
+    private $simpleService;
 
     /**
      * SecondaryService constructor.
-     * @param \Kinikit\Core\DependencyInjection\ComplexService $complexService
+     * @param SimpleService $simpleService
      */
-    public function __construct($complexService) {
-        $this->complexService = $complexService;
+    public function __construct($simpleService) {
+        $this->simpleService = $simpleService;
     }
 
 
@@ -22,10 +22,10 @@ class SecondaryService {
     }
 
     /**
-     * @return ComplexService
+     * @return SimpleService
      */
-    public function getComplexService() {
-        return $this->complexService;
+    public function getSimpleService() {
+        return $this->simpleService;
     }
 
 

@@ -13,7 +13,7 @@ use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Exception\PropertyNotWritableException;
 use Kinikit\Core\Object\AssociativeArray;
 use Kinikit\Core\Object\SerialisableObject;
-use Kinikit\Core\Util\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Annotation\ClassAnnotationParser;
 use Kinikit\Core\Util\Logging\Logger;
 
 class SerialisableArrayUtils {

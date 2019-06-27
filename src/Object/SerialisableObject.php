@@ -8,7 +8,7 @@ use Kinikit\Core\Exception\PropertyNotWritableException;
 use Kinikit\Core\Util\CodeUtils;
 use Kinikit\Core\Util\ObjectUtils;
 use Kinikit\Core\Util\SerialisableArrayUtils;
-use Kinikit\Core\Util\Serialisation\Serialisable;
+use Kinikit\Core\Serialisation\Serialisable;
 use Kinikit\Core\Validation\Validator;
 
 /**
