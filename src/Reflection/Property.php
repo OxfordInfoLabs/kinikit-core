@@ -5,6 +5,7 @@ namespace Kinikit\Core\Reflection;
 
 
 use Kinikit\Core\Annotation\Annotation;
+use Kinikit\Core\Exception\WrongPropertyTypeException;
 use Kinikit\Core\Util\Primitive;
 
 class Property {
@@ -52,6 +53,7 @@ class Property {
         $declaredNamespaceClasses = $declaringClassInspector->getDeclaredNamespaceClasses();
 
         $type = "mixed";
+        $arraySuffix = "";
         if (sizeof($propertyAnnotations) > 0) {
             $annotation = $propertyAnnotations[0];
 
@@ -72,7 +74,7 @@ class Property {
 
         }
 
-        $this->type = $type;
+        $this->type = $type . $arraySuffix;
 
     }
 
@@ -124,10 +126,57 @@ class Property {
 
 
     /**
+     * Return a boolean indicating whether or not this is a primitive type.
+     */
+    public function isPrimitive() {
+        return in_array($this->type, Primitive::TYPES);
+    }
+
+    /**
      * Get the visibility for this property.
      */
     public function getVisibility() {
         return $this->reflectionProperty->isPublic() ? self::VISIBILITY_PUBLIC : ($this->reflectionProperty->isProtected() ? self::VISIBILITY_PROTECTED : self::VISIBILITY_PRIVATE);
+    }
+
+
+    /**
+     * Set a property value on an object
+     *
+     * @param $object
+     * @param mixed $value
+     */
+    public function set($object, $value) {
+
+        // Ensure the reflection property is accessible.
+        $this->reflectionProperty->setAccessible(true);
+
+
+        // If a primitive and not of right type, throw now.
+        $wrongType = false;
+        if ($this->isPrimitive()) {
+            if (!Primitive::isOfPrimitiveType($this->getType(), $value))
+                $wrongType = true;
+        } else if (!is_array($value) && !is_object($value) || get_class($value) != trim($this->getType(), "\\")) {
+            $wrongType = true;
+        }
+
+        if ($wrongType)
+            throw new WrongPropertyTypeException("An attempt was made to write to the property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type.");
+
+        $this->reflectionProperty->setValue($object, $value);
+
+    }
+
+
+    /**
+     * Get a property value for an object
+     *
+     * @param $object
+     */
+    public function get($object) {
+        $this->reflectionProperty->setAccessible(true);
+        return $this->reflectionProperty->getValue($object);
     }
 
 

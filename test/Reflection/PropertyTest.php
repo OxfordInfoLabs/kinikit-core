@@ -3,7 +3,10 @@
 
 namespace Kinikit\Core\Reflection;
 
+use Exception;
 use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Exception\WrongPropertyTypeException;
+
 
 include_once 'autoloader.php';
 
@@ -64,5 +67,76 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("\\" . TestTypedPOPO::class, $property->getType());
 
     }
+
+
+    public function testCanSetPropertiesProvidedTypeIsRight() {
+
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+
+        $testPOPO = new TestPropertyPOPO(99);
+
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("hidden");
+        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["hidden"];
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+
+        try {
+            $property->set($testPOPO, true);
+            $this->fail("Should have thrown here");
+        } catch (WrongPropertyTypeException $e) {
+            // As expected
+        }
+
+        $property->set($testPOPO, "My Little Pony");
+        $this->assertEquals("My Little Pony", $reflectionProperty->getValue($testPOPO));
+
+
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("withSetter");
+        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+
+        try {
+            $property->set($testPOPO, true);
+            $this->fail("Should have thrown here");
+        } catch (WrongPropertyTypeException $e) {
+            // As expected
+        }
+
+        try {
+            $property->set($testPOPO, new TestTypedPOPO(1, "Me"));
+            $this->fail("Should have thrown here");
+        } catch (WrongPropertyTypeException $e) {
+            // As expected
+        }
+
+        $property->set($testPOPO, new TestAnnotatedPOPO(1, "Bingo"));
+        $this->assertEquals(new TestAnnotatedPOPO(1, "Bingo"), $reflectionProperty->getValue($testPOPO));
+
+    }
+
+
+    public function testCanGetProperties() {
+
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+
+        $testPOPO = new TestPropertyPOPO(99);
+
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("constructorOnly");
+        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["constructorOnly"];
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+        $this->assertEquals(99, $property->get($testPOPO));
+
+
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("withSetter");
+        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($testPOPO, new TestAnnotatedPOPO(1, "Mark"));
+
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+        $this->assertEquals(new TestAnnotatedPOPO(1, "Mark"), $property->get($testPOPO));
+
+    }
+
 
 }

@@ -44,7 +44,6 @@ class ObjectBinder {
 
         $result = null;
 
-
         $arrayTrimmed = preg_replace("/\[[a-z]*\]$/", "", $targetClass);
 
         // If an array of objects, process these next.
@@ -68,17 +67,45 @@ class ObjectBinder {
 
                 $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
 
-                // Construct the class first.
-                $instance = $classInspector->createInstance($data);
+                $processedKeys = array();
 
-                // Attempt to call each setter method if we have data.
-                $setters = $classInspector->getSetters();
-                foreach ($setters as $member => $method) {
-                    if (isset($data[$member])) {
-                        $method->call($instance, $data);
+
+                // Process constructor first.
+                if ($classInspector->getConstructor()) {
+                    foreach ($classInspector->getConstructor()->getParameters() as $parameter) {
+
+                        $key = $parameter->getName();
+                        if (isset($data[$key])) {
+                            $data[$key] = $this->bindFromArray($data[$key], $parameter->getType());
+                            $processedKeys[] = $key;
+                        }
+
                     }
-
                 }
+
+                // Loop through each property
+                foreach ($classInspector->getProperties() as $key => $property) {
+                    if (!in_array($key, $processedKeys) && isset($data[$key])) {
+                        $propertyType = $property->getType();
+                        $data[$key] = $this->bindFromArray($data[$key], $propertyType);
+                        $processedKeys[] = $key;
+                    }
+                }
+
+                // Inject each property
+                foreach ($classInspector->getSetters() as $key => $setter) {
+                    if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
+                        $parameter = $setter->getParameters[0];
+                        $parameterType = $parameter->getType();
+                        $data[$key] = $this->bindFromArray($data[$key], $parameterType);
+                    }
+                }
+
+
+                // Construct the class first and then call setters
+                $instance = $classInspector->createInstance($data);
+                $classInspector->setPropertyData($instance, $data, null, false);
+
 
             } catch (WrongParametersException $e) {
                 throw new ObjectBindingException($e);

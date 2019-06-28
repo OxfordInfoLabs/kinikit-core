@@ -179,7 +179,7 @@ class ClassInspector {
     /**
      * Get getters
      *
-     * @return string[string]
+     * @return Method[string]
      */
     public function getGetters() {
         $this->getPublicMethods();
@@ -190,7 +190,7 @@ class ClassInspector {
     /**
      * Get setters
      *
-     * @return string[string]
+     * @return Method[string]
      */
     public function getSetters() {
         $this->getPublicMethods();
@@ -207,6 +207,87 @@ class ClassInspector {
         $processedArguments = $this->getConstructor() ? $this->getConstructor()->__processMethodArguments($constructorArguments) : [];
 
         return $this->reflectionClass->newInstanceArgs($processedArguments);
+    }
+
+
+    /**
+     * Set property data for all properties or a single property if supplied.  The order of setting is via a
+     * public setter method first and then via a property.  If publicOnly is true, only public properties
+     * will be accessed in the absence of a setter otherwise properties will be coerced to accessible.
+     *
+     * @param object $object
+     * @param array $data
+     * @param string $propertyName
+     * @param bool $publicOnly
+     */
+    public function setPropertyData($object, $data, $propertyName = null, $publicOnly = true) {
+
+        // If property name, doing one at a time.
+        if ($propertyName) {
+
+            $setters = $this->getSetters();
+            if (isset($setters[$propertyName])) {
+
+                $parameters = $setters[$propertyName]->getParameters();
+                if (sizeof($parameters) > 0) {
+                    $params = [$parameters[0]->getName() => $data];
+                }
+
+                $setters[$propertyName]->call($object, $params);
+            } else {
+                $properties = $this->getProperties();
+                if (isset($properties[$propertyName])) {
+                    if (!$publicOnly || $properties[$propertyName]->getVisibility() == Property::VISIBILITY_PUBLIC)
+                        $properties[$propertyName]->set($object, $data);
+                }
+            }
+
+        } else {
+            foreach ($data as $key => $datum) {
+                $this->setPropertyData($object, $datum, $key, $publicOnly);
+            }
+        }
+
+    }
+
+
+    /**
+     * Get property data for all properties or a single property if supplied.  The order of getting is via a public getter method first
+     * and then via a property.  If publicOnly is true, only public properties will be accessed in the absence of a
+     * getter, otherwise properties will be coerced to accessible.
+     *
+     * @param object $object
+     * @param string $propertyName
+     * @param bool $publicOnly
+     *
+     * @return mixed
+     */
+    public function getPropertyData($object, $propertyName = null, $publicOnly = true) {
+        if ($propertyName) {
+            $getters = $this->getGetters();
+            if (isset($getters[$propertyName])) {
+                return $getters[$propertyName]->call($object, []);
+            }
+
+            $properties = $this->getProperties();
+            if (isset($properties[$propertyName])) {
+                if (!$publicOnly || $properties[$propertyName]->getVisibility() == Property::VISIBILITY_PUBLIC)
+                    return $properties[$propertyName]->get($object);
+            }
+        } else {
+            $returnData = [];
+            $keysSeen = [];
+            foreach ($this->getGetters() as $key => $getter) {
+                $returnData[$key] = $getter->call($object, []);
+                $keysSeen[] = $key;
+            }
+            foreach ($this->getProperties() as $key => $property) {
+                if (!in_array($key, $keysSeen) && !$publicOnly || $property->getVisibility() == Property::VISIBILITY_PUBLIC)
+                    $returnData[$key] = $this->getPropertyData($object, $key, $publicOnly);
+            }
+            return $returnData;
+
+        }
     }
 
 

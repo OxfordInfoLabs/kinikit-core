@@ -12,7 +12,7 @@ class SimpleStrongTypeConstructorObject {
     public $name;
 
     /**
-     * @var integer
+     * @var int
      */
     public $age;
 

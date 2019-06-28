@@ -140,8 +140,7 @@ class Parameter {
      * @return bool
      */
     public function isPrimitive() {
-        $type = trim(preg_replace("/\[.*\]/", "", $this->type));
-        return in_array($type, Primitive::TYPES);
+        return in_array($this->getType(), Primitive::TYPES);
     }
 
 

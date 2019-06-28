@@ -96,8 +96,6 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("dob"), $annotations->getFieldAnnotations()["dob"], $classInspector), $properties["dob"]);
         $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("publicPOPO"), $annotations->getFieldAnnotations()["publicPOPO"], $classInspector), $properties["publicPOPO"]);
 
-
-
     }
 
 
@@ -128,5 +126,142 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanSetPropertyDataOneAtATimePublicOnly() {
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+
+        // Non public members
+        $classInspector->setPropertyData($testPropertyPOPO, "Monkey", "hidden");
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["hidden"]));
+
+        $classInspector->setPropertyData($testPropertyPOPO, 77, "constructorOnly");
+        $this->assertEquals(33, $testPropertyPOPO->returnData()["constructorOnly"]);
+
+        $classInspector->setPropertyData($testPropertyPOPO, "Monkey", "withGetter");
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["withGetter"]));
+
+
+        // Setter members
+        $classInspector->setPropertyData($testPropertyPOPO, new TestAnnotatedPOPO(44, "Mark"), "withSetter");
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["withSetter"]));
+        $this->assertEquals(new TestAnnotatedPOPO(44, "Mark"), $testPropertyPOPO->returnSetterValues()["withSetter"]);
+
+
+        $classInspector->setPropertyData($testPropertyPOPO, "BINGO", "withSetterAndGetter");
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["withSetterAndGetter"]));
+        $this->assertEquals("BINGO", $testPropertyPOPO->returnSetterValues()["withSetterAndGetter"]);
+
+
+        // Public member
+        $classInspector->setPropertyData($testPropertyPOPO, new TestTypedPOPO(44, "BIGBOY"), "writable");
+        $this->assertEquals(new TestTypedPOPO(44, "BIGBOY"), $testPropertyPOPO->writable);
+    }
+
+
+    public function testCanSetPropertyDataOneAtATimeNotPublicOnly() {
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+
+        // Non public members
+        $classInspector->setPropertyData($testPropertyPOPO, "Monkey", "hidden", false);
+        $this->assertEquals("Monkey", $testPropertyPOPO->returnData()["hidden"]);
+
+        $classInspector->setPropertyData($testPropertyPOPO, 77, "constructorOnly", false);
+        $this->assertEquals(77, $testPropertyPOPO->returnData()["constructorOnly"]);
+
+        $classInspector->setPropertyData($testPropertyPOPO, "Monkey", "withGetter", false);
+        $this->assertEquals("Monkey", $testPropertyPOPO->returnData()["withGetter"]);
+
+
+        // Setter members
+        $classInspector->setPropertyData($testPropertyPOPO, new TestAnnotatedPOPO(44, "Mark"), "withSetter", false);
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["withSetter"]));
+        $this->assertEquals(new TestAnnotatedPOPO(44, "Mark"), $testPropertyPOPO->returnSetterValues()["withSetter"]);
+
+
+        $classInspector->setPropertyData($testPropertyPOPO, "BINGO", "withSetterAndGetter", false);
+        $this->assertFalse(isset($testPropertyPOPO->returnData()["withSetterAndGetter"]));
+        $this->assertEquals("BINGO", $testPropertyPOPO->returnSetterValues()["withSetterAndGetter"]);
+
+
+        // Public member
+        $classInspector->setPropertyData($testPropertyPOPO, new TestTypedPOPO(44, "BIGBOY"), "writable", false);
+        $this->assertEquals(new TestTypedPOPO(44, "BIGBOY"), $testPropertyPOPO->writable);
+    }
+
+
+    public function testCanSetPropertyDataInBulk() {
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+
+        $data = array("hidden" => "BADBOY", "constructorOnly" => 22, "withGetter" => "Badger", "withSetter" => new TestAnnotatedPOPO(11, "Badger"),
+            "withSetterAndGetter" => "MARKO", "writable" => new TestTypedPOPO(11, "MARKO"));
+
+
+        // Set public only first
+        $classInspector->setPropertyData($testPropertyPOPO, $data);
+
+        $this->assertEquals(["hidden" => null, "constructorOnly" => 33, "withGetter" => null, "withSetter" => null, "withSetterAndGetter" => null, "writable" => new TestTypedPOPO(11, "MARKO")], $testPropertyPOPO->returnData());
+        $this->assertEquals(["withSetter" => new TestAnnotatedPOPO(11, "Badger"),
+            "withSetterAndGetter" => "MARKO"], $testPropertyPOPO->returnSetterValues());
+
+
+        // Now set private as well
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+        $classInspector->setPropertyData($testPropertyPOPO, $data, null, false);
+
+
+        $this->assertEquals(["hidden" => "BADBOY", "constructorOnly" => 22, "withGetter" => "Badger", "withSetter" => null, "withSetterAndGetter" => null, "writable" => new TestTypedPOPO(11, "MARKO")], $testPropertyPOPO->returnData());
+        $this->assertEquals(["withSetter" => new TestAnnotatedPOPO(11, "Badger"),
+            "withSetterAndGetter" => "MARKO"], $testPropertyPOPO->returnSetterValues());
+
+
+    }
+
+
+    public function testCanGetPropertyDataOneAtATime() {
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+        $testPropertyPOPO->writable = new TestTypedPOPO(3, "Marky");
+
+        $this->assertEquals(null, $classInspector->getPropertyData($testPropertyPOPO, "constructorOnly"));
+        $this->assertEquals(new TestTypedPOPO(3, "Marky"), $classInspector->getPropertyData($testPropertyPOPO, "writable"));
+        $this->assertEquals("GETTER_CALLED", $classInspector->getPropertyData($testPropertyPOPO, "withGetter"));
+        $this->assertEquals("GETTER_CALLED", $classInspector->getPropertyData($testPropertyPOPO, "withSetterAndGetter"));
+
+
+        $this->assertEquals(33, $classInspector->getPropertyData($testPropertyPOPO, "constructorOnly", false));
+        $this->assertEquals(new TestTypedPOPO(3, "Marky"), $classInspector->getPropertyData($testPropertyPOPO, "writable", false));
+        $this->assertEquals("GETTER_CALLED", $classInspector->getPropertyData($testPropertyPOPO, "withGetter", false));
+        $this->assertEquals("GETTER_CALLED", $classInspector->getPropertyData($testPropertyPOPO, "withSetterAndGetter", false));
+
+
+    }
+
+
+    public function testCanGetPropertyDataInBulk() {
+
+        $classInspector = new ClassInspector(TestPropertyPOPO::class);
+        $testPropertyPOPO = new TestPropertyPOPO(33);
+        $testPropertyPOPO->writable = new TestTypedPOPO(3, "Marky");
+
+        // Public only
+        $bulkData = $classInspector->getPropertyData($testPropertyPOPO);
+        $this->assertEquals(["withGetter" => "GETTER_CALLED", "withSetterAndGetter" => "GETTER_CALLED", "writable" => new TestTypedPOPO(3, "Marky")], $bulkData);
+
+
+        // With private data
+        $bulkData = $classInspector->getPropertyData($testPropertyPOPO, null, false);
+        $this->assertEquals(["hidden" => null, "constructorOnly" => 33, "withGetter" => "GETTER_CALLED",
+            "withSetter" => null, "withSetterAndGetter" => "GETTER_CALLED", "writable" => new TestTypedPOPO(3, "Marky"),
+            "__setterValues" => []], $bulkData);
+
+
+    }
 
 }
