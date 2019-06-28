@@ -7,7 +7,7 @@ use Kinikit\Core\Annotation\ClassAnnotationParser;
 use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Primitive;
 use Kinikit\Core\Reflection\ClassInspector;
-use Kinikit\Core\Reflection\MethodInspector;
+use Kinikit\Core\Reflection\Method;
 use Kinikit\Core\Reflection\Parameter;
 
 /**

@@ -3,6 +3,12 @@
 namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Annotation\ClassAnnotations;
+use Kinikit\Core\Exception\BadParameterException;
+use Kinikit\Core\Exception\InsufficientParametersException;
+use Kinikit\Core\Exception\WrongParametersException;
+
+include_once "autoloader.php";
 
 /**
  * Class inspector test cases
@@ -34,30 +40,27 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
         $reflectionClass = new \ReflectionClass(TestTypedPOPO::class);
         $annotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class);
-        $declaredNamespaceClasses = ["Annotation" => "\Kinikit\Core\Annotation\Annotation",
-            "AccessDeniedException" => "\Kinikit\Core\Exception\AccessDeniedException",
-            "ObjectInterceptor" => "\Kinikit\Core\DependencyInjection\ObjectInterceptor"];
 
         // Check constructor
-        $this->assertEquals(new MethodInspector($reflectionClass->getConstructor(), $annotations->getMethodAnnotations()["__construct"], $declaredNamespaceClasses), $classInspector->getConstructor());
+        $this->assertEquals(new Method($reflectionClass->getConstructor(), $annotations->getMethodAnnotations()["__construct"], $classInspector), $classInspector->getConstructor());
 
 
         // Check public methods
         $publicMethods = $classInspector->getPublicMethods();
         $this->assertEquals(6, sizeof($publicMethods));
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("getId"), $annotations->getMethodAnnotations()["getId"], $declaredNamespaceClasses), $publicMethods["getId"]);
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("getName"), $annotations->getMethodAnnotations()["getName"], $declaredNamespaceClasses), $publicMethods["getName"]);
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("setName"), $annotations->getMethodAnnotations()["setName"], $declaredNamespaceClasses), $publicMethods["setName"]);
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("setDob"), $annotations->getMethodAnnotations()["setDob"], $declaredNamespaceClasses), $publicMethods["setDob"]);
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("clone"), $annotations->getMethodAnnotations()["clone"], $declaredNamespaceClasses), $publicMethods["clone"]);
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("isSpecial"), $annotations->getMethodAnnotations()["isSpecial"], $declaredNamespaceClasses), $publicMethods["isSpecial"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("getId"), $annotations->getMethodAnnotations()["getId"], $classInspector), $publicMethods["getId"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("getName"), $annotations->getMethodAnnotations()["getName"], $classInspector), $publicMethods["getName"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("setName"), $annotations->getMethodAnnotations()["setName"], $classInspector), $publicMethods["setName"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("setDob"), $annotations->getMethodAnnotations()["setDob"], $classInspector), $publicMethods["setDob"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("clone"), $annotations->getMethodAnnotations()["clone"], $classInspector), $publicMethods["clone"]);
+        $this->assertEquals(new Method($reflectionClass->getMethod("isSpecial"), $annotations->getMethodAnnotations()["isSpecial"], $classInspector), $publicMethods["isSpecial"]);
 
 
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("getId"), $annotations->getMethodAnnotations()["getId"], $declaredNamespaceClasses), $classInspector->getPublicMethod("getId"));
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("getName"), $annotations->getMethodAnnotations()["getName"], $declaredNamespaceClasses), $classInspector->getPublicMethod("getName"));
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("setName"), $annotations->getMethodAnnotations()["setName"], $declaredNamespaceClasses), $classInspector->getPublicMethod("setName"));
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("setDob"), $annotations->getMethodAnnotations()["setDob"], $declaredNamespaceClasses), $classInspector->getPublicMethod("setDob"));
-        $this->assertEquals(new MethodInspector($reflectionClass->getMethod("clone"), $annotations->getMethodAnnotations()["clone"], $declaredNamespaceClasses), $classInspector->getPublicMethod("clone"));
+        $this->assertEquals(new Method($reflectionClass->getMethod("getId"), $annotations->getMethodAnnotations()["getId"], $classInspector), $classInspector->getPublicMethod("getId"));
+        $this->assertEquals(new Method($reflectionClass->getMethod("getName"), $annotations->getMethodAnnotations()["getName"], $classInspector), $classInspector->getPublicMethod("getName"));
+        $this->assertEquals(new Method($reflectionClass->getMethod("setName"), $annotations->getMethodAnnotations()["setName"], $classInspector), $classInspector->getPublicMethod("setName"));
+        $this->assertEquals(new Method($reflectionClass->getMethod("setDob"), $annotations->getMethodAnnotations()["setDob"], $classInspector), $classInspector->getPublicMethod("setDob"));
+        $this->assertEquals(new Method($reflectionClass->getMethod("clone"), $annotations->getMethodAnnotations()["clone"], $classInspector), $classInspector->getPublicMethod("clone"));
 
 
     }
@@ -79,5 +82,51 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
 
     }
+
+
+    public function testCanGetPropertiesOfClass() {
+        $classInspector = new ClassInspector(TestTypedPOPO::class);
+        $properties = $classInspector->getProperties();
+        $annotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class);
+
+        $this->assertEquals(4, sizeof($properties));
+
+        $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("id"), $annotations->getFieldAnnotations()["id"], $classInspector), $properties["id"]);
+        $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("name"), $annotations->getFieldAnnotations()["name"], $classInspector), $properties["name"]);
+        $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("dob"), $annotations->getFieldAnnotations()["dob"], $classInspector), $properties["dob"]);
+        $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("publicPOPO"), $annotations->getFieldAnnotations()["publicPOPO"], $classInspector), $properties["publicPOPO"]);
+
+
+
+    }
+
+
+    public function testCanCreateInstanceOfClassProvidedAllRequiredArgumentsAreSupplied() {
+
+        $classInspector = new ClassInspector(TestTypedPOPO::class);
+
+        // Try missing params first
+        try {
+            $classInspector->createInstance([]);
+            $this->fail("Should have thrown here");
+        } catch (InsufficientParametersException $e) {
+            // Success
+        }
+
+        // Try wrong types now
+        try {
+            $classInspector->createInstance(["name" => "mark", "id" => "Bad Type"]);
+            $this->fail("Should have thrown here");
+        } catch (WrongParametersException $e) {
+            // Success
+        }
+
+
+        // Try successful ones
+        $this->assertEquals(new TestTypedPOPO(11, "Mark"), $classInspector->createInstance(["id" => 11, "name" => "Mark"]));
+
+
+    }
+
 
 }

@@ -9,35 +9,102 @@ use Kinikit\Core\Util\Primitive;
 class Parameter {
 
 
-    private $name;
-    private $type;
-    private $required;
-    private $defaultValue;
-    private $explicitlyTyped;
+    /**
+     * The reflection parameter object
+     *
+     * @var \ReflectionParameter
+     */
+    private $reflectionParameter;
 
-    const NO_DEFAULT_VALUE = "!!!";
 
     /**
-     * Construct with a name a type and a default value if one exists.
+     * The method inspector for the method which this parameter is called upon.
+     *
+     * @var Method
+     */
+    private $method;
+
+
+    /**
+     * The type for this parameter
+     *
+     * @var string
+     */
+    private $type;
+
+
+    /**
+     * An indicator as to whether or not this parameter is explicitly typed.
+     *
+     * @var bool
+     */
+    private $explicitlyTyped;
+
+
+    /**
+     * Construct with the reflection parameter and the ownning method inspector.
      *
      * Parameter constructor.
-     * @param $name
-     * @param $type
-     * @param null $defaultValue
+     * @param \ReflectionParameter $reflectionParameter
+     * @param Method $method
      */
-    public function __construct($name, $type, $required = false, $defaultValue = self::NO_DEFAULT_VALUE, $explicitlyTyped = false) {
-        $this->name = $name;
-        $this->type = $type;
-        $this->required = $required;
-        $this->defaultValue = $defaultValue;
-        $this->explicitlyTyped = $explicitlyTyped;
+    public function __construct($reflectionParameter, $method) {
+        $this->reflectionParameter = $reflectionParameter;
+        $this->method = $method;
+
+
+        $declaredNamespaceClasses = $method->getDeclaringClassInspector()->getDeclaredNamespaceClasses();
+
+        // Evaluate the parameter type according to whether or not this is an explicitly typed param or annotated.
+        $type = "mixed";
+        $arraySuffix = "";
+
+        $this->explicitlyTyped = false;
+        if ($reflectionParameter->getType()) {
+
+            if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
+                list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
+
+                if (!in_array($type, Primitive::TYPES))
+                    $type = "\\" . ltrim(trim($type), "\\");
+            } else {
+                list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType());
+            }
+            $this->explicitlyTyped = true;
+        } else {
+
+            $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
+
+            foreach ($methodAnnotations as $annotation) {
+                if (strpos($annotation->getValue(), '$' . $reflectionParameter->getName())) {
+                    $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
+
+                    list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
+
+                    if (!in_array($type, Primitive::TYPES)) {
+                        if (isset($declaredNamespaceClasses[$type]))
+                            $type = $declaredNamespaceClasses[$type];
+                        else {
+                            if (substr($type, 0, 1) != "\\") {
+                                $type = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $type;
+                            }
+                        }
+
+                    }
+                    break;
+                }
+            }
+        }
+
+        $this->type = $type . $arraySuffix;
+
     }
 
     /**
      * @return mixed
      */
     public function getName() {
-        return $this->name;
+        return $this->reflectionParameter->getName();
     }
 
     /**
@@ -50,15 +117,15 @@ class Parameter {
     /**
      * @return mixed
      */
-    public function getRequired() {
-        return $this->required;
+    public function isRequired() {
+        return !$this->reflectionParameter->isOptional();
     }
 
     /**
      * @return mixed
      */
     public function getDefaultValue() {
-        return $this->defaultValue;
+        return $this->isRequired() ? null : $this->reflectionParameter->getDefaultValue();
     }
 
     /**
@@ -75,6 +142,14 @@ class Parameter {
     public function isPrimitive() {
         $type = trim(preg_replace("/\[.*\]/", "", $this->type));
         return in_array($type, Primitive::TYPES);
+    }
+
+
+    // Strip Array type suffix
+    private function stripArrayTypeSuffix($type) {
+        $strippedType = trim(preg_replace("/\[.*\]$/", "", $type));
+        $arraySuffix = substr($type, strlen($strippedType));
+        return array($strippedType, $arraySuffix);
     }
 
 

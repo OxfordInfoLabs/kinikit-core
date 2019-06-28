@@ -28,7 +28,7 @@ class ProxyGenerator {
         $proxyClassName = $shortClass . "Proxy";
 
         if (class_exists($className . "Proxy")) {
-            return $className."Proxy";
+            return $className . "Proxy";
         }
 
         $namespace = $classInspector->getNamespace();
@@ -86,7 +86,7 @@ class ProxyGenerator {
         $params = [];
         foreach ($method->getParameters() as $parameter) {
             $param = ($parameter->isExplicitlyTyped() ? $parameter->getType() : "") . " $" . $parameter->getName();
-            if ($parameter->getDefaultValue() != Parameter::NO_DEFAULT_VALUE) {
+            if (!$parameter->isRequired()) {
                 $param .= ' = ' . is_string($parameter->getDefaultValue()) ? '"' . $parameter->getDefaultValue() . '"' : $parameter->getDefaultValue();
             }
             $params[] = $param;

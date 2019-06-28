@@ -20,6 +20,7 @@ class ClassInspector {
     private $publicMethods;
     private $setters = array();
     private $getters = array();
+    private $properties;
     private $methodInspectors = array();
 
     /**
@@ -64,7 +65,7 @@ class ClassInspector {
     /**
      * Get the constructor as a method inspector object.
      *
-     * @return MethodInspector
+     * @return Method
      */
     public function getConstructor() {
         return $this->reflectionClass->getConstructor() ? $this->getMethodInspector("__construct") : null;
@@ -118,7 +119,7 @@ class ClassInspector {
     /**
      * Get all public methods as method inspector objects indexed by method name
      *
-     * @return MethodInspector[]
+     * @return Method[]
      */
     public function getPublicMethods() {
         if (!isset($this->publicMethods)) {
@@ -149,10 +150,29 @@ class ClassInspector {
      * Get the public method
      *
      * @param string $string
-     * @return MethodInspector
+     * @return Method
      */
     public function getPublicMethod(string $string) {
         return $this->getMethodInspector($string);
+    }
+
+
+    /**
+     * Get all properties of this class
+     *
+     * @return Property[]
+     */
+    public function getProperties() {
+        if (!isset($this->properties)) {
+
+            $this->properties = [];
+
+            foreach ($this->reflectionClass->getProperties() as $property) {
+                $this->properties[$property->getName()] = new Property($property, $this->classAnnotations->getFieldAnnotations()[$property->getName()], $this);
+            }
+        }
+
+        return $this->properties;
     }
 
 
@@ -178,11 +198,23 @@ class ClassInspector {
     }
 
 
+    /**
+     * Create an instance with constructor arguments as key value pairs
+     *
+     * @param mixed[string] $constructorArguments
+     */
+    public function createInstance($constructorArguments) {
+        $processedArguments = $this->getConstructor() ? $this->getConstructor()->__processMethodArguments($constructorArguments) : [];
+
+        return $this->reflectionClass->newInstanceArgs($processedArguments);
+    }
+
+
     // Get a method inspector - cached as accessed for better performance.
     private function getMethodInspector($methodName) {
         if (!isset($this->methodInspectors[$methodName])) {
             $reflectionMethod = $methodName == "__construct" ? $this->reflectionClass->getConstructor() : $this->reflectionClass->getMethod($methodName);
-            $this->methodInspectors[$methodName] = new MethodInspector($reflectionMethod, $this->classAnnotations->getMethodAnnotations()[$methodName], $this->getDeclaredNamespaceClasses());
+            $this->methodInspectors[$methodName] = new Method($reflectionMethod, $this->classAnnotations->getMethodAnnotations()[$methodName], $this);
         }
 
         return $this->methodInspectors[$methodName];

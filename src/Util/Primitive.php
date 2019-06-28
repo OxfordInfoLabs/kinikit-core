@@ -12,7 +12,7 @@ namespace Kinikit\Core\Util;
 class Primitive {
 
     // Built in primitive types
-    const TYPES = ["bool", "int", "float", "string", "mixed"];
+    const TYPES = ["bool", "int", "float", "string", "mixed", "void"];
 
     const TYPE_BOOLEAN = "bool";
     const TYPE_INT = "int";
@@ -35,6 +35,8 @@ class Primitive {
                 return is_float($value);
             case self::TYPE_STRING:
                 return is_string($value);
+            case self::TYPE_MIXED:
+                return true;
         }
 
         return false;

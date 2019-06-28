@@ -3,7 +3,9 @@
 
 namespace Kinikit\Core\Binding;
 
+use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\ObjectBindingException;
+use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Util\Primitive;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Reflection\Parameter;
@@ -62,70 +64,26 @@ class ObjectBinder {
             }
 
 
-            $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
+            try {
 
-            // If we have a constructor, form arguments
-            $constructorParams = array();
-            $constructor = $classInspector->getConstructor();
-            if ($constructor) {
-                foreach ($constructor->getParameters() as $parameter) {
-                    if (isset($data[$parameter->getName()])) {
-                        $value = $data[$parameter->getName()];
+                $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
 
+                // Construct the class first.
+                $instance = $classInspector->createInstance($data);
 
-                        $value = $this->bindFromArray($value, $parameter->getType());
-
-                        // Check for bad typed arguments if explicit typing.
-                        if ($parameter->isExplicitlyTyped()) {
-                            if ($parameter->isPrimitive() && !Primitive::isOfPrimitiveType($parameter->getType(), $value)) {
-                                throw new ObjectBindingException("Explicitly typed required constructor parameter {$parameter->getName()} was supplied with the wrong type");
-                            }
-
-                        }
-
-                        $constructorParams[] = $value;
-                    } else {
-
-                        if ($parameter->isExplicitlyTyped()) {
-
-                            if ($parameter->getRequired())
-                                throw new ObjectBindingException("Explicitly typed required constructor parameter {$parameter->getName()} was not supplied when binding object of type $targetClass");
-
-                        }
-
-                        $constructorParams[] = $parameter->getDefaultValue() == Parameter::NO_DEFAULT_VALUE ? null : $parameter->getDefaultValue();
+                // Attempt to call each setter method if we have data.
+                $setters = $classInspector->getSetters();
+                foreach ($setters as $member => $method) {
+                    if (isset($data[$member])) {
+                        $method->call($instance, $data);
                     }
-                }
-            }
-
-            // Create the class
-            $reflectionClass = $classInspector->getReflectionClass();
-            $instance = $reflectionClass->newInstanceArgs($constructorParams);
-
-            // Attempt to call each setter method if we have data.
-            $setters = $classInspector->getSetters();
-            foreach ($setters as $member => $method) {
-                if (isset($data[$member])) {
-
-                    $value = $data[$member];
-
-                    $parameter = $method->getParameters()[0];
-
-                    // Handle nested objects
-                    $value = $this->bindFromArray($value, $parameter->getType());
-
-                    // Check for bad typed arguments if explicit typing.
-                    if ($parameter->isExplicitlyTyped()) {
-                        if ($parameter->isPrimitive() && !Primitive::isOfPrimitiveType($parameter->getType(), $value)) {
-                            throw new ObjectBindingException("Explicitly typed setter parameter {$parameter->getName()} was supplied with the wrong type");
-                        }
-
-                    }
-
-                    $setters[$member]->getReflectionMethod()->invokeArgs($instance, [$value]);
 
                 }
 
+            } catch (WrongParametersException $e) {
+                throw new ObjectBindingException($e);
+            } catch (InsufficientParametersException $e) {
+                throw new ObjectBindingException($e);
             }
 
 

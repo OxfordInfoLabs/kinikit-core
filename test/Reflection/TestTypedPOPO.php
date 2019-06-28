@@ -10,9 +10,22 @@ use Kinikit\Core\DependencyInjection\ObjectInterceptor;
 
 class TestTypedPOPO {
 
+    /**
+     * @var int
+     */
     private $id;
+
+    /**
+     * @var string
+     */
     private $name;
-    private $dob;
+
+    protected $dob;
+
+    /**
+     * @var TestTypedPOPO
+     */
+    public $publicPOPO;
 
     /**
      * TestPOPO constructor.
@@ -38,17 +51,17 @@ class TestTypedPOPO {
 
     /**
      */
-    public function setName(string $name) {
+    public function setName(string $name): void {
         $this->name = $name;
     }
 
     /**
      */
-    public function setDob(string $dob) {
+    public function setDob(string $dob): void {
         $this->dob = $dob;
     }
 
-    public function isSpecial(){
+    public function isSpecial(): bool {
         return true;
     }
 
