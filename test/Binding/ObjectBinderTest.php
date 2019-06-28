@@ -19,7 +19,7 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
      */
     private $objectBinder;
 
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
         $this->objectBinder = new ObjectBinder(new ClassInspectorProvider());
     }
