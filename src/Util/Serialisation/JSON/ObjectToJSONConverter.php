@@ -66,6 +66,11 @@ class ObjectToJSONConverter implements ObjectToFormatConverter {
                 $returnValue [$modifiedMemberName] = $this->normaliseToArrayForm($memberValue, $ignoreNonSerialisables);
             }
 
+            // Ensure blank objects are mapped correctly as objects.
+            if (sizeof($returnValue) == 0) {
+                $returnValue = new \stdClass();
+            }
+
         } // If array input, deal with it now.
         else if (is_array($object)) {
             $returnValue = array();
