@@ -119,19 +119,26 @@ class Method {
      * @return Parameter[]
      */
     public function getParameters() {
+        return array_values($this->getIndexedParameters());
+    }
 
+
+    /**
+     * Get the parameters indexed by string key for this method.
+     */
+    public function getIndexedParameters() {
         if (!isset($this->parameters)) {
             $this->parameters = array();
 
             foreach ($this->reflectionMethod->getParameters() as $parameter) {
-                $this->parameters[] = new Parameter($parameter, $this);
+                $this->parameters[$parameter->getName()] = new Parameter($parameter, $this);
             }
 
         }
 
         return $this->parameters;
-
     }
+
 
     /**
      * Get the return type for this method

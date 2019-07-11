@@ -2,7 +2,7 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Util\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\ClassInspector;
 
 
 /**
@@ -82,10 +82,12 @@ trait Proxy {
             }
         }
 
+        $methodInspector = $this->classInspector->getPublicMethod($name);
+
 
         // Evaluate before method interceptors - return input parameters
         foreach ($interceptors as $interceptor) {
-            $params = $interceptor->beforeMethod($this, $name, $params, $this->classInspector);
+            $params = $interceptor->beforeMethod($this, $name, $params, $methodInspector);
         }
 
         // Make the main call, wrap in exception handling
@@ -97,7 +99,7 @@ trait Proxy {
 
             // Evaluate after method interceptors.
             foreach ($interceptors as $interceptor) {
-                $callable = $interceptor->methodCallable($callable, $name, $params, $this->classInspector);
+                $callable = $interceptor->methodCallable($callable, $name, $params, $methodInspector);
             }
 
             // Actually call the callable and get the return value.
@@ -106,14 +108,14 @@ trait Proxy {
 
             // Evaluate after method interceptors, return a return value
             foreach ($interceptors as $interceptor) {
-                $returnValue = $interceptor->afterMethod($this, $name, $params, $returnValue, $this->classInspector);
+                $returnValue = $interceptor->afterMethod($this, $name, $params, $returnValue, $methodInspector);
             }
 
             return $returnValue;
 
         } catch (\Throwable $e) {
             foreach ($interceptors as $interceptor) {
-                $interceptor->onException($this, $name, $params, $e, $this->classInspector);
+                $interceptor->onException($this, $name, $params, $e, $methodInspector);
             }
 
             throw ($e);
