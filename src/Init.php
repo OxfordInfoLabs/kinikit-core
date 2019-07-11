@@ -4,8 +4,9 @@
 namespace Kinikit\Core;
 
 use ErrorException;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Util\Logging\Logger;
-use Kinikit\MVC\Framework\HTTP\HttpSession;
+use Kinikit\Core\Configuration\Configuration;
 
 
 /**
@@ -22,9 +23,28 @@ class Init {
      * Init constructor.  Automatically sets things up.
      */
     public function __construct() {
+        $this->process();
+    }
+
+
+    // Process core init logic.
+    private function process() {
+
+        $applicationNamespace = Configuration::readParameter("application.namespace");
+
+        $bootstrap = null;
+        if ($applicationNamespace && class_exists($applicationNamespace . "\\Bootstrap")) {
+            $bootstrap = Container::instance()->get($applicationNamespace . "\\Bootstrap");
+        }
+
+        if ($bootstrap) {
+            $bootstrap->preInit();
+        }
+
 
         // Set the default timezone to prevent issues with dates
-        date_default_timezone_set("Europe/London");
+        $configuredTimezone = Configuration::readParameter("default.timezone");
+        date_default_timezone_set($configuredTimezone ? $configuredTimezone : "Europe/London");
 
         // Set a catch all error handler
         set_error_handler(array($this, "genericErrorHandler"), E_ALL);
@@ -40,8 +60,11 @@ class Init {
         }
 
 
-        // Start a session early in the flow
-        HttpSession::instance();
+        if ($bootstrap) {
+            $bootstrap->postInit();
+        }
+
+
     }
 
 

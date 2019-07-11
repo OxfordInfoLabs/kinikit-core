@@ -9,7 +9,7 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Validation\MisconfiguredValidatorException;
 
 class LengthFieldValidator extends ObjectFieldValidator {
 

@@ -8,9 +8,8 @@
 
 namespace Kinikit\Core\Validation;
 
-use Kinikit\Core\Object\SerialisableObject;
 
-class FieldValidationError extends SerialisableObject {
+class FieldValidationError  {
 
     protected $fieldName;
     protected $validatorKey;

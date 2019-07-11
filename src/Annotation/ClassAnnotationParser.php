@@ -8,19 +8,12 @@
 
 namespace Kinikit\Core\Annotation;
 
-
+/**
+ *
+ * @noProxy
+ * @package Kinikit\Core\Annotation
+ */
 class ClassAnnotationParser {
-
-    private static $instance;
-
-    /**
-     * Only allow private construction.
-     *
-     * ClassAnnotation constructor.
-     * @param $className
-     */
-    private function __construct() {
-    }
 
 
     /**
@@ -107,24 +100,13 @@ class ClassAnnotationParser {
             $commentLine = $commentLines[$i];
             if (is_numeric(strpos($commentLine, "/**")) ||
                 is_numeric(strpos($commentLine, "*/")) ||
-                preg_match("/@[\s\S]*$/",$commentLine) ||
-                !trim($commentLine,"* ")) {
+                preg_match("/@[\s\S]*$/", $commentLine) ||
+                !trim($commentLine, "* ")) {
                 array_splice($commentLines, $i, 1);
             }
         }
 
         return join(PHP_EOL, $commentLines);
-    }
-
-    /**
-     * Return singleton instance
-     */
-    public static function instance() {
-        if (self::$instance == null) {
-            self::$instance = new ClassAnnotationParser();
-        }
-
-        return self::$instance;
     }
 
 

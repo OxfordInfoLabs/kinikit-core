@@ -4,6 +4,7 @@ namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\DependencyInjection\Container;
 
 /**
  * Generic class inspector for inspecting class information using a mixture of reflection
@@ -32,7 +33,7 @@ class ClassInspector {
     public function __construct($class) {
 
         $this->reflectionClass = new \ReflectionClass($class);
-        $this->classAnnotations = ClassAnnotationParser::instance()->parse($class);
+        $this->classAnnotations = Container::instance()->get(ClassAnnotationParser::class)->parse($class);
 
     }
 
@@ -59,6 +60,16 @@ class ClassInspector {
      */
     public function getReflectionClass() {
         return $this->reflectionClass;
+    }
+
+
+    /**
+     * Return boolean as to whether or not this is an interface
+     *
+     * @return bool
+     */
+    public function isInterface() {
+        return $this->reflectionClass->isInterface();
     }
 
 
@@ -103,6 +114,16 @@ class ClassInspector {
 
         return $this->declaredNamespaces;
 
+    }
+
+
+    /**
+     * Get the whole annotations object
+     *
+     * @return \Kinikit\Core\Annotation\ClassAnnotations
+     */
+    public function getClassAnnotationsObject() {
+        return $this->classAnnotations;
     }
 
 

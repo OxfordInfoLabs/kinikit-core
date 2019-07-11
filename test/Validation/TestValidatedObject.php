@@ -8,10 +8,7 @@
 
 namespace Kinikit\Core\Validation;
 
-
-use Kinikit\Core\Object\SerialisableObject;
-
-class TestValidatedObject extends SerialisableObject {
+class TestValidatedObject  {
 
 
     /**

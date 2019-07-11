@@ -2,8 +2,11 @@
 
 namespace Kinikit\Core\Binding;
 
-use Kinikit\Core\Exception\ObjectBindingException;
+use Kinikit\Core\Binding\ObjectBindingException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\Core\Reflection\TestAnnotatedPOPO;
+use Kinikit\Core\Reflection\TestPropertyPOPO;
+use Kinikit\Core\Reflection\TestTypedPOPO;
 
 include "autoloader.php";
 
@@ -192,5 +195,152 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testIfPublicOnlySetToFalsePrivateMembersAreBoundAsWell() {
+
+
+        $instance = $this->objectBinder->bindFromArray(["hidden" => "23", "constructorOnly" => 33, "withGetter" => "Hello",
+            "withSetter" => ["id" => 33, "name" => "Mark", "dob" => "01/01/1990"],
+            "withSetterAndGetter" => "Bingo",
+            "writable" => ["id" => 22, "name" => "John"]], TestPropertyPOPO::class);
+
+
+        $this->assertEquals(["hidden" => null, "constructorOnly" => 33,
+            "withGetter" => null, "withSetter" => null,
+            "withSetterAndGetter" => null, "writable" => new TestTypedPOPO(22, "John")], $instance->returnData());
+
+
+        // Now try one with private access allowed as well.
+
+        $instance = $this->objectBinder->bindFromArray(["hidden" => "23", "constructorOnly" => 33, "withGetter" => "Hello",
+            "withSetter" => ["id" => 33, "name" => "Mark", "dob" => "01/01/1990"],
+            "withSetterAndGetter" => "Bingo",
+            "writable" => ["id" => 22, "name" => "John"]], TestPropertyPOPO::class, false);
+
+        $this->assertEquals(["hidden" => "23", "constructorOnly" => 33,
+            "withGetter" => "Hello", "withSetter" => null,
+            "withSetterAndGetter" => null, "writable" => new TestTypedPOPO(22, "John")], $instance->returnData());
+
+    }
+
+
+    public function testPrimitiveObjectsGetReturnedIntactWhenBindingToArray() {
+
+        $this->assertEquals(true, $this->objectBinder->bindToArray(true));
+        $this->assertEquals(11, $this->objectBinder->bindToArray(11));
+        $this->assertEquals(0.75, $this->objectBinder->bindToArray(0.75));
+        $this->assertEquals("hello", $this->objectBinder->bindToArray("hello"));
+
+
+    }
+
+
+    public function testCanBindSimpleObjectsToArrayInPublicOnlyMode() {
+
+        $simpleObject = new SimpleGetterSetterObj();
+        $simpleObject->setName("Bingo");
+        $simpleObject->setAge(23);
+        $simpleObject->setDob("06/12/1977");
+
+        $this->assertEquals(array("name" => "Bingo", "age" => 23, "dob" => "06/12/1977"),
+            $this->objectBinder->bindToArray($simpleObject));
+
+
+        $constructorObject = new SimpleConstructorObject("David", 11, "01/01/2001");
+
+        $this->assertEquals(array("name" => "David", "age" => 11, "dob" => "01/01/2001"),
+            $this->objectBinder->bindToArray($constructorObject));
+
+
+    }
+
+
+    public function testCanBindArraysOfSimpleObjectsToArrayWithPreservedKeys() {
+
+        $simpleObject = new SimpleGetterSetterObj();
+        $simpleObject->setName("Bingo");
+        $simpleObject->setAge(23);
+        $simpleObject->setDob("06/12/1977");
+
+        $simpleObject2 = new SimpleGetterSetterObj();
+        $simpleObject2->setName("Bongo");
+        $simpleObject2->setAge(49);
+        $simpleObject2->setDob("01/01/1999");
+
+
+        $objects = [$simpleObject, $simpleObject2];
+
+        $array = $this->objectBinder->bindToArray($objects);
+
+        $this->assertEquals([["name" => "Bingo", "age" => 23, "dob" => "06/12/1977"],
+            ["name" => "Bongo", "age" => 49, "dob" => "01/01/1999"]], $array);
+
+
+        $objects = ["first" => $simpleObject, "second" => $simpleObject2];
+
+        $array = $this->objectBinder->bindToArray($objects);
+
+        $this->assertEquals(["first" => ["name" => "Bingo", "age" => 23, "dob" => "06/12/1977"],
+            "second" => ["name" => "Bongo", "age" => 49, "dob" => "01/01/1999"]], $array);
+
+
+    }
+
+    public function testCanBindComplexObjectToArrayInPublicMode() {
+
+        $simpleObject = new SimpleGetterSetterObj();
+        $simpleObject->setName("Bingo");
+        $simpleObject->setAge(23);
+        $simpleObject->setDob("06/12/1977");
+
+        $otherObjs = ["primary" => [new SimpleConstructorObject("Mark", 12, "01/01/1990")],
+            "secondary" => [new SimpleConstructorObject("Mark", 22, "01/01/1999"),
+                new SimpleConstructorObject("Luke", 33, "01/01/1985")]];
+
+
+        $complexObject = new ComplexObject($simpleObject);
+        $complexObject->setGames(array("hockey", "tennis", "football"));
+        $complexObject->setTitle("Pineapple");
+        $complexObject->setOtherObjs($otherObjs);
+
+        $array = $this->objectBinder->bindToArray($complexObject);
+
+        $this->assertEquals(["title" => "Pineapple",
+            "games" => ["hockey", "tennis", "football"],
+            "simpleObject" => ["name" => "Bingo", "age" => 23, "dob" => "06/12/1977"],
+            "otherObjs" => ["primary" => [["name" => "Mark", "age" => 12, "dob" => "01/01/1990"]],
+                "secondary" => [["name" => "Mark", "age" => 22, "dob" => "01/01/1999"],
+                    ["name" => "Luke", "age" => 33, "dob" => "01/01/1985"]]]], $array);
+    }
+
+
+    public function testCanBindPrivateMembersToArrayAsWellIfSpecified() {
+
+
+        $instance = $this->objectBinder->bindFromArray(["hidden" => "23", "constructorOnly" => 33, "withGetter" => "Hello",
+            "withSetter" => ["id" => 33, "name" => "Mark", "dob" => "01/01/1990"],
+            "withSetterAndGetter" => "Bingo",
+            "writable" => ["id" => 22, "name" => "John"]], TestPropertyPOPO::class, false);
+
+
+        // Public only first
+        $array = $this->objectBinder->bindToArray($instance);
+
+        $this->assertEquals(["withGetter" => "GETTER_CALLED", "withSetterAndGetter" => "GETTER_CALLED", "writable" => [
+            "id" => 22, "name" => "John", "special" => true, "publicPOPO" => null]], $array);
+
+
+        // Private as well
+        $array = $this->objectBinder->bindToArray($instance, false);
+
+        $this->assertEquals(["hidden" => "23", "constructorOnly" => 33, "withSetter" => null, "withGetter" => "GETTER_CALLED", "withSetterAndGetter" => "GETTER_CALLED", "writable" => [
+            "id" => 22, "name" => "John", "special" => true, "publicPOPO" => null, "dob" => "01/01/2016"],
+            "__setterValues" => [
+                "withSetter" => ["id" => 33, "name" => "Mark", "dob" => "01/01/1990", "special" => true],
+                "withSetterAndGetter" => "Bingo"
+            ]], $array);
+
+
+    }
 
 }

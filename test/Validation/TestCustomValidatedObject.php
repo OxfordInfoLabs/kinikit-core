@@ -9,9 +9,8 @@
 namespace Kinikit\Core\Validation;
 
 
-use Kinikit\Core\Object\SerialisableObject;
 
-class TestCustomValidatedObject extends SerialisableObject {
+class TestCustomValidatedObject  {
 
     /**
      * @validation required,macaroni

@@ -19,7 +19,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
 
         $classInspector = new ClassInspector(TestTypedPOPO::class);
-        $annotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getMethodAnnotations()["__construct"];
+        $annotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class)->getMethodAnnotations()["__construct"];
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getConstructor();
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
@@ -84,7 +84,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         // Check constructor
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getConstructor();
         $reflectionParams = $reflectionMethod->getParameters();
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["__construct"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["__construct"];
 
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
@@ -99,7 +99,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         // Check one without params
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("getId");
 
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["getId"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["getId"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
@@ -110,7 +110,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         // Check one with param
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("setDob");
         $reflectionParams = $reflectionMethod->getParameters();
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["setDob"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["setDob"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
@@ -122,7 +122,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("clone");
         $reflectionParams = $reflectionMethod->getParameters();
 
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["clone"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["clone"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
@@ -135,7 +135,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("evaluateAnnotation");
         $reflectionParams = $reflectionMethod->getParameters();
 
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["evaluateAnnotation"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["evaluateAnnotation"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
@@ -183,7 +183,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         // Check constructor
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getConstructor();
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["__construct"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["__construct"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
@@ -191,21 +191,21 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         // Check one without params
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("getId");
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["getId"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["getId"];
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
 
         // Check one with param
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("setDob");
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["setDob"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["setDob"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
         // Check one with class param
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("clone");
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["clone"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["clone"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
@@ -213,7 +213,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         // Check one with class param
         $reflectionMethod = (new \ReflectionClass(TestAnnotatedPOPO::class))->getMethod("evaluateAnnotation");
-        $annotations = ClassAnnotationParser::instance()->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["evaluateAnnotation"];
+        $annotations = (new ClassAnnotationParser())->parse(TestAnnotatedPOPO::class)->getMethodAnnotations()["evaluateAnnotation"];
 
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());

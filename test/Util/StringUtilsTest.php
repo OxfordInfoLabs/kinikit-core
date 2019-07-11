@@ -12,38 +12,6 @@ include_once "autoloader.php";
  */
 class StringUtilsTest extends \PHPUnit\Framework\TestCase {
 
-    public function testNonWildcardPatternsOnlyMatchIfStringEqualsPattern() {
-
-        // Precise matches should match
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "precise"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("bob", "bob"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("mary", "mary"));
-
-        // Imprecise matches for non wildcard patterns should not match
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "imprecise"));
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "precise2"));
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "prec"));
-
-    }
-
-    public function testWildcardPatternsAreEvaluatedCorrectlyAsExpected() {
-
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "prec*"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "*ise"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "*ec*"));
-
-        // Check *s are optional characters
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "precise*"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "*precise"));
-        $this->assertTrue(StringUtils::matchesWildcardPattern("precise", "*precise*"));
-
-        // Now check for some failures
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "*pprecise"));
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "precise2*"));
-        $this->assertFalse(StringUtils::matchesWildcardPattern("precise", "prec*2*"));
-
-    }
-
 
     public function testCanGenerateRandomStringOfJustLowerCaseLetters() {
 

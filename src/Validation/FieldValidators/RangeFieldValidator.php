@@ -9,8 +9,7 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Exception\MisconfiguredValidatorException;
-use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Validation\MisconfiguredValidatorException;
 
 class RangeFieldValidator extends ObjectFieldValidator {
 
@@ -31,7 +30,7 @@ class RangeFieldValidator extends ObjectFieldValidator {
      *
      * @param string $value
      * @param $fieldName
-     * @param SerialisableObject $targetObject
+     * @param $targetObject
      * @param array $validatorParams
      * @param $validatorKey
      * @return bool|mixed

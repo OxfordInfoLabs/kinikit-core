@@ -3,8 +3,6 @@
 namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\ClassAnnotationParser;
-use Kinikit\Core\Annotation\ClassAnnotations;
-use Kinikit\Core\Exception\BadParameterException;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 
@@ -29,7 +27,9 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
             "ObjectInterceptor" => "\Kinikit\Core\DependencyInjection\ObjectInterceptor"], $classInspector->getDeclaredNamespaceClasses());
 
 
-        $this->assertEquals(ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getClassAnnotations(), $classInspector->getClassAnnotations());
+        $parser = new ClassAnnotationParser();
+
+        $this->assertEquals($parser->parse(TestTypedPOPO::class)->getClassAnnotations(), $classInspector->getClassAnnotations());
 
     }
 
@@ -39,7 +39,9 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         $classInspector = new ClassInspector(TestTypedPOPO::class);
 
         $reflectionClass = new \ReflectionClass(TestTypedPOPO::class);
-        $annotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class);
+        $parser = new ClassAnnotationParser();
+
+        $annotations = $parser->parse(TestTypedPOPO::class);
 
         // Check constructor
         $this->assertEquals(new Method($reflectionClass->getConstructor(), $annotations->getMethodAnnotations()["__construct"], $classInspector), $classInspector->getConstructor());
@@ -87,7 +89,7 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
     public function testCanGetPropertiesOfClass() {
         $classInspector = new ClassInspector(TestTypedPOPO::class);
         $properties = $classInspector->getProperties();
-        $annotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class);
+        $annotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class);
 
         $this->assertEquals(4, sizeof($properties));
 

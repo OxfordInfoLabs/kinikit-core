@@ -2,6 +2,9 @@
 
 namespace Kinikit\Core\Validation;
 
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Validation\FieldValidators\RegexpFieldValidator;
+
 include_once "autoloader.php";
 
 /**
@@ -12,12 +15,20 @@ include_once "autoloader.php";
  */
 class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
+    /**
+     * @var Validator
+     */
+    private $validator;
+
+    public function setUp() {
+        $this->validator = Container::instance()->get(Validator::class);
+    }
 
     public function testCanValidateObjectWithMarkupBasedValidation() {
 
         $validatedObject = new TestValidatedObject();
 
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
 
         $this->assertEquals(3, sizeof($validationErrors));
 
@@ -36,14 +47,14 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $validatedObject->setId("marky");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(3, sizeof($validationErrors));
         $idErrors = $validationErrors["id"];
         $this->assertEquals(1, sizeof($idErrors));
         $this->assertEquals(new FieldValidationError("id", "numeric", "Value must be numeric"), $idErrors["numeric"]);
 
         $validatedObject->setUsername("__");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(3, sizeof($validationErrors));
         $usernameErrors = $validationErrors["username"];
         $this->assertEquals(2, sizeof($usernameErrors));
@@ -52,14 +63,14 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $validatedObject->setName("**Bang123**");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(3, sizeof($validationErrors));
         $nameErrors = $validationErrors["name"];
         $this->assertEquals(1, sizeof($nameErrors));
         $this->assertEquals(new FieldValidationError("name", "name", "Value must be a valid name"), $nameErrors["name"]);
 
         $validatedObject->setPassword("%%");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(5, sizeof($validationErrors));
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
@@ -71,7 +82,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $validatedObject->setPassword("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(5, sizeof($validationErrors));
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
@@ -82,14 +93,14 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new FieldValidationError("confirmPassword", "equals", "Value does not match the password field"), $confirmPasswordErrors["equals"]);
 
         $validatedObject->setAge(10);
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(6, sizeof($validationErrors));
         $ageErrors = $validationErrors["age"];
         $this->assertEquals(1, sizeof($ageErrors));
         $this->assertEquals(new FieldValidationError("age", "range", "Value must be between 18 and 65"), $ageErrors["range"]);
 
         $validatedObject->setAge(70);
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(6, sizeof($validationErrors));
         $ageErrors = $validationErrors["age"];
         $this->assertEquals(1, sizeof($ageErrors));
@@ -97,7 +108,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $validatedObject->setShoeSize(2);
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(7, sizeof($validationErrors));
         $shoeSizeErrors = $validationErrors["shoeSize"];
         $this->assertEquals(1, sizeof($shoeSizeErrors));
@@ -105,28 +116,28 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $validatedObject->setShoeSize(12);
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(7, sizeof($validationErrors));
         $shoeSizeErrors = $validationErrors["shoeSize"];
         $this->assertEquals(1, sizeof($shoeSizeErrors));
         $this->assertEquals(new FieldValidationError("shoeSize", "max", "Value must be no greater than 11"), $shoeSizeErrors["max"]);
 
         $validatedObject->setEmailAddress("pinky");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(8, sizeof($validationErrors));
         $emailAddressErrors = $validationErrors["emailAddress"];
         $this->assertEquals(1, sizeof($emailAddressErrors));
         $this->assertEquals(new FieldValidationError("emailAddress", "email", "Value must be a valid email"), $emailAddressErrors["email"]);
 
         $validatedObject->setStandardDate("rrr");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(9, sizeof($validationErrors));
         $dateErrors = $validationErrors["standardDate"];
         $this->assertEquals(1, sizeof($dateErrors));
         $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in d/m/Y format"), $dateErrors["date"]);
 
         $validatedObject->setCustomDate("rrr");
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(10, sizeof($validationErrors));
         $dateErrors = $validationErrors["customDate"];
         $this->assertEquals(1, sizeof($dateErrors));
@@ -145,15 +156,18 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $validatedObject->setStandardDate("06/12/1977");
         $validatedObject->setCustomDate("01-01-2017");
 
-        $validationErrors = Validator::instance()->validateObject($validatedObject);
+        $validationErrors = $this->validator->validateObject($validatedObject);
         $this->assertEquals(0, sizeof($validationErrors));
     }
 
-    public function testCustomValidationsAreLoadedFromConfigFile() {
+    public function testCustomValidationsMayBeUsedIfAddedAtRuntime() {
+
+        $this->validator->addValidator("macaroni", new RegexpFieldValidator("[0-9][A-Z]", "This field is not Macaroni"));
+
 
         $customObject = new TestCustomValidatedObject();
 
-        $validationErrors = Validator::instance()->validateObject($customObject);
+        $validationErrors = $this->validator->validateObject($customObject);
 
         $this->assertEquals(1, sizeof($validationErrors));
 
@@ -163,7 +177,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $customObject->setCustomField("MM");
 
-        $validationErrors = Validator::instance()->validateObject($customObject);
+        $validationErrors = $this->validator->validateObject($customObject);
 
         $this->assertEquals(1, sizeof($validationErrors));
 
@@ -173,7 +187,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
 
         $customObject->setCustomField("1M");
-        $validationErrors = Validator::instance()->validateObject($customObject);
+        $validationErrors = $this->validator->validateObject($customObject);
         $this->assertEquals(0, sizeof($validationErrors));
 
     }

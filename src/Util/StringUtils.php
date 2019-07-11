@@ -11,28 +11,6 @@ namespace Kinikit\Core\Util;
 class StringUtils {
 
     /**
-     * Return a boolean indicating whether the passed string matches the supplied pattern
-     * which may contain * wildcards
-     *
-     * @param string $predicateString
-     * @param string $pattern
-     */
-    public static function matchesWildcardPattern($predicateString, $pattern) {
-
-        // Only do a fuzzy match if at least a single * character found.
-        if (is_numeric(strpos($pattern, "*"))) {
-            $pattern = str_replace("\\*", "(.*)", preg_quote($pattern, "/"));
-            $regex = "/" . $pattern . "/";
-            return preg_match($regex, $predicateString) > 0;
-
-        } else {
-            return $predicateString == $pattern;
-        }
-
-    }
-
-
-    /**
      * Generate a random string of the given length (for e.g. passwords etc).
      * Optional flags allow for capital letters, numbers and symbols
      *

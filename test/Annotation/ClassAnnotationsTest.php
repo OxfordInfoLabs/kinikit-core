@@ -14,7 +14,9 @@ class ClassAnnotationsTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanGetAllAnnotationsMatchingTag() {
 
-        $annotations = ClassAnnotationParser::instance()->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
+        $classAnnotationParser = new ClassAnnotationParser();
+
+        $annotations = $classAnnotationParser->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $matchingAnnotations = $annotations->getFieldAnnotationsForMatchingTag("validation");

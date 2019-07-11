@@ -4,8 +4,8 @@
 namespace Kinikit\Core\Binding;
 
 use Kinikit\Core\Exception\InsufficientParametersException;
-use Kinikit\Core\Exception\ObjectBindingException;
 use Kinikit\Core\Exception\WrongParametersException;
+use Kinikit\Core\Reflection\Property;
 use Kinikit\Core\Util\Primitive;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Reflection\Parameter;
@@ -14,7 +14,7 @@ use Kinikit\Core\Reflection\Parameter;
  * Binder object used for converting an object (or an array of objects) recursively to associative array data
  * and vice versa.  Similar to GSON for Java
  *
- * Class ObjectBinder
+ * @noProxy
  * @package Kinikit\Core\Object
  */
 class ObjectBinder {
@@ -40,7 +40,7 @@ class ObjectBinder {
      * @param array $data
      * @return mixed
      */
-    public function bindFromArray($data, $targetClass) {
+    public function bindFromArray($data, $targetClass, $publicOnly = true) {
 
         $result = null;
 
@@ -52,7 +52,7 @@ class ObjectBinder {
             $result = [];
 
             foreach ($data as $key => $dataItem) {
-                $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed);
+                $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly);
             }
 
         } else {
@@ -76,35 +76,37 @@ class ObjectBinder {
 
                         $key = $parameter->getName();
                         if (isset($data[$key])) {
-                            $data[$key] = $this->bindFromArray($data[$key], $parameter->getType());
+                            $data[$key] = $this->bindFromArray($data[$key], $parameter->getType(), $publicOnly);
                             $processedKeys[] = $key;
                         }
 
                     }
                 }
 
-                // Loop through each property
-                foreach ($classInspector->getProperties() as $key => $property) {
-                    if (!in_array($key, $processedKeys) && isset($data[$key])) {
-                        $propertyType = $property->getType();
-                        $data[$key] = $this->bindFromArray($data[$key], $propertyType);
+                // Inject each setter first of all.
+                foreach ($classInspector->getSetters() as $key => $setter) {
+                    if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
+                        $parameter = $setter->getParameters()[0];
+                        $parameterType = $parameter->getType();
+                        $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly);
                         $processedKeys[] = $key;
                     }
                 }
 
-                // Inject each property
-                foreach ($classInspector->getSetters() as $key => $setter) {
-                    if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
-                        $parameter = $setter->getParameters[0];
-                        $parameterType = $parameter->getType();
-                        $data[$key] = $this->bindFromArray($data[$key], $parameterType);
+
+                // Loop through each property as fall back provided public included.
+                foreach ($classInspector->getProperties() as $key => $property) {
+                    if (!in_array($key, $processedKeys) && isset($data[$key])) {
+                        $propertyType = $property->getType();
+                        $data[$key] = $this->bindFromArray($data[$key], $propertyType, $publicOnly);
+                        $processedKeys[] = $key;
                     }
                 }
 
 
                 // Construct the class first and then call setters
                 $instance = $classInspector->createInstance($data);
-                $classInspector->setPropertyData($instance, $data, null, false);
+                $classInspector->setPropertyData($instance, $data, null, $publicOnly);
 
 
             } catch (WrongParametersException $e) {
@@ -131,8 +133,53 @@ class ObjectBinder {
      * @param $object
      * @return array
      */
-    public function bindToArray($object) {
+    public function bindToArray($object, $publicOnly = true) {
 
+
+        if ($object === null) {
+            return $object;
+        }
+
+        // if primitive, return intact straight away.
+        if (Primitive::isPrimitive($object)) {
+            return $object;
+        }
+
+        // Handle array case
+        if (is_array($object)) {
+            $objects = [];
+            foreach ($object as $key => $value) {
+                $objects[$key] = $this->bindToArray($value, $publicOnly);
+            }
+            return $objects;
+        }
+
+        $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+
+        $processedKeys = [];
+        $targetArray = [];
+
+        // Work through getters first of all
+        $getters = $classInspector->getGetters();
+        foreach ($getters as $key => $getter) {
+            $value = $getter->call($object, []);
+
+            $targetArray[$key] = $this->bindToArray($value, $publicOnly);
+            $processedKeys[$key] = 1;
+        }
+
+        // Now work through members.
+        $members = $classInspector->getProperties();
+        foreach ($members as $key => $member) {
+            if (!isset($processedKeys[$key]) && (!$publicOnly || $member->getVisibility() == Property::VISIBILITY_PUBLIC)) {
+                $value = $member->get($object);
+                $targetArray[$key] = $this->bindToArray($value, $publicOnly);
+                $processedKeys[$key] = 1;
+            }
+        }
+
+
+        return $targetArray;
     }
 
 

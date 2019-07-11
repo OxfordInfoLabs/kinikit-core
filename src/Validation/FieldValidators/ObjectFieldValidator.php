@@ -9,9 +9,8 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Object\SerialisableObject;
 
-abstract class ObjectFieldValidator extends SerialisableObject {
+abstract class ObjectFieldValidator  {
 
 
     private $validationMessage;

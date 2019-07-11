@@ -9,16 +9,28 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Exception\MisconfiguredValidatorException;
+use Kinikit\Core\Validation\MisconfiguredValidatorException;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 
 class EqualsFieldValidator extends ObjectFieldValidator {
+
+
+    /**
+     * @var ClassInspectorProvider
+     */
+    private $classInspectorProvider;
+
+    public function __construct($classInspectorProvider, $validationMessage = null) {
+        parent::__construct($validationMessage);
+        $this->classInspectorProvider = $classInspectorProvider;
+    }
 
     /**
      * Validate a value
      *
      * @param $value string
      * @param $fieldName
-     * @param $targetObject SerialisableObject
+     * @param $targetObject
      * @param $validatorParams array
      * @param $validatorKey
      * @return mixed
@@ -32,7 +44,8 @@ class EqualsFieldValidator extends ObjectFieldValidator {
 
         $otherField = $validatorParams[0];
         if (trim($otherField, "'\"") == $otherField) {
-            $otherFieldValue = $targetObject->__getSerialisablePropertyValue($otherField);
+            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($targetObject));
+            $otherFieldValue = $classInspector->getPropertyData($targetObject, $otherField);
             return $value == $otherFieldValue;
         } else {
             return $value == $validatorParams[0];

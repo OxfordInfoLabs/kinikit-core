@@ -5,9 +5,15 @@ namespace Kinikit\Core\Serialisation\JSON;
 use Kinikit\Core\Exception\PropertyNotWritableException;
 use Kinikit\Core\Util\ClassUtils;
 use Kinikit\Core\Util\Logging\Logger;
-use Kinikit\Core\Util\SerialisableArrayUtils;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Serialisation\FormatToObjectConverter;
 
+/**
+ * @noProxy
+ *
+ * Class JSONToObjectConverter
+ * @package Kinikit\Core\Serialisation\JSON
+ */
 class JSONToObjectConverter implements FormatToObjectConverter {
 
     /**
@@ -23,7 +29,7 @@ class JSONToObjectConverter implements FormatToObjectConverter {
         $converted = json_decode($jsonString, true);
 
         if ($mapToClass) {
-            $converted = SerialisableArrayUtils::convertArrayToSerialisableObjects($converted, $mapToClass);
+            $converted = ObjectArrayUtils::convertArrayToSerialisableObjects($converted, $mapToClass);
         }
 
         // Now convert to objects and return

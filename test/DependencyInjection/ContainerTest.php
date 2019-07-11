@@ -2,8 +2,7 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Exception\RecursiveDependencyException;
-use PHPMailer\PHPMailer\Exception;
+use Kinikit\Core\Configuration\Configuration;
 
 include_once "autoloader.php";
 
@@ -78,6 +77,65 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
 
         }
+    }
+
+
+    public function testClassesWithNoProxyAnnotationAreNotProxied() {
+
+        $container = new Container();
+        $instance = $container->get(NonProxyService::class);
+
+        $this->assertEquals("Kinikit\Core\DependencyInjection\NonProxyService", get_class($instance));
+
+    }
+
+
+    public function testCanExplicitlyMapInterfaceToImplementation() {
+
+        $container = new Container();
+        $container->addInterfaceMapping(InterfaceNoDefault::class, ImplementationNoDefault::class);
+
+        $implementation = $container->get(InterfaceNoDefault::class);
+        $this->assertEquals(new ImplementationNoDefault(), $implementation);
+    }
+
+
+    public function testAttemptToConstructAnInterfaceWithoutExplicitOrDefaultImplementationThrowsException() {
+
+        try {
+            $container = new Container();
+            $container->get(InterfaceNoDefault::class);
+            $this->fail("Should have thrown here");
+
+        } catch (MissingInterfaceImplementationException $e) {
+            // Success
+            $this->assertTrue(true);
+        }
+
+    }
+
+    public function testCanImplicitlyMapInterfaceToImplementationViaAnnotations() {
+
+        $container = new Container();
+        $implementation = $container->get(InterfaceWithMappings::class);
+        $this->assertEquals(new ImplementationMapping1(), $implementation);
+
+        Configuration::instance()->addParameter("interface.class", "second");
+        $container = new Container();
+        $implementation = $container->get(InterfaceWithMappings::class);
+        $this->assertEquals(new ImplementationMapping2(), $implementation);
+
+        Configuration::instance()->addParameter("interface.class", "first");
+        $container = new Container();
+        $implementation = $container->get(InterfaceWithMappings::class);
+        $this->assertEquals(new ImplementationMapping1(), $implementation);
+
+        // Also try concrete class in config.
+        Configuration::instance()->addParameter("interface.class", ImplementationMapping2::class);
+        $container = new Container();
+        $implementation = $container->get(InterfaceWithMappings::class);
+        $this->assertEquals(new ImplementationMapping2(), $implementation);
+
     }
 
 

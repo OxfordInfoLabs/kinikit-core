@@ -2,13 +2,11 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Exception\RecursiveDependencyException;
 use Kinikit\Core\Annotation\ClassAnnotationParser;
-use Kinikit\Core\Util\ArrayUtils;
+use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\Primitive;
-use Kinikit\Core\Reflection\ClassInspector;
-use Kinikit\Core\Reflection\Method;
-use Kinikit\Core\Reflection\Parameter;
+
 
 /**
  * Standard Inversion of Control (IOC) dependency injection container.  This is a singleton class which
@@ -23,9 +21,9 @@ class Container {
     private static $instance;
 
     /**
-     * @var \Kinikit\Core\DependencyInjection\Proxy[string]
+     * @var mixed[string]
      */
-    private $proxies = array();
+    private $instances = array();
 
 
     /**
@@ -35,6 +33,16 @@ class Container {
      */
     private $methodInterceptors;
 
+
+    /**
+     * Array of explicit interface mappings (defined in e.g. Bootstrap scripts)
+     * for providing concrete implementation to interface.
+     *
+     * @var string[string]
+     */
+    private $interfaceMappings = array();
+
+
     /**
      * Proxy generator
      *
@@ -43,10 +51,21 @@ class Container {
     private $proxyGenerator;
 
 
+    /**
+     * @var ClassInspectorProvider
+     */
+    private $classInspectorProvider;
+
+
     // Constructor
     public function __construct() {
         $this->methodInterceptors = new ObjectInterceptors();
         $this->proxyGenerator = new ProxyGenerator();
+        $this->classInspectorProvider = new ClassInspectorProvider();
+
+        // Add required class inspector classes to the container upfront to avoid recursion problems.
+        $this->instances["\\" . ClassInspectorProvider::class] = $this->classInspectorProvider;
+        $this->instances["\\" . ClassAnnotationParser::class] = new ClassAnnotationParser();
     }
 
 
@@ -98,6 +117,22 @@ class Container {
         $this->methodInterceptors->addInterceptor($methodInterceptor);
     }
 
+
+    /**
+     * Add an explicit interface mapping for a given interface to a concrete implementation.
+     *
+     * @param string $interfaceClassName
+     * @param string $implementationClassName
+     */
+    public function addInterfaceMapping($interfaceClassName, $implementationClassName) {
+
+        $interfaceClassName = "\\" . ltrim(trim($interfaceClassName), "\\");
+        $implementationClassName = "\\" . ltrim(trim($implementationClassName), "\\");
+
+        $this->interfaceMappings[$interfaceClassName] = $implementationClassName;
+    }
+
+
     /**
      * @param $className
      * @return object
@@ -108,18 +143,35 @@ class Container {
         // Remove leading \'s.
         $className = "\\" . ltrim(trim($className), "\\");
 
+        if (isset($this->interfaceMappings[$className])) {
+            $className = $this->interfaceMappings[$className];
+        }
+
+
         $dependentClasses[] = $className;
 
         // Shortcut if we already have this instance.
-        if (isset($this->proxies[$className])) {
-            return $this->proxies[$className];
+        if (isset($this->instances[$className])) {
+            return $this->instances[$className];
         }
 
         // Create a new proxy and ensure that we add it to our collection up front.
-        $classInspector = new ClassInspector($className);
+        $classInspector = $this->classInspectorProvider->getClassInspector($className);
 
-        // Create a proxy class
-        $proxyClass = $this->proxyGenerator->generateProxy($className);
+
+        // If interface, attempt to resolve interface via annotations
+        $newClass = $className;
+        if ($classInspector->isInterface()) {
+            $newClass = $this->resolveInterface($classInspector);
+            $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
+        }
+
+        // Create a proxy class provided the noProxy annotation is not set.
+        $proxy = false;
+        if (!isset($classInspector->getClassAnnotations()["noProxy"])) {
+            $proxy = true;
+            $newClass = $this->proxyGenerator->generateProxy($newClass);
+        }
 
         $params = array();
         if ($constructor = $classInspector->getConstructor()) {
@@ -134,16 +186,56 @@ class Container {
         }
 
         // Create the proxy object
-        $reflectionClass = new \ReflectionClass($proxyClass);
-        $proxy = $reflectionClass->newInstanceArgs($params);
+        $reflectionClass = new \ReflectionClass($newClass);
+        $instance = $reflectionClass->newInstanceArgs($params);
 
-        // Populate with base functionality.
-        $proxy->__populate($this->methodInterceptors, $classInspector);
+        // Populate with base functionality if a proxy.
+        if ($proxy)
+            $instance->__populate($this->methodInterceptors, $classInspector);
 
         // Store for future efficiency.
-        $this->proxies[$className] = $proxy;
+        $this->instances[$className] = $instance;
 
-        return $proxy;
+        return $instance;
+    }
+
+
+    // Resolve an interface to a concrete class or throw
+    private function resolveInterface($classInspector) {
+
+        $classAnnotations = $classInspector->getClassAnnotations();
+
+        $className = null;
+
+        if (isset($classAnnotations["implementationConfigParam"]) &&
+            isset($classAnnotations["implementation"])) {
+            $configParam = $classAnnotations["implementationConfigParam"][0]->getValue();
+            $configValue = Configuration::readParameter($configParam);
+
+
+            if ($configValue) {
+                $implementations = $classAnnotations["implementation"];
+                foreach ($implementations as $implementation) {
+                    $explodedImp = explode(" ", trim($implementation->getValue()));
+                    if ($explodedImp[0] == $configValue) {
+                        return "\\" . ltrim(trim($explodedImp[1]), "\\");
+                    }
+                }
+
+                // if no mapping found, simply return the value as explicit class mapping.
+                return "\\" . ltrim(trim($configValue), "\\");
+
+            }
+
+        }
+
+        if (isset($classAnnotations["defaultImplementation"])) {
+            return "\\" . ltrim(trim($classAnnotations["defaultImplementation"][0]->getValue()), "\\");
+        }
+
+        throw new MissingInterfaceImplementationException($classInspector->getClassName());
+
+
     }
 
 

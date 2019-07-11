@@ -9,7 +9,7 @@
 namespace Kinikit\Core\Template\Parser;
 
 use Kinikit\Core\Template\TemplateParser;
-use Kinikit\Core\Util\SerialisableArrayUtils;
+use Kinikit\Core\Util\ObjectArrayUtils;
 
 
 class TwigTemplateParser extends TemplateParser {
@@ -26,7 +26,7 @@ class TwigTemplateParser extends TemplateParser {
 
         $twig = new \Twig_Environment($twigLoader);
 
-        $newModel = SerialisableArrayUtils::convertSerialisableObjectsToAssociativeArrays($model);
+        $newModel = ObjectArrayUtils::convertSerialisableObjectsToAssociativeArrays($model);
 
         return $twig->render("template", $newModel);
 

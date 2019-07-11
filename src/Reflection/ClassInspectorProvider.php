@@ -6,6 +6,7 @@ namespace Kinikit\Core\Reflection;
 /**
  * Store for class inspectors:  Designed to be injected as required by other objects.
  *
+ * @noProxy
  * @package Kinikit\Core\Util\Reflection
  */
 class ClassInspectorProvider {

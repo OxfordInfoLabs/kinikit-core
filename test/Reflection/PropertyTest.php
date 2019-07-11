@@ -17,7 +17,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
         $classInspector = new ClassInspector(TestTypedPOPO::class);
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("id");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getFieldAnnotations()["id"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class)->getFieldAnnotations()["id"];
 
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
@@ -30,7 +30,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("name");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getFieldAnnotations()["name"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class)->getFieldAnnotations()["name"];
 
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
@@ -42,7 +42,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("string", $property->getType());
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("dob");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getFieldAnnotations()["dob"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class)->getFieldAnnotations()["dob"];
 
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
@@ -55,7 +55,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("publicPOPO");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestTypedPOPO::class)->getFieldAnnotations()["publicPOPO"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class)->getFieldAnnotations()["publicPOPO"];
 
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
@@ -77,7 +77,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $testPOPO = new TestPropertyPOPO(99);
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("hidden");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["hidden"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestPropertyPOPO::class)->getFieldAnnotations()["hidden"];
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
         try {
@@ -92,7 +92,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("withSetter");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
         try {
@@ -123,13 +123,13 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $testPOPO = new TestPropertyPOPO(99);
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("constructorOnly");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["constructorOnly"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestPropertyPOPO::class)->getFieldAnnotations()["constructorOnly"];
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
         $this->assertEquals(99, $property->get($testPOPO));
 
 
         $reflectionProperty = $classInspector->getReflectionClass()->getProperty("withSetter");
-        $propertyAnnotations = ClassAnnotationParser::instance()->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestPropertyPOPO::class)->getFieldAnnotations()["withSetter"];
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($testPOPO, new TestAnnotatedPOPO(1, "Mark"));
 

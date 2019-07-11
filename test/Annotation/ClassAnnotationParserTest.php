@@ -7,9 +7,15 @@ include_once "autoloader.php";
 
 class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
 
+    private $classAnnotationParser;
+
+    public function setUp() {
+        $this->classAnnotationParser = new ClassAnnotationParser();
+    }
+
     public function testCanGetClassAnnotationsFromAnnotatedClass() {
 
-        $annotations = ClassAnnotationParser::instance()->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
+        $annotations = $this->classAnnotationParser->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $classAnnotations = $annotations->getClassAnnotations();
@@ -25,7 +31,7 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanGetFieldAnnotationsFromAnnotatedClass() {
 
-        $annotations = ClassAnnotationParser::instance()->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
+        $annotations = $this->classAnnotationParser->parse("Kinikit\Core\Annotation\TestAnnotatedClass");
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $fieldAnnotations = $annotations->getFieldAnnotations();

@@ -9,9 +9,7 @@
 namespace Kinikit\Core\Util;
 
 
-use Kinikit\Core\Object\SerialisableObject;
-
-class WrapperClass extends SerialisableObject {
+class WrapperClass  {
 
     private $id;
     private $name;

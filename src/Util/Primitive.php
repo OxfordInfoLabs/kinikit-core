@@ -22,6 +22,17 @@ class Primitive {
     const TYPE_STRING = "string";
     const TYPE_MIXED = "mixed";
 
+
+    /**
+     * Return a boolean indicator as to whether or not this value is primitive
+     *
+     * @param $value
+     */
+    public static function isPrimitive($value) {
+        return is_bool($value) || is_int($value) || is_float($value) || is_string($value);
+    }
+
+
     /**
      * Check whether an object is of a primitive type.
      *
@@ -45,5 +56,6 @@ class Primitive {
 
         return false;
     }
+
 
 }

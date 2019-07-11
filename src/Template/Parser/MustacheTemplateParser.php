@@ -3,7 +3,7 @@
 namespace Kinikit\Core\Template\Parser;
 
 use Kinikit\Core\Template\TemplateParser;
-use Kinikit\Core\Util\SerialisableArrayUtils;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Mustache_Engine;
 
 /**
@@ -24,7 +24,7 @@ class MustacheTemplateParser extends TemplateParser {
             return $value;
         }));
 
-        $newModel = SerialisableArrayUtils::convertSerialisableObjectsToAssociativeArrays($model, true);
+        $newModel = ObjectArrayUtils::convertSerialisableObjectsToAssociativeArrays($model, true);
 
         return $mustacheEngine->render($viewText, $newModel);
 

@@ -1,14 +1,13 @@
 <?php
 
 namespace Kinikit\Core\Serialisation\JSON;
-use Kinikit\Core\Object\SerialisableObject;
 
 
 /**
  * Simple JSON Object
  *
  */
-class SimpleJSONObject extends SerialisableObject {
+class SimpleJSONObject  {
 
     private $myMember;
     private $yourMember;

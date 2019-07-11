@@ -9,35 +9,41 @@
 namespace Kinikit\Core\Validation;
 
 
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Exception\InvalidValidatorException;
 use Kinikit\Core\Object\SerialisableObject;
-use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Serialisation\XML\XMLToObjectConverter;
 use Kinikit\Core\Validation\FieldValidators\DateFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\EqualsFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\LengthFieldValidator;
+use Kinikit\Core\Validation\FieldValidators\ObjectFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\RangeFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\RegexpFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\RequiredFieldValidator;
 
 class Validator {
 
-    private static $instance;
+
+    /**
+     * @var ClassInspectorProvider
+     */
+    private $classInspectorProvider;
+
     private $validators;
 
-    public function __construct() {
+    /**
+     * Validator constructor.
+     * @param ClassInspectorProvider $classInspectorProvider
+     */
+    public function __construct($classInspectorProvider) {
 
-
-        if (file_exists("Config/field-validators.xml")) {
-            $converter = new XMLToObjectConverter(array("FieldValidators" => "Array"), false);
-            $this->validators = $converter->convert(file_get_contents("Config/field-validators.xml"));
-        }
-
+        $this->classInspectorProvider = $classInspectorProvider;
 
         $this->validators["required"] = new RequiredFieldValidator("This field is required");
         $this->validators["regexp"] = new RegexpFieldValidator(null, "Value does not match the required format");
-        $this->validators["equals"] = new EqualsFieldValidator("Value does not match the $1 field");
+        $this->validators["equals"] = new EqualsFieldValidator($classInspectorProvider, "Value does not match the $1 field");
         $this->validators["minlength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MIN, "Value must be at least $1 characters");
         $this->validators["maxlength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MAX, "Value must be no greater than $1 characters");
         $this->validators["min"] = new RangeFieldValidator(RangeFieldValidator::MODE_MIN, "Value must be at least $1");
@@ -53,24 +59,34 @@ class Validator {
 
 
     /**
+     * Add a field validator by key
+     *
+     * @param string $key
+     * @param ObjectFieldValidator $fieldValidator
+     */
+    public function addValidator($key, $fieldValidator) {
+        $this->validators[$key] = $fieldValidator;
+    }
+
+    /**
      * Validate a serialisable object
      *
      * @param SerialisableObject $object
      */
     public function validateObject($object) {
-        if (!$object instanceof SerialisableObject) {
-            throw new ClassNotSerialisableException(get_class($object));
-        }
 
-        $classAnnotations = ClassAnnotationParser::instance()->parse($object);
+        // Get a class inspector instance for this object.
+        $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
+        // Look up field annotations of type validation.
+        $classAnnotations = $classInspector->getClassAnnotationsObject();
         $validationFields = $classAnnotations->getFieldAnnotationsForMatchingTag("validation");
 
         $validationErrors = array();
 
         foreach ($validationFields as $field => $annotation) {
 
-            $value = $object->__getSerialisablePropertyValue($field);
+            $value = $classInspector->getPropertyData($object, $field, false);
 
             foreach ($annotation[0]->getValues() as $validatorString) {
 
@@ -114,17 +130,5 @@ class Validator {
 
     }
 
-    /**
-     * Return singleton instance
-     */
-    public static function instance() {
-
-        if (!self::$instance) {
-            self::$instance = new Validator();
-        }
-
-        return self::$instance;
-
-    }
 
 }

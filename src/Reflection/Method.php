@@ -5,7 +5,6 @@ namespace Kinikit\Core\Reflection;
 
 
 use Kinikit\Core\Annotation\Annotation;
-use Kinikit\Core\Exception\BadParameterException;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Util\Primitive;

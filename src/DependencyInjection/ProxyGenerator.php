@@ -41,7 +41,7 @@ class ProxyGenerator {
         
         class $proxyClassName extends $shortClass {
         
-            use Proxy;
+            use \Kinikit\Core\DependencyInjection\Proxy;
         
         ";
 
@@ -87,7 +87,17 @@ class ProxyGenerator {
         foreach ($method->getParameters() as $parameter) {
             $param = ($parameter->isExplicitlyTyped() ? $parameter->getType() : "") . " $" . $parameter->getName();
             if (!$parameter->isRequired()) {
-                $param .= ' = ' . is_string($parameter->getDefaultValue()) ? '"' . $parameter->getDefaultValue() . '"' : $parameter->getDefaultValue();
+
+                $defaultValueString = $parameter->getDefaultValue();
+                if (is_string($defaultValueString)) {
+                    $defaultValueString = '"' . $defaultValueString . '"';
+                } else if (is_bool($defaultValueString)) {
+                    $defaultValueString = $defaultValueString ? "true" : "false";
+                } else if ($defaultValueString === null) {
+                    $defaultValueString = "null";
+                }
+
+                $param .= ' = ' . $defaultValueString;
             }
             $params[] = $param;
         }

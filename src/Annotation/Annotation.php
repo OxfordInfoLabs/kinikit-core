@@ -8,10 +8,7 @@
 
 namespace Kinikit\Core\Annotation;
 
-
-use Kinikit\Core\Object\SerialisableObject;
-
-class Annotation extends SerialisableObject{
+class Annotation {
 
     private $label;
     private $value;
@@ -62,7 +59,7 @@ class Annotation extends SerialisableObject{
     public function getValues() {
         $exploded = explode(",", $this->getValue());
         $values = array();
-        foreach ($exploded as $entry){
+        foreach ($exploded as $entry) {
             $values[] = trim($entry);
         }
 
