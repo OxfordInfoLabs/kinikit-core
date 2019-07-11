@@ -20,7 +20,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
      */
     private $validator;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->validator = Container::instance()->get(Validator::class);
     }
 

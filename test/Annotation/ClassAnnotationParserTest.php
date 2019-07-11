@@ -9,7 +9,7 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
 
     private $classAnnotationParser;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->classAnnotationParser = new ClassAnnotationParser();
     }
 

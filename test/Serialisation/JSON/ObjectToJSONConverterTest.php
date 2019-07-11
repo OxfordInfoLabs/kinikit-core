@@ -17,7 +17,7 @@ class ObjectToJSONConverterTest extends \PHPUnit\Framework\TestCase {
 
     private $converter;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->converter = Container::instance()->get(ObjectToJSONConverter::class);
     }
 

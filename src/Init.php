@@ -5,7 +5,7 @@ namespace Kinikit\Core;
 
 use ErrorException;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Util\Logging\Logger;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Configuration\Configuration;
 
 
