@@ -7,19 +7,23 @@
  */
 
 
-namespace Kinikit\Core\Template\Parser;
-use Kinikit\Core\Template\TemplateParser;
+namespace Kinikit\Core\Template;
 
-class PHPTemplateParser extends TemplateParser {
+/**
+ * @noProxy
+ *
+ * @package Kinikit\Core\Template
+ */
+class PHPTemplateParser implements TemplateParser {
 
     /**
      * Parse the view as PHP.  This also allows for new variables to be defined within a view and as such these will be merged into the model
      * for use in a parent view if required.
      *
-     * @param $viewText
+     * @param $templateText
      * @param $model
      */
-    public function parseTemplateText($viewText, &$model) {
+    public function parseTemplateText($templateText, &$model) {
 
         // Extract all template parameters into scope.
         extract($model);
@@ -30,7 +34,7 @@ class PHPTemplateParser extends TemplateParser {
 
         // Now use an object buffer to get the result.
         ob_start();
-        include $viewText;
+        eval ("?>" . $templateText);
         $result = ob_get_contents();
         ob_end_clean();
 
