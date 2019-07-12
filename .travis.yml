@@ -1,7 +1,7 @@
 language: php
 php:
   - '7.2'
-before_script: cd test
+before_script: composer install; cd test
 script: phpunit .
 after_success:
   - "../trigger_travis_build.sh kinikit-mvc"
