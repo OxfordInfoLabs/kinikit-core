@@ -70,7 +70,7 @@ class FileResolver {
                 $fullPath = true;
                 foreach ($path as $pathElement) {
 
-                    $iterator = new \DirectoryIterator($searchDir);
+                    $iterator = new \DirectoryIterator($builtPath);
                     $elementMatch = false;
                     foreach ($iterator as $item) {
                         if ($item->isDot()) continue;
