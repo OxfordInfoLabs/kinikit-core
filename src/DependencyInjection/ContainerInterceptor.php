@@ -9,7 +9,7 @@ use Kinikit\Core\Reflection\ClassInspector;
 /**
  * Object Interceptor base class for intercepting object creations and method calls on the proxy object.
  */
-class ObjectInterceptor {
+class ContainerInterceptor {
 
 
     /**

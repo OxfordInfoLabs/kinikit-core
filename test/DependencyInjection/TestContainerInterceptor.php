@@ -4,7 +4,7 @@
 namespace Kinikit\Core\DependencyInjection;
 
 
-class TestObjectInterceptor extends ObjectInterceptor {
+class TestContainerInterceptor extends ContainerInterceptor {
 
     public $afterCreates = array();
     public $beforeCalls = array();

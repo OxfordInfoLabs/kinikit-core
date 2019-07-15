@@ -3,14 +3,14 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-class ObjectInterceptors {
+class ContainerInterceptors {
 
     private $interceptors = array();
 
     /**
      * Add an interceptor to this collection.
      *
-     * @param ObjectInterceptor $interceptor
+     * @param ContainerInterceptor $interceptor
      */
     public function addInterceptor($interceptor) {
         $this->interceptors[] = $interceptor;

@@ -8,10 +8,10 @@ namespace Kinikit\Core\Exception;
  *
  * Class AccessDeniedException
  */
-class AccessDeniedException extends SerialisableException {
+class AccessDeniedException extends StatusException {
 
     public function __construct($message = null) {
-        parent::__construct($message ? $message : "You do not have sufficient access to complete the requested operation");
+        parent::__construct($message ? $message : "You do not have sufficient access to complete the requested operation", 403);
     }
 
 

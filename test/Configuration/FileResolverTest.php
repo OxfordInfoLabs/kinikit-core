@@ -55,4 +55,20 @@ class FileResolverTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testResolutionIsCaseInsensitiveIfRequested() {
+
+
+        // Add mixture of configured paths
+        Configuration::instance()->addParameter("search.paths", "../src;../vendor/symfony");
+        $fileResolver = new FileResolver();
+        $fileResolver->addSearchPath("./Template");
+
+
+        $this->assertEquals("./Template/MustacheTemplateParserTest.php", $fileResolver->resolveFile("template/mustacheTEMPLATEPARSERTEST.php", true));
+        $this->assertEquals("../vendor/symfony/polyfill-ctype/bootstrap.php", $fileResolver->resolveFile("polyfill-CType/BOOTSTRAP.php", true));
+
+
+    }
+
 }

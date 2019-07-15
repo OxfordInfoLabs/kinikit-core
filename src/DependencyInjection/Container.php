@@ -29,9 +29,9 @@ class Container {
     /**
      * Global interceptors
      *
-     * @var \Kinikit\Core\DependencyInjection\ObjectInterceptors
+     * @var \Kinikit\Core\DependencyInjection\ContainerInterceptors
      */
-    private $methodInterceptors;
+    private $interceptors;
 
 
     /**
@@ -59,7 +59,7 @@ class Container {
 
     // Constructor
     public function __construct() {
-        $this->methodInterceptors = new ObjectInterceptors();
+        $this->interceptors = new ContainerInterceptors();
         $this->proxyGenerator = new ProxyGenerator();
         $this->classInspectorProvider = new ClassInspectorProvider();
 
@@ -94,27 +94,27 @@ class Container {
     }
 
     /**
-     * @return ObjectInterceptors
+     * @return ContainerInterceptors
      */
-    public function getMethodInterceptors() {
-        return $this->methodInterceptors;
+    public function getInterceptors() {
+        return $this->interceptors;
     }
 
     /**
-     * @param ObjectInterceptors $methodInterceptors
+     * @param ContainerInterceptors $interceptors
      */
-    public function setMethodInterceptors($methodInterceptors) {
-        $this->methodInterceptors = $methodInterceptors;
+    public function setInterceptors($interceptors) {
+        $this->interceptors = $interceptors;
     }
 
 
     /**
      * Add a method interceptor to the list defined for this container.
      *
-     * @param $methodInterceptor
+     * @param ContainerInterceptor $interceptor
      */
-    public function addMethodInterceptor($methodInterceptor) {
-        $this->methodInterceptors->addInterceptor($methodInterceptor);
+    public function addInterceptor($interceptor) {
+        $this->interceptors->addInterceptor($interceptor);
     }
 
 
@@ -191,7 +191,7 @@ class Container {
 
         // Populate with base functionality if a proxy.
         if ($proxy)
-            $instance->__populate($this->methodInterceptors, $classInspector);
+            $instance->__populate($this->interceptors, $classInspector);
 
         // Store for future efficiency.
         $this->instances[$className] = $instance;

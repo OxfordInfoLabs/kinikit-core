@@ -14,7 +14,7 @@ use Kinikit\Core\Reflection\ClassInspector;
 trait Proxy {
 
     /**
-     * @var ObjectInterceptor[]
+     * @var ContainerInterceptor[]
      */
     private $interceptors;
 
@@ -28,7 +28,7 @@ trait Proxy {
     /**
      * Internal function called by Container to populate with bits required.
      *
-     * @param ObjectInterceptor[] $interceptors
+     * @param ContainerInterceptor[] $interceptors
      * @param ClassInspector $classInspector
      */
     public function __populate($interceptors, $classInspector) {

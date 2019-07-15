@@ -40,7 +40,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
 
         // Check that the methods can be called as usual on the proxy
         $proxy = new SimpleServiceProxy();
-        $proxy->__populate(new ObjectInterceptors(), new ClassInspector(SimpleService::class));
+        $proxy->__populate(new ContainerInterceptors(), new ClassInspector(SimpleService::class));
 
         $this->assertEquals("Hello wonderful world of fun", $proxy->getName());
         $this->assertEquals(array("A", "B", "C", "D"), $proxy->echoParams("A", "B", "C", "D"));
@@ -70,7 +70,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(2, sizeof($reflectionClass->getConstructor()->getParameters()));
 
         $proxy = new ServiceWithExplicitTypeProxy(new SimpleService(), new SecondaryService(null));
-        $proxy->__populate(new ObjectInterceptors(), new ClassInspector(ServiceWithExplicitType::class));
+        $proxy->__populate(new ContainerInterceptors(), new ClassInspector(ServiceWithExplicitType::class));
 
         $this->assertEquals("HELLO", $proxy->hello());
         $this->assertTrue($proxy->getSecondaryService() instanceof SecondaryService);

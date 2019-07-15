@@ -24,7 +24,7 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
         $this->assertEquals(["Annotation" => "\Kinikit\Core\Annotation\Annotation",
             "AccessDeniedException" => "\Kinikit\Core\Exception\AccessDeniedException",
-            "ObjectInterceptor" => "\Kinikit\Core\DependencyInjection\ObjectInterceptor"], $classInspector->getDeclaredNamespaceClasses());
+            "ContainerInterceptor" => "\Kinikit\Core\DependencyInjection\ContainerInterceptor"], $classInspector->getDeclaredNamespaceClasses());
 
 
         $parser = new ClassAnnotationParser();
