@@ -74,4 +74,20 @@ class ReturnTypeTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanCheckWhetherReturnTypeIsInstanceOfAnotherReturnType() {
+
+        $classInspector = new ClassInspector(TestExtendedPOPO::class);
+
+        $methodInspector = $classInspector->getPublicMethod("clone");
+
+        $returnType = new ReturnType($methodInspector);
+        $this->assertEquals("\\" . TestExtendedPOPO::class, $returnType->getType());
+        $this->assertTrue($returnType->isInstanceOf(TestAnnotatedPOPO::class));
+        $this->assertTrue($returnType->isInstanceOf(TestExtendedPOPO::class));
+        $this->assertFalse($returnType->isInstanceOf(TestPropertyPOPO::class));
+
+
+    }
+
 }

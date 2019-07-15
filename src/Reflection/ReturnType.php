@@ -18,6 +18,7 @@ class ReturnType {
      */
     private $explicitlyTyped;
 
+
     /**
      * ReturnType constructor.
      *
@@ -61,6 +62,19 @@ class ReturnType {
      */
     public function getType() {
         return $this->type;
+    }
+
+
+    /**
+     * Return a boolean if this class is an instance of another class
+     *
+     * @param string $otherClassName
+     */
+    public function isInstanceOf($otherClassName) {
+        $type = "\\" . trim($this->type, "\\");
+        $otherClassName = "\\" . trim($otherClassName, "\\");
+
+        return is_subclass_of($type, $otherClassName) || $otherClassName == $type;
     }
 
     /**
