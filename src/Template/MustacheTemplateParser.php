@@ -43,6 +43,7 @@ class MustacheTemplateParser implements TemplateParser {
             return $value;
         }));
 
+
         $newModel = $this->objectBinder->bindToArray($model);
 
         return $mustacheEngine->render($templateText, $newModel);

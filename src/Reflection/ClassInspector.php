@@ -151,9 +151,9 @@ class ClassInspector {
                     $methodInspector = $this->getMethodInspector($methodName);
                     $this->publicMethods[$methodName] = $methodInspector;
 
-                    if (substr($methodName, 0, 3) == "get") {
+                    if (substr($methodName, 0, 3) == "get" && sizeof($methodInspector->getParameters()) == 0) {
                         $this->getters[lcfirst(substr($methodName, 3))] = $methodInspector;
-                    } else if (substr($method->getName(), 0, 2) == "is") {
+                    } else if (substr($method->getName(), 0, 2) == "is" && sizeof($methodInspector->getParameters()) == 0) {
                         $this->getters[lcfirst(substr($methodName, 2))] = $methodInspector;
                     } else if (substr($method->getName(), 0, 3) == "set") {
                         $this->setters[lcfirst(substr($methodName, 3))] = $methodInspector;
