@@ -75,6 +75,7 @@ class ProxyGenerator {
         }";
 
 
+
         eval($classString);
 
         return $className . "Proxy";
