@@ -37,7 +37,7 @@ class Method {
     /**
      * @var Parameter[]
      */
-    private $parameters;
+    private $parameters = array();
 
 
     /**
@@ -127,7 +127,7 @@ class Method {
      * Get the parameters indexed by string key for this method.
      */
     public function getIndexedParameters() {
-        if (!isset($this->parameters)) {
+        if (!$this->parameters) {
             $this->parameters = array();
 
             foreach ($this->reflectionMethod->getParameters() as $parameter) {
