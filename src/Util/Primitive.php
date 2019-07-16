@@ -34,7 +34,7 @@ class Primitive {
 
 
     /**
-     * Check whether an object is of a primitive type.
+     * Check whether a value is of a primitive type.
      *
      * @param $primitiveType
      */
@@ -42,12 +42,12 @@ class Primitive {
         switch ($primitiveType) {
             case self::TYPE_BOOLEAN:
             case self::TYPE_BOOL:
-                return is_bool($value);
+                return is_bool($value) || ($value === "true" || $value === "false");
             case self::TYPE_INT;
             case self::TYPE_INTEGER:
-                return is_int($value);
+                return is_int($value) || is_numeric($value) && is_int(+$value);
             case self::TYPE_FLOAT:
-                return is_float($value);
+                return is_float($value) || is_numeric($value) && is_float(+$value);
             case self::TYPE_STRING:
                 return is_string($value);
             case self::TYPE_MIXED:
@@ -55,6 +55,32 @@ class Primitive {
         }
 
         return false;
+    }
+
+
+    /**
+     * Convert a value to the correct primitive type.  Returns the value intact if not possible.
+     *
+     * @param $primitiveType
+     * @param $value
+     */
+    public static function convertToPrimitive($primitiveType, $value) {
+        if (self::isOfPrimitiveType($primitiveType, $value)) {
+            switch ($primitiveType) {
+                case self::TYPE_BOOLEAN:
+                case self::TYPE_BOOL:
+                    if ($value === "true") return true;
+                    if ($value === "false") return false;
+                    return boolval($value);
+                case self::TYPE_INT;
+                case self::TYPE_INTEGER:
+                    return intval($value);
+                case self::TYPE_FLOAT:
+                    return floatval($value);
+            }
+        }
+
+        return $value;
     }
 
 

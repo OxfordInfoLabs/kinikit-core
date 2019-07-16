@@ -59,7 +59,7 @@ class ObjectBinder {
 
             // if a primitive, shortcut and return the value intact.
             if (in_array($targetClass, Primitive::TYPES)) {
-                return $data;
+                return Primitive::convertToPrimitive($targetClass, $data);
             }
 
 

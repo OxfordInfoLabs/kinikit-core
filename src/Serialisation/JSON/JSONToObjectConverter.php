@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Serialisation\JSON;
 
+use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Exception\PropertyNotWritableException;
 use Kinikit\Core\Util\ClassUtils;
 use Kinikit\Core\Util\Logging\Logger;
@@ -17,6 +18,23 @@ use Kinikit\Core\Serialisation\FormatToObjectConverter;
 class JSONToObjectConverter implements FormatToObjectConverter {
 
     /**
+     * @var ObjectBinder $objectBinder
+     */
+    private $objectBinder;
+
+    /**
+     * Construct an JSON to object converter with autowired ObjectBinder
+     *
+     * ObjectToJSONConverter constructor.
+     *
+     * @param ObjectBinder $objectBinder
+     */
+    public function __construct($objectBinder) {
+        $this->objectBinder = $objectBinder;
+    }
+
+
+    /**
      * Convert a json string into objects.  If the mapToClass member is passed
      * the converter will attempt to map the result to an instance of that class type or array.
      *
@@ -29,7 +47,7 @@ class JSONToObjectConverter implements FormatToObjectConverter {
         $converted = json_decode($jsonString, true);
 
         if ($mapToClass) {
-            $converted = ObjectArrayUtils::convertArrayToSerialisableObjects($converted, $mapToClass);
+            $converted = $this->objectBinder->bindFromArray($converted, $mapToClass);
         }
 
         // Now convert to objects and return
