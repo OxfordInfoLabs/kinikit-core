@@ -35,10 +35,13 @@ class ProxyGenerator {
 
         $constructorParams = $classInspector->getConstructor() ? $this->getMethodParamsString($classInspector->getConstructor()) : "";
 
+        $classString = "";
 
-        $classString = "
-        namespace $namespace;
-        
+        if ($namespace)
+            $classString = "
+        namespace $namespace;";
+
+        $classString .= "
         class $proxyClassName extends $shortClass {
         
             use \Kinikit\Core\DependencyInjection\Proxy;
