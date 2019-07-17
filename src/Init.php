@@ -41,6 +41,23 @@ class Init {
             $bootstrap->preInit();
         }
 
+        // Core init function - can be overloaded.
+        $this->init();
+
+        if ($bootstrap) {
+            $bootstrap->postInit();
+        }
+
+
+    }
+
+
+    /**
+     * Overridable function for core init logic - useful for framework
+     * inits in sub frameworks.
+     */
+    protected function init() {
+
 
         // Set the default timezone to prevent issues with dates
         $configuredTimezone = Configuration::readParameter("default.timezone");
@@ -53,25 +70,13 @@ class Init {
         spl_autoload_register(array($this, "genericClassAutoloader"));
 
 
-        if (file_exists("ApplicationAnnouncement.php")) {
-            include_once "ApplicationAnnouncement.php";
-            $appAnnouncement = new \ApplicationAnnouncement ();
-            $appAnnouncement->announce();
-        }
-
-
-        if ($bootstrap) {
-            $bootstrap->postInit();
-        }
-
-
     }
 
 
     /**
      * Generic class auto loader.
      */
-    function genericClassAutoloader($class) {
+    private function genericClassAutoloader($class) {
 
         if (Configuration::readParameter("application.namespace")) {
             $class = str_replace(Configuration::readParameter("application.namespace") . "\\", "", $class);
@@ -99,7 +104,7 @@ class Init {
      * @param $line
      * @throws ErrorException
      */
-    function genericErrorHandler($severity, $message, $file, $line) {
+    private function genericErrorHandler($severity, $message, $file, $line) {
         Logger::log($message . ": at line $line in file $file");
         throw new ErrorException($message, 0, $severity, $file, $line);
     }
