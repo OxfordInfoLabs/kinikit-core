@@ -40,6 +40,7 @@ class MockObjectProvider {
      * All injected dependencies will be stubbed out with mock instances for convenience.
      *
      * @param $className
+     * @return MockObject
      */
     public function getMockInstance($className) {
 

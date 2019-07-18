@@ -11,7 +11,7 @@ namespace Kinikit\Core\Exception;
  */
 class ItemNotFoundException extends StatusException {
 
-    public function __construct($message) {
+    public function __construct($message = null) {
         parent::__construct($message ? $message : "The item accessed does not exist", 404);
     }
 
