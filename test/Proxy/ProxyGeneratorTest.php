@@ -1,8 +1,12 @@
 <?php
 
 
-namespace Kinikit\Core\DependencyInjection;
+namespace Kinikit\Core\Proxy;
 
+use Kinikit\Core\DependencyInjection\ContainerInterceptors;
+use Kinikit\Core\DependencyInjection\Proxy;
+use Kinikit\Core\DependencyInjection\ServiceWithExplicitType;
+use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Reflection\ClassInspector;
 
 include_once "autoloader.php";
@@ -14,7 +18,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
 
         $proxyGenerator = new ProxyGenerator();
 
-        $className = $proxyGenerator->generateProxy(SimpleService::class);
+        $className = $proxyGenerator->generateProxy(SimpleService::class, "Proxy", [Proxy::class]);
 
         // Check the class name is a proxy
         $this->assertEquals("Kinikit\Core\DependencyInjection\SimpleServiceProxy", $className);
@@ -39,7 +43,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(4, sizeof($echoParams->getParameters()));
 
         // Check that the methods can be called as usual on the proxy
-        $proxy = new SimpleServiceProxy();
+        $proxy = new \Kinikit\Core\DependencyInjection\SimpleServiceProxy();
         $proxy->__populate(new ContainerInterceptors(), new ClassInspector(SimpleService::class));
 
         $this->assertEquals("Hello wonderful world of fun", $proxy->getName());
@@ -53,28 +57,28 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
 
         $proxyGenerator = new ProxyGenerator();
 
-        $className = $proxyGenerator->generateProxy(ServiceWithExplicitType::class);
+        $className = $proxyGenerator->generateProxy(ServiceWithExplicitType::class, "Extended", [Proxy::class]);
 
         // Check the class name is a proxy
-        $this->assertEquals("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeProxy", $className);
+        $this->assertEquals("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended", $className);
 
 
         // Check the class exists.
-        $this->assertTrue(class_exists("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeProxy"));
+        $this->assertTrue(class_exists("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended"));
 
         // Check we are extending the base class
-        $reflectionClass = new \ReflectionClass("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeProxy");
+        $reflectionClass = new \ReflectionClass("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended");
         $this->assertEquals(ServiceWithExplicitType::class, $reflectionClass->getParentClass()->getName());
 
         // Check that the constructor has no arguments in this case.
         $this->assertEquals(2, sizeof($reflectionClass->getConstructor()->getParameters()));
 
-        $proxy = new ServiceWithExplicitTypeProxy(new SimpleService(), new SecondaryService(null));
+        $proxy = new \Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended(new SimpleService(), new \Kinikit\Core\DependencyInjection\SecondaryService(null));
         $proxy->__populate(new ContainerInterceptors(), new ClassInspector(ServiceWithExplicitType::class));
 
         $this->assertEquals("HELLO", $proxy->hello());
-        $this->assertTrue($proxy->getSecondaryService() instanceof SecondaryService);
-        $this->assertTrue($proxy->getSimpleService() instanceof SimpleService);
+        $this->assertTrue($proxy->getSecondaryService() instanceof \Kinikit\Core\DependencyInjection\SecondaryService);
+        $this->assertTrue($proxy->getSimpleService() instanceof \Kinikit\Core\DependencyInjection\SimpleService);
 
 
     }

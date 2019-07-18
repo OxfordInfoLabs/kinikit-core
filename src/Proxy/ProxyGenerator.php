@@ -1,34 +1,43 @@
 <?php
 
 
-namespace Kinikit\Core\DependencyInjection;
+namespace Kinikit\Core\Proxy;
 
 use Kinikit\Core\Exception\RecursiveDependencyException;
 use Kinikit\Core\Reflection\ClassInspector;
-use Kinikit\Core\Reflection\Parameter;
+
 
 /**
  * Generates proxy classes dynamically which extends the class in question in the same namespace.
+ *
+ * @noProxy
  *
  * @package Kinikit\Core\DependencyInjection
  */
 class ProxyGenerator {
 
     /**
-     * Generate a dynamic proxy class for a given class name.  This returns the classname for the new proxy.
+     * Generate a dynamic proxy class for a given class name using the suffix for the extended class
+     * Any included traits are added to the proxy.  A __call method must be supplied in at least one of
+     * the traits which will be called by all methods with function arguments as an array.
      *
-     * @param $className
+     * This returns the classname for the new proxy.
+     *
+     * @param string $className
+     * @param string $proxySuffix
+     * @param string[] $includedTraits
+     *
      * @return string
      */
-    public function generateProxy($className) {
+    public function generateProxy($className, $proxySuffix, $includedTraits) {
 
         $classInspector = new ClassInspector($className);
 
         $shortClass = $classInspector->getShortClassName();
-        $proxyClassName = $shortClass . "Proxy";
+        $proxyClassName = $shortClass . $proxySuffix;
 
-        if (class_exists($className . "Proxy")) {
-            return $className . "Proxy";
+        if (class_exists($className . $proxySuffix)) {
+            return $className . $proxySuffix;
         }
 
         $namespace = $classInspector->getNamespace();
@@ -43,10 +52,9 @@ class ProxyGenerator {
 
         $classString .= "
         class $proxyClassName extends $shortClass {
-        
-            use \Kinikit\Core\DependencyInjection\Proxy;
-        
+            
         ";
+        foreach ($includedTraits as $trait) $classString .= "use \\" . ltrim($trait, "\\") . ";\n";
 
         if ($classInspector->getConstructor()) {
             $classString .= "
@@ -75,10 +83,9 @@ class ProxyGenerator {
         }";
 
 
-
         eval($classString);
 
-        return $className . "Proxy";
+        return $className . $proxySuffix;
 
 
     }

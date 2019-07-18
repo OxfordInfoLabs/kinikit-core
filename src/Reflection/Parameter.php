@@ -52,7 +52,6 @@ class Parameter {
         $this->reflectionParameter = $reflectionParameter;
         $this->method = $method;
 
-
         $declaredNamespaceClasses = $method->getDeclaringClassInspector()->getDeclaredNamespaceClasses();
 
         // Evaluate the parameter type according to whether or not this is an explicitly typed param or annotated.

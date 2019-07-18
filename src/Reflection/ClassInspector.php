@@ -99,15 +99,17 @@ class ClassInspector {
 
         if (!$this->declaredNamespaces) {
 
-            $source = file_get_contents($this->reflectionClass->getFileName());
-            $fragment = explode("class ", $source);
-            preg_match_all("/use (.*?);/", $fragment[0], $matches);
-            $this->declaredNamespaces = [];
-            if (isset($matches[1])) {
-                foreach ($matches[1] as $namespacedClass) {
-                    $explodedClass = explode("\\", $namespacedClass);
-                    $className = array_pop($explodedClass);
-                    $this->declaredNamespaces[$className] = "\\" . $namespacedClass;
+            if (file_exists($this->reflectionClass->getFileName())) {
+                $source = file_get_contents($this->reflectionClass->getFileName());
+                $fragment = explode("class ", $source);
+                preg_match_all("/use (.*?);/", $fragment[0], $matches);
+                $this->declaredNamespaces = [];
+                if (isset($matches[1])) {
+                    foreach ($matches[1] as $namespacedClass) {
+                        $explodedClass = explode("\\", $namespacedClass);
+                        $className = array_pop($explodedClass);
+                        $this->declaredNamespaces[$className] = "\\" . $namespacedClass;
+                    }
                 }
             }
         }

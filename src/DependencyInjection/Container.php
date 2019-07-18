@@ -6,6 +6,7 @@ use Kinikit\Core\Annotation\ClassAnnotationParser;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\Primitive;
+use Kinikit\Core\Proxy\ProxyGenerator;
 
 
 /**
@@ -170,7 +171,7 @@ class Container {
         $proxy = false;
         if (!isset($classInspector->getClassAnnotations()["noProxy"])) {
             $proxy = true;
-            $newClass = $this->proxyGenerator->generateProxy($newClass);
+            $newClass = $this->proxyGenerator->generateProxy($newClass, "Proxy", [Proxy::class]);
         }
 
         $params = array();

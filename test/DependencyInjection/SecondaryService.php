@@ -10,6 +10,7 @@ class SecondaryService {
 
     /**
      * SecondaryService constructor.
+     *
      * @param SimpleService $simpleService
      */
     public function __construct($simpleService) {
