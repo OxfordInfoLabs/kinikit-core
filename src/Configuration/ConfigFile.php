@@ -86,6 +86,8 @@ class ConfigFile {
      *
      * @param $prefix
      * @param bool $stripKeyPrefixes
+     *
+     * @return string[]
      */
     public function getParametersMatchingPrefix($prefix, $stripKeyPrefixes = false) {
 

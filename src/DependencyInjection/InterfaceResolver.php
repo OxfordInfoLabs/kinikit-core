@@ -75,7 +75,7 @@ class InterfaceResolver {
 
         if ($implementationKey) {
 
-            $implementations = $classAnnotations["implementation"];
+            $implementations = $classAnnotations["implementation"] ?? [];
             foreach ($implementations as $implementation) {
                 $explodedImp = explode(" ", trim($implementation->getValue()));
                 if ($explodedImp[0] == $implementationKey) {
