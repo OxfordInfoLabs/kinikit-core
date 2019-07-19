@@ -107,4 +107,20 @@ class MockObjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue(true);
     }
 
+
+    public function testCanGetMethodCallHistory() {
+
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleService::class);
+        $mockObject->echoParams(1, 2, 3, 4);
+
+        $this->assertEquals([[1, 2, 3, 4]], $mockObject->getMethodCallHistory("echoParams"));
+
+        $mockObject->echoParams("Mark", "Luke", "John", "Steve");
+
+        $this->assertEquals([[1, 2, 3, 4], ["Mark", "Luke", "John", "Steve"]], $mockObject->getMethodCallHistory("echoParams"));
+
+
+
+    }
+
 }

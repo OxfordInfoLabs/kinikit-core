@@ -23,6 +23,14 @@ trait MockObject {
 
 
     /**
+     * History of method call arguments as an array by method.
+     *
+     * @var array
+     */
+    private $methodCallArguments = [];
+
+
+    /**
      * Set the return value for a method, if matching args are supplied
      * this return value will only be returned if the args match otherwise
      * it will be returned for all invocations.
@@ -61,12 +69,27 @@ trait MockObject {
 
 
     /**
+     * Get the method call history as an array of passed arguments for a given method
+     *
+     * @return mixed[][]
+     */
+    public function getMethodCallHistory($methodName) {
+        return $this->methodCallArguments[$methodName] ?? [];
+    }
+
+    /**
      * Process behaviour for the passed method
      *
      * @param $methodName
      * @param $arguments
      */
     public function __call($methodName, $arguments) {
+
+        // Add calling arguments to history
+        if (!isset($this->methodCallArguments[$methodName]))
+            $this->methodCallArguments[$methodName] = [];
+
+        $this->methodCallArguments[$methodName][] = $arguments;
 
         // Check for return values first.
         if ($returnValue = $this->getArrayMethodValue($methodName, $arguments, $this->returnValues)) {

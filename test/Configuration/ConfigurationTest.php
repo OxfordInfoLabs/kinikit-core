@@ -40,8 +40,6 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("vauxhall", Configuration::readParameter("param4"));
 
 
-
-
     }
 
 }

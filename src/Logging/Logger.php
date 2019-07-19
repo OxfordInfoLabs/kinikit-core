@@ -8,7 +8,7 @@ use Kinikit\Core\Configuration\Configuration;
 /**
  * Simple logger class for writing log entries to the standard configured log file.
  *
- * Class OOALogger
+ * Class Logger
  */
 class Logger {
 

@@ -57,12 +57,18 @@ class Container {
      */
     private $classInspectorProvider;
 
+    /**
+     * @var InterfaceResolver
+     */
+    private $interfaceResolver;
+
 
     // Constructor
     public function __construct() {
         $this->interceptors = new ContainerInterceptors();
         $this->proxyGenerator = new ProxyGenerator();
         $this->classInspectorProvider = new ClassInspectorProvider();
+        $this->interfaceResolver = new InterfaceResolver($this->classInspectorProvider);
 
         // Add required class inspector classes to the container upfront to avoid recursion problems.
         $this->instances["\\" . ClassInspectorProvider::class] = $this->classInspectorProvider;
@@ -163,7 +169,7 @@ class Container {
         // If interface, attempt to resolve interface via annotations
         $newClass = $className;
         if ($classInspector->isInterface()) {
-            $newClass = $this->resolveInterface($classInspector);
+            $newClass = $this->interfaceResolver->getCurrentlyConfiguredImplementationClass($newClass);
             $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
         }
 
@@ -198,45 +204,6 @@ class Container {
         $this->instances[$className] = $instance;
 
         return $instance;
-    }
-
-
-    // Resolve an interface to a concrete class or throw
-    private function resolveInterface($classInspector) {
-
-        $classAnnotations = $classInspector->getClassAnnotations();
-
-        $className = null;
-
-        if (isset($classAnnotations["implementationConfigParam"]) &&
-            isset($classAnnotations["implementation"])) {
-            $configParam = $classAnnotations["implementationConfigParam"][0]->getValue();
-            $configValue = Configuration::readParameter($configParam);
-
-
-            if ($configValue) {
-                $implementations = $classAnnotations["implementation"];
-                foreach ($implementations as $implementation) {
-                    $explodedImp = explode(" ", trim($implementation->getValue()));
-                    if ($explodedImp[0] == $configValue) {
-                        return "\\" . ltrim(trim($explodedImp[1]), "\\");
-                    }
-                }
-
-                // if no mapping found, simply return the value as explicit class mapping.
-                return "\\" . ltrim(trim($configValue), "\\");
-
-            }
-
-        }
-
-        if (isset($classAnnotations["defaultImplementation"])) {
-            return "\\" . ltrim(trim($classAnnotations["defaultImplementation"][0]->getValue()), "\\");
-        }
-
-        throw new MissingInterfaceImplementationException($classInspector->getClassName());
-
-
     }
 
 

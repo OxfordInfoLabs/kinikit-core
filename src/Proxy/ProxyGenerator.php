@@ -106,7 +106,10 @@ class ProxyGenerator {
                     $defaultValueString = $defaultValueString ? "true" : "false";
                 } else if ($defaultValueString === null) {
                     $defaultValueString = "null";
+                } else if (is_array($defaultValueString)) {
+                    $defaultValueString = "[]";
                 }
+
 
                 $param .= ' = ' . $defaultValueString;
             }
