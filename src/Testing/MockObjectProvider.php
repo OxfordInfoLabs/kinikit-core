@@ -57,7 +57,11 @@ class MockObjectProvider {
             $params = [];
             foreach ($constructorParams as $key => $value) {
                 if (!in_array($value->getType(), Primitive::TYPES)) {
-                    $params[$key] = $this->getMockInstance($value->getType());
+                    if ($value->isArray()) {
+                        $params[$key] = [];
+                    } else {
+                        $params[$key] = $this->getMockInstance($value->getType());
+                    }
                 }
             }
         } else {

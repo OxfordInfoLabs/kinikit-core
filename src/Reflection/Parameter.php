@@ -114,17 +114,32 @@ class Parameter {
     }
 
     /**
+     * Is this parameter an array type
+     */
+    public function isArray(){
+        return $this->type != $this->stripArrayTypeSuffix($this->type);
+    }
+
+    /**
      * @return mixed
      */
     public function isRequired() {
-        return !$this->reflectionParameter->isOptional();
+        return (!$this->reflectionParameter->isOptional()) || (!$this->reflectionParameter->isDefaultValueAvailable());
     }
 
     /**
      * @return mixed
      */
     public function getDefaultValue() {
-        return $this->isRequired() ? null : $this->reflectionParameter->getDefaultValue();
+        return $this->isRequired() ? null : ($this->reflectionParameter->isDefaultValueAvailable() ? $this->reflectionParameter->getDefaultValue() : null);
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isVariadic() {
+        return $this->reflectionParameter->isVariadic();
     }
 
     /**

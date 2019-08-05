@@ -77,6 +77,39 @@ trait MockObject {
         return $this->methodCallArguments[$methodName] ?? [];
     }
 
+
+    /**
+     * Reset the method call history for a method name
+     *
+     * @param $methodName
+     */
+    public function resetMethodCallHistory($methodName) {
+        $this->methodCallArguments[$methodName] = [];
+    }
+
+    /**
+     * Return a boolean indicating whether a method was called (optionally with arguments)
+     *
+     * @param $methodName
+     * @param $withArguments
+     *
+     * @return bool
+     */
+    public function methodWasCalled($methodName, $withArguments = null) {
+
+        $methodCallHistory = $this->getMethodCallHistory($methodName);
+
+        // Return false if never called
+        if (sizeof($methodCallHistory) == 0) {
+            return false;
+        }
+
+        // Return depending on arguments
+        return is_array($withArguments) ? array_search($withArguments, $methodCallHistory) !== false : true;
+
+
+    }
+
     /**
      * Process behaviour for the passed method
      *

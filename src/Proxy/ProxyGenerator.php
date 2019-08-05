@@ -44,6 +44,8 @@ class ProxyGenerator {
 
         $constructorParams = $classInspector->getConstructor() ? $this->getMethodParamsString($classInspector->getConstructor()) : "";
 
+        $extensionType = $classInspector->isInterface() ? "implements" : "extends";
+
         $classString = "";
 
         if ($namespace)
@@ -51,7 +53,7 @@ class ProxyGenerator {
         namespace $namespace;";
 
         $classString .= "
-        class $proxyClassName extends $shortClass {
+        class $proxyClassName $extensionType $shortClass {
             
         ";
         foreach ($includedTraits as $trait) $classString .= "use \\" . ltrim($trait, "\\") . ";\n";
@@ -96,7 +98,14 @@ class ProxyGenerator {
 
         $params = [];
         foreach ($method->getParameters() as $parameter) {
-            $param = ($parameter->isExplicitlyTyped() ? $parameter->getType() : "") . " $" . $parameter->getName();
+            $param = ($parameter->isExplicitlyTyped() ? $parameter->getType() : "");
+
+            if ($parameter->isVariadic()) {
+                $param .= " ...$" . $parameter->getName();
+            } else {
+                $param .= " $" . $parameter->getName();
+            }
+
             if (!$parameter->isRequired()) {
 
                 $defaultValueString = $parameter->getDefaultValue();
