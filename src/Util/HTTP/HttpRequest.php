@@ -23,8 +23,7 @@ class HttpRequest {
         // GRAB DIRECT POST DATA AS AN ASSOCIATIVE ARRAY
         // Required for data submitted as POST over ajax
         $directPHPInput = file_get_contents("php://input");
-        $explodedParams = explode("&", $directPHPInput);
-
+        
         if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"] == "application/xml") {
             $converter = new XMLToObjectConverter();
         } else {
@@ -47,11 +46,12 @@ class HttpRequest {
             $convertedInput[urldecode($key)] = $decoded;
         }
 
-
         // If only one param and not a key value pair, assume payload.
-        if (sizeof($explodedParams) == 1 && !preg_match("/^[a-z0-9A-Z]+\=/", $explodedParams[0])) {
-            $convertedInput["payload"] = $converter->convert(rawurldecode($explodedParams[0]));
+        if (!preg_match("/^[a-z0-9A-Z]+\=/", $directPHPInput)) {
+            $convertedInput["payload"] = $converter->convert(rawurldecode($directPHPInput));
         } else {
+
+            $explodedParams = explode("&", $directPHPInput);
 
             // Convert post params
             foreach ($explodedParams as $param) {
@@ -65,7 +65,6 @@ class HttpRequest {
                 }
             }
         }
-
 
         $this->parameters = $convertedInput;
     }
