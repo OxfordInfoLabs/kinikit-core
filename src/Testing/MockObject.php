@@ -124,11 +124,10 @@ trait MockObject {
 
         $this->methodCallArguments[$methodName][] = $arguments;
 
-        // Check for return values first.
-        if ($returnValue = $this->getArrayMethodValue($methodName, $arguments, $this->returnValues)) {
-            return $returnValue;
-        } else if ($exception = $this->getArrayMethodValue($methodName, $arguments, $this->exceptions)) {
+        if ($exception = $this->getArrayMethodValue($methodName, $arguments, $this->exceptions)) {
             throw $exception;
+        } else {
+            return $this->getArrayMethodValue($methodName, $arguments, $this->returnValues);
         }
 
 
@@ -143,6 +142,7 @@ trait MockObject {
         } else if (!is_array($matchingArgs)) {
             $matchingArgs = [$matchingArgs];
         }
+
 
         if (!isset($array[$methodName])) {
             $array[$methodName] = [];
@@ -175,6 +175,7 @@ trait MockObject {
     private function getArrayMethodValue($methodName, $matchingArgs, $array) {
 
         if (isset($array[$methodName])) {
+
             $catchAll = null;
             foreach ($array[$methodName] as list($args, $returnValue)) {
 
