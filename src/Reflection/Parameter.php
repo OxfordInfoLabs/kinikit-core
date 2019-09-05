@@ -142,6 +142,14 @@ class Parameter {
         return $this->reflectionParameter->isVariadic();
     }
 
+
+    /**
+     * @return bool
+     */
+    public function isPassedByReference() {
+        return $this->reflectionParameter->isPassedByReference();
+    }
+
     /**
      * @return bool
      */

@@ -102,6 +102,8 @@ class ProxyGenerator {
 
             if ($parameter->isVariadic()) {
                 $param .= " ...$" . $parameter->getName();
+            } else if ($parameter->isPassedByReference()){
+                $param .= " &$" . $parameter->getName();
             } else {
                 $param .= " $" . $parameter->getName();
             }
