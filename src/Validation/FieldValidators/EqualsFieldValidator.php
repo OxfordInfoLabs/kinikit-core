@@ -42,7 +42,7 @@ class EqualsFieldValidator extends ObjectFieldValidator {
             throw new MisconfiguredValidatorException($validatorKey, $fieldName, $targetObject);
         }
 
-        $otherField = $validatorParams[0];
+        $otherField = ltrim($validatorParams[0], "$");
         if (trim($otherField, "'\"") == $otherField) {
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($targetObject));
             $otherFieldValue = $classInspector->getPropertyData($targetObject, $otherField);

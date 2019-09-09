@@ -12,54 +12,61 @@ class TestValidatedObject  {
 
 
     /**
-     * @validation required,numeric
+     * @required
+     * @numeric
      */
     private $id;
 
     /**
-     * @validation required,alphanumeric,minlength(3)
+     * @required
+     * @alphanumeric
+     * @minlength 3
      */
     private $username;
 
     /**
-     * @validation required,name
+     * @required
+     * @name
      */
     private $name;
 
     /**
-     * @validation regexp([0-9a-z]*),minlength(8),maxlength(16)
+     * @regexp [0-9a-z]*
+     * @minlength 8
+     * @maxlength 16
      */
     private $password;
 
     /**
-     * @validation equals(password)
+     * @equals password
      */
     private $confirmPassword;
 
     /**
-     * @validation range(18|65)
+     * @range 18,65
      */
     private $age;
 
     /**
-     * @validation min(3),max(11)
+     * @min 3
+     * @max 11
      */
     private $shoeSize;
 
     /**
-     * @validation email
+     * @email
      */
     private $emailAddress;
 
 
     /**
-     * @validation date
+     * @date
      */
     private $standardDate;
 
 
     /**
-     * @validation date(d-m-Y)
+     * @date d-m-Y
      */
     private $customDate;
 

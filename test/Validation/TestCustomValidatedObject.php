@@ -13,7 +13,8 @@ namespace Kinikit\Core\Validation;
 class TestCustomValidatedObject  {
 
     /**
-     * @validation required,macaroni
+     * @required
+     * @macaroni
      */
     private $customField;
 

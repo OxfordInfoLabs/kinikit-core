@@ -80,29 +80,18 @@ class Validator {
 
         // Look up field annotations of type validation.
         $classAnnotations = $classInspector->getClassAnnotationsObject();
-        $validationFields = $classAnnotations->getFieldAnnotationsForMatchingTag("validation");
+        $validationFields = $classAnnotations->getFieldAnnotations();
 
         $validationErrors = array();
 
-        foreach ($validationFields as $field => $annotation) {
+        foreach ($validationFields as $field => $annotations) {
 
             $value = $classInspector->getPropertyData($object, $field, false);
 
-            foreach ($annotation[0]->getValues() as $validatorString) {
+            foreach ($annotations as $annotation) {
 
-                $explodedValidator = explode("(", $validatorString);
-                $validatorKey = trim($explodedValidator[0]);
-
-                // Gather validator args if supplied.
-                $validatorArgs = array();
-                if (sizeof($explodedValidator) > 1) {
-                    $argsCSV = explode(")", $explodedValidator[1]);
-                    $args = explode("|", $argsCSV[0]);
-
-                    foreach ($args as $arg) {
-                        $validatorArgs[] = trim($arg);
-                    }
-                }
+                $validatorKey = $annotation[0]->getLabel();
+                $validatorArgs = $annotation[0]->getValue() ? explode(",", $annotation[0]->getValue()) : [];
 
                 $validator = isset($this->validators[$validatorKey]) ? $this->validators[$validatorKey] : null;
                 if (isset($validator)) {
@@ -116,10 +105,7 @@ class Validator {
                         $validationErrors[$field][$validatorKey] = new FieldValidationError($field, $validatorKey, $message);
                     }
 
-                } else {
-                    throw new InvalidValidatorException($validatorKey, $field, $object);
                 }
-
 
             }
 
