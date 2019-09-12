@@ -49,7 +49,7 @@ class Primitive {
             case self::TYPE_FLOAT:
                 return is_float($value) || is_numeric($value) && is_float(+$value);
             case self::TYPE_STRING:
-                return is_string($value);
+                return is_string($value) || is_numeric($value) || is_float($value) || is_bool($value);
             case self::TYPE_MIXED:
                 return true;
         }

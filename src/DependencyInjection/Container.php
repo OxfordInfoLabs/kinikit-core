@@ -100,6 +100,18 @@ class Container {
 
     }
 
+
+    /**
+     * Set an instance for a specific class name.  Useful for testing purposes.
+     *
+     * @param $className
+     * @param $instance
+     */
+    public function set($className, $instance) {
+        $className = "\\" . ltrim(trim($className), "\\");
+        $this->instances[$className] = $instance;
+    }
+
     /**
      * @return ContainerInterceptors
      */

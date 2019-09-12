@@ -36,6 +36,7 @@ class StringUtils {
         return $string;
     }
 
+    
 }
 
 ?>

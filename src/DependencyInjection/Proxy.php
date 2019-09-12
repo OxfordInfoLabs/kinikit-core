@@ -77,7 +77,7 @@ trait Proxy {
         if ($method) {
             $reflectionParams = $method->getParameters();
             foreach ($reflectionParams as $index => $param) {
-                $params[$param->getName()] = isset($arguments[$index]) ? $arguments[$index] :
+                $params[$param->getName()] = isset($arguments[$index]) ? ($param->isPassedByReference() ? $arguments[$index] : $arguments[$index]) :
                     ($param->isOptional() ? $param->getDefaultValue() : null);
             }
         }
@@ -94,7 +94,20 @@ trait Proxy {
         try {
 
             $callable = function () use ($name, $params, $reflectionClass) {
-                return $reflectionClass->getParentClass()->getMethod($name)->invokeArgs($this, array_values($params));
+
+                $reflectionMethod = $reflectionClass->getParentClass()->getMethod($name);
+
+                $paramValues = array_values($params);
+                $invocationParams = [];
+                foreach ($reflectionMethod->getParameters() as $index => $parameter) {
+                    if ($parameter->isPassedByReference()) {
+                        $invocationParams[] = &$paramValues[$index];
+                    } else {
+                        $invocationParams[] = $paramValues[$index];
+                    }
+                }
+
+                return $reflectionMethod->invokeArgs($this, $invocationParams);
             };
 
             // Evaluate after method interceptors.
