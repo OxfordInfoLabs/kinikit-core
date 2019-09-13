@@ -69,9 +69,9 @@ class Validator {
     }
 
     /**
-     * Validate a serialisable object
+     * Validate an object using markup attributes.
      *
-     * @param SerialisableObject $object
+     * @param mixed $object
      */
     public function validateObject($object) {
 
@@ -86,7 +86,7 @@ class Validator {
 
         foreach ($validationFields as $field => $annotations) {
 
-            $value = $classInspector->getPropertyData($object, $field, false);
+            $value = $classInspector->getProperties()[$field]->get($object);
 
             foreach ($annotations as $annotation) {
 

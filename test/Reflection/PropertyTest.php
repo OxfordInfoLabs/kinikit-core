@@ -80,12 +80,7 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $propertyAnnotations = (new ClassAnnotationParser())->parse(TestPropertyPOPO::class)->getFieldAnnotations()["hidden"];
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
-        try {
-            $property->set($testPOPO, true);
-            $this->fail("Should have thrown here");
-        } catch (WrongPropertyTypeException $e) {
-            // As expected
-        }
+
 
         $property->set($testPOPO, "My Little Pony");
         $this->assertEquals("My Little Pony", $reflectionProperty->getValue($testPOPO));

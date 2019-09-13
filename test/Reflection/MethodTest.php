@@ -237,13 +237,6 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
             // Success
         }
 
-        // Try wrong types now
-        try {
-            $methodInspector->call($testTypedPOPO, ["name" => true]);
-            $this->fail("Should have thrown here");
-        } catch (WrongParametersException $e) {
-            // Success
-        }
 
 
         $methodInspector = $classInspector->getPublicMethod("clone");
