@@ -159,7 +159,7 @@ class Property {
                 $wrongType = true;
         } else if (is_object($value)) {
             $wrongType = get_class($value) != trim($this->getType(), "\\");
-        } else if (!is_array($value)) {
+        } else if (!is_array($value) && $value !== null) {
             $wrongType = true;
         }
 
