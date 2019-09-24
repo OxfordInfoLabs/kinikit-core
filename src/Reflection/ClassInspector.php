@@ -191,7 +191,7 @@ class ClassInspector {
             $this->properties = [];
 
             foreach ($this->reflectionClass->getProperties() as $property) {
-                $this->properties[$property->getName()] = new Property($property, $this->classAnnotations->getFieldAnnotations()[$property->getName()], $this);
+                $this->properties[$property->getName()] = new Property($property, $this->classAnnotations->getFieldAnnotations()[$property->getName()] ?? [], $this);
             }
         }
 

@@ -62,11 +62,18 @@ class ObjectArrayUtils {
 
         $returnValues = array();
 
-        foreach ($objects as $object) {
-            if ($object instanceof SerialisableObject) {
-                $returnValues[$object->__getSerialisablePropertyValue($member)] = $object;
-            } else {
-                throw new ClassNotSerialisableException(get_class($object));
+        $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
+
+        $currentInspector = null;
+        foreach ($objects as $value) {
+
+            if (is_object($value)) {
+
+                if (!$currentInspector || (get_class($value) != $currentInspector->getClassName())) {
+                    $currentInspector = $classInspectorProvider->getClassInspector(get_class($value));
+                }
+
+                $returnValues[$currentInspector->getPropertyData($value, $member)] = $value;
             }
         }
 
