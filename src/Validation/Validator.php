@@ -44,8 +44,8 @@ class Validator {
         $this->validators["required"] = new RequiredFieldValidator("This field is required");
         $this->validators["regexp"] = new RegexpFieldValidator(null, "Value does not match the required format");
         $this->validators["equals"] = new EqualsFieldValidator($classInspectorProvider, "Value does not match the $1 field");
-        $this->validators["minlength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MIN, "Value must be at least $1 characters");
-        $this->validators["maxlength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MAX, "Value must be no greater than $1 characters");
+        $this->validators["minLength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MIN, "Value must be at least $1 characters");
+        $this->validators["maxLength"] = new LengthFieldValidator(LengthFieldValidator::MODE_MAX, "Value must be no greater than $1 characters");
         $this->validators["min"] = new RangeFieldValidator(RangeFieldValidator::MODE_MIN, "Value must be at least $1");
         $this->validators["max"] = new RangeFieldValidator(RangeFieldValidator::MODE_MAX, "Value must be no greater than $1");
         $this->validators["range"] = new RangeFieldValidator(RangeFieldValidator::MODE_RANGE, "Value must be between $1 and $2");

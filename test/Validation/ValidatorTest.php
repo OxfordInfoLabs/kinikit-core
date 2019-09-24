@@ -59,7 +59,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $usernameErrors = $validationErrors["username"];
         $this->assertEquals(2, sizeof($usernameErrors));
         $this->assertEquals(new FieldValidationError("username", "alphanumeric", "Value must be alphanumeric"), $usernameErrors["alphanumeric"]);
-        $this->assertEquals(new FieldValidationError("username", "minlength", "Value must be at least 3 characters"), $usernameErrors["minlength"]);
+        $this->assertEquals(new FieldValidationError("username", "minLength", "Value must be at least 3 characters"), $usernameErrors["minLength"]);
 
 
         $validatedObject->setName("**Bang123**");
@@ -75,7 +75,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
         $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
-        $this->assertEquals(new FieldValidationError("password", "minlength", "Value must be at least 8 characters"), $passwordErrors["minlength"]);
+        $this->assertEquals(new FieldValidationError("password", "minLength", "Value must be at least 8 characters"), $passwordErrors["minLength"]);
         $confirmPasswordErrors = $validationErrors["confirmPassword"];
         $this->assertEquals(1, sizeof($confirmPasswordErrors));
         $this->assertEquals(new FieldValidationError("confirmPassword", "equals", "Value does not match the password field"), $confirmPasswordErrors["equals"]);
@@ -87,7 +87,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
         $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
-        $this->assertEquals(new FieldValidationError("password", "maxlength", "Value must be no greater than 16 characters"), $passwordErrors["maxlength"]);
+        $this->assertEquals(new FieldValidationError("password", "maxLength", "Value must be no greater than 16 characters"), $passwordErrors["maxLength"]);
         $confirmPasswordErrors = $validationErrors["confirmPassword"];
         $this->assertEquals(1, sizeof($confirmPasswordErrors));
         $this->assertEquals(new FieldValidationError("confirmPassword", "equals", "Value does not match the password field"), $confirmPasswordErrors["equals"]);

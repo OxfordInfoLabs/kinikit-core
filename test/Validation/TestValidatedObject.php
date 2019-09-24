@@ -20,7 +20,7 @@ class TestValidatedObject  {
     /**
      * @required
      * @alphanumeric
-     * @minlength 3
+     * @minLength 3
      */
     private $username;
 
@@ -32,8 +32,8 @@ class TestValidatedObject  {
 
     /**
      * @regexp [0-9a-z]*
-     * @minlength 8
-     * @maxlength 16
+     * @minLength 8
+     * @maxLength 16
      */
     private $password;
 
