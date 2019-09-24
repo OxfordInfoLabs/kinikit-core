@@ -192,4 +192,18 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testValidateMethodIsCalledOnObjectIfDefined() {
+
+        $object = new TestValidationMethodObject();
+
+        // Validate the object with custom method.
+        $errors = $this->validator->validateObject($object);
+
+        $this->assertEquals(2, sizeof($errors));
+        $this->assertTrue(isset($errors["name"]["required"]));
+        $this->assertTrue(isset($errors["custom"]));
+
+    }
+
 }

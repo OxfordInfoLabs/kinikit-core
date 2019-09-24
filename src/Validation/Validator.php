@@ -109,6 +109,46 @@ class Validator {
 
             }
 
+            // If the value is an object, recursively validate.
+            if (is_object($value)) {
+                $subValidationErrors = $this->validateObject($value);
+                if ($subValidationErrors) {
+                    if (!isset($validationErrors[$field])) $validationErrors[$field] = array();
+                    $validationErrors[$field] = array_merge($validationErrors[$field], $subValidationErrors);
+                }
+            }
+
+            // if the value is an array, recursively validate
+            if (is_array($value)) {
+                $validationErrorArray = [];
+                foreach ($value as $index => $valueEntry) {
+                    if (is_object($valueEntry)) {
+                        $subValidationErrors = $this->validateObject($valueEntry);
+                        if ($subValidationErrors) {
+                            $validationErrorArray[$index] = $subValidationErrors;
+                        }
+                    }
+                }
+
+                if (sizeof($validationErrorArray)) {
+                    if (!isset($validationErrors[$field]))
+                        $validationErrors[$field] = array();
+
+                    $validationErrors[$field] = array_merge($validationErrors[$field], $validationErrorArray);
+                }
+
+            }
+
+
+        }
+
+        // Also if a validate method exists on the object, execute that now and merge any
+        // validation errors in.
+        if (isset($classInspector->getPublicMethods()["validate"])) {
+            $customValidation = $object->validate();
+            if (sizeof($customValidation)) {
+                $validationErrors = array_merge($validationErrors, $customValidation);
+            }
         }
 
         return $validationErrors;

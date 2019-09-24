@@ -318,7 +318,8 @@ class ClassInspector {
     private function getMethodInspector($methodName) {
         if (!isset($this->methodInspectors[$methodName])) {
             $reflectionMethod = $methodName == "__construct" ? $this->reflectionClass->getConstructor() : $this->reflectionClass->getMethod($methodName);
-            $this->methodInspectors[$methodName] = new Method($reflectionMethod, $this->classAnnotations->getMethodAnnotations()[$methodName], $this);
+
+            $this->methodInspectors[$methodName] = new Method($reflectionMethod, $this->classAnnotations->getMethodAnnotations()[$methodName] ?? [], $this);
         }
 
         return $this->methodInspectors[$methodName];
