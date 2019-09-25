@@ -222,6 +222,24 @@ class ClassInspector {
 
 
     /**
+     * Return a boolean indicating whether an accessor exists for the specified property name.
+     *
+     * @param $propertyName
+     */
+    public function hasAccessor($propertyName) {
+
+        // Check getters first
+        $getters = $this->getGetters();
+        if (isset($getters[$propertyName]))
+            return true;
+
+        // Fall back to properties
+        $properties = $this->getProperties();
+        return isset($properties[$propertyName]);
+    }
+
+
+    /**
      * Create an instance with constructor arguments as key value pairs
      *
      * @param mixed[string] $constructorArguments

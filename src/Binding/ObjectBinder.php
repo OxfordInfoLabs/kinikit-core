@@ -3,6 +3,7 @@
 
 namespace Kinikit\Core\Binding;
 
+use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Reflection\Property;
@@ -83,6 +84,7 @@ class ObjectBinder {
                     }
                 }
 
+
                 // Inject each setter first of all.
                 foreach ($classInspector->getSetters() as $key => $setter) {
                     if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
@@ -108,7 +110,7 @@ class ObjectBinder {
                 $instance = $classInspector->createInstance($data);
                 $classInspector->setPropertyData($instance, $data, null, $publicOnly);
 
-
+             
             } catch (WrongParametersException $e) {
                 throw new ObjectBindingException($e);
             } catch (InsufficientParametersException $e) {

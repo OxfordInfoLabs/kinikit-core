@@ -4,6 +4,7 @@
 namespace Kinikit\Core\Reflection;
 
 
+use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
@@ -99,6 +100,16 @@ class Method {
 
 
     /**
+     * Return boolean indicating static
+     *
+     * @return boolean
+     */
+    public function isStatic() {
+        return $this->reflectionMethod->isStatic();
+    }
+
+
+    /**
      * Call this method on the supplied object using arguments which are
      * in key / value format for convenience.
      *
@@ -162,6 +173,7 @@ class Method {
      */
     public function __processMethodArguments($arguments) {
 
+
         // Loop through each parameter
         $orderedArgs = [];
         $missingRequired = [];
@@ -189,6 +201,8 @@ class Method {
                         $missingRequired[] = $parameter->getName();
                     else
                         $orderedArgs[] = null;
+                } else if (!$parameter->isExplicitlyTyped()) {
+                    $orderedArgs[] = null;
                 }
 
             }

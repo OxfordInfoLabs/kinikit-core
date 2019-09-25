@@ -70,6 +70,9 @@ class ProxyGenerator {
         // Loop through all public methods and reimplement.
         foreach ($classInspector->getPublicMethods() as $method) {
 
+            if ($method->isStatic())
+                continue;
+
             $paramsString = $this->getMethodParamsString($method);
             $returnType = $method->getReturnType() && $method->getReturnType()->isExplicitlyTyped() ? ":" . $method->getReturnType()->getType() : "";
 
@@ -102,7 +105,7 @@ class ProxyGenerator {
 
             if ($parameter->isVariadic()) {
                 $param .= " ...$" . $parameter->getName();
-            } else if ($parameter->isPassedByReference()){
+            } else if ($parameter->isPassedByReference()) {
                 $param .= " &$" . $parameter->getName();
             } else {
                 $param .= " $" . $parameter->getName();

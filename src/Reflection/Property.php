@@ -132,6 +132,14 @@ class Property {
         return in_array($this->type, Primitive::TYPES);
     }
 
+
+    /**
+     * Return a static indicator
+     */
+    public function isStatic() {
+        return $this->reflectionProperty->isStatic();
+    }
+
     /**
      * Get the visibility for this property.
      */
