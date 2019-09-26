@@ -42,7 +42,7 @@ class Primitive {
         switch ($primitiveType) {
             case self::TYPE_BOOLEAN:
             case self::TYPE_BOOL:
-                return is_bool($value) || ($value === "true" || $value === "false");
+                return is_bool($value) || ($value === "true" || $value === "false") || is_int($value);
             case self::TYPE_INT;
             case self::TYPE_INTEGER:
                 return is_int($value) || is_numeric($value) && is_int(+$value);

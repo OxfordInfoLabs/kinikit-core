@@ -200,9 +200,9 @@ class Method {
                     if ($parameter->isExplicitlyTyped())
                         $missingRequired[] = $parameter->getName();
                     else
-                        $orderedArgs[] = null;
+                        $orderedArgs[] = $parameter->getDefaultValue();
                 } else if (!$parameter->isExplicitlyTyped()) {
-                    $orderedArgs[] = null;
+                    $orderedArgs[] = $parameter->getDefaultValue();
                 }
 
             }
