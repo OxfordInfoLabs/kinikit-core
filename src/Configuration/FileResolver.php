@@ -53,7 +53,7 @@ class FileResolver {
      * @param string $string
      * @return string
      */
-    public function resolveFile(string $relativeFilePath, $caseInsensitive = false) {
+    public function resolveFile($relativeFilePath, $caseInsensitive = false) {
 
 
         // Slower more careful algorithm for case insensitive.
@@ -69,7 +69,7 @@ class FileResolver {
                 $builtPath = $searchPath;
                 $fullPath = true;
                 foreach ($path as $pathElement) {
-
+                    
                     $iterator = new \DirectoryIterator($builtPath);
                     $elementMatch = false;
                     foreach ($iterator as $item) {
@@ -80,6 +80,8 @@ class FileResolver {
                             break;
                         }
                     }
+
+
 
                     // Break if no element match
                     if (!$elementMatch) {
