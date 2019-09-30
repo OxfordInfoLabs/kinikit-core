@@ -3,6 +3,8 @@
 namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Binding\ComplexObject;
+use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 
@@ -263,6 +265,17 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
             "withSetter" => null, "withSetterAndGetter" => "GETTER_CALLED", "writable" => new TestTypedPOPO(3, "Marky"),
             "__setterValues" => []], $bulkData);
 
+
+    }
+
+
+    public function testCanConstructWithFilenameInstead() {
+
+        $classInspector = new ClassInspector("Binding/ComplexObject.php");
+        $this->assertEquals(new ClassInspector(ComplexObject::class), $classInspector);
+
+        $classInspector = new ClassInspector("DependencyInjection/SecondaryService.php");
+        $this->assertEquals(new ClassInspector(SecondaryService::class), $classInspector);
 
     }
 

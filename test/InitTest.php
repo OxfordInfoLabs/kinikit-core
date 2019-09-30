@@ -3,6 +3,7 @@
 namespace Kinikit\Core;
 
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
 
 
@@ -10,7 +11,7 @@ class InitTest extends \PHPUnit\Framework\TestCase {
 
     public function testInitSetsTimeZoneAccordingToConfigParamOrDefaultToLondon() {
 
-        new Init();
+        new Init(Container::instance()->get(SearchNamespaces::class));
 
         // Check that timezone is now correctly set.
         $this->assertEquals("Europe/London", date_default_timezone_get());
@@ -18,7 +19,7 @@ class InitTest extends \PHPUnit\Framework\TestCase {
 
         Configuration::instance()->addParameter("default.timezone", "Europe/Paris");
 
-        new Init();
+        new Init(Container::instance()->get(SearchNamespaces::class));
 
         // Check that timezone is now correctly set.
         $this->assertEquals("Europe/Paris", date_default_timezone_get());
@@ -32,14 +33,14 @@ class InitTest extends \PHPUnit\Framework\TestCase {
         date_default_timezone_set("Europe/London");
         Configuration::instance()->addParameter("default.timezone", "Europe/Paris");
 
-        new Init();
+        new Init(Container::instance()->get(SearchNamespaces::class));
 
         // Should be the single container managed version.
         $bootstrap = Container::instance()->get(Bootstrap::class);
 
         // Confirm that pre and post were called in the correct order.
-        $this->assertEquals("Europe/London", $bootstrap->timezoneBefore);
-        $this->assertEquals("Europe/Paris", $bootstrap->timezoneAfter);
+        $this->assertEquals("Europe/Paris", $bootstrap->timezone);
+
 
 
     }

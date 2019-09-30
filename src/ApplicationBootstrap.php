@@ -7,16 +7,10 @@ namespace Kinikit\Core;
 interface ApplicationBootstrap {
 
     /**
-     * Logic to be run before the main framework init.
+     * Set up logic, run on each request, first before any request processing.
      *
      */
-    public function preInit();
+    public function setup();
 
-
-    /**
-     * Logic to be run after the main framework init.
-     *
-     */
-    public function postInit();
 
 }

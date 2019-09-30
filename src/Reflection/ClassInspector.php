@@ -25,12 +25,16 @@ class ClassInspector {
     private $methodInspectors = array();
 
     /**
-     * Construct with either a class name or object
+     * Construct with a class name or filename.
      *
      * ClassInspector constructor.
      * @param mixed $class
      */
     public function __construct($class) {
+
+        if (is_numeric(strpos($class, "."))) {
+            $class = $this->getClassNameFromFile($class);
+        }
 
         $this->reflectionClass = new \ReflectionClass($class);
         $this->classAnnotations = Container::instance()->get(ClassAnnotationParser::class)->parse($class);
@@ -343,5 +347,27 @@ class ClassInspector {
         return $this->methodInspectors[$methodName];
     }
 
+
+    // Get a class name from a file
+    private function getClassNameFromFile($filename) {
+
+        $file = file_get_contents($filename);
+
+        // Get the class
+        preg_match("/class (.*?)\W/", $file, $matches);
+        if (sizeof($matches) == 2) {
+            $className = trim($matches[1]);
+        }
+
+
+        // Get the namespace
+        preg_match("/namespace (.*?);/", $file, $matches);
+        if (sizeof($matches) == 2) {
+            $namespace = trim($matches[1]);
+        }
+
+
+        return $namespace . "\\".$className;
+    }
 
 }

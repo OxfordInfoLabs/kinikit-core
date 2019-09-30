@@ -4,6 +4,7 @@
 namespace Kinikit\Core;
 
 use ErrorException;
+use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Configuration\Configuration;
@@ -20,9 +21,17 @@ use Kinikit\Core\Configuration\Configuration;
 class Init {
 
     /**
-     * Init constructor.  Automatically sets things up.
+     * @var SearchNamespaces
      */
-    public function __construct() {
+    private $searchNamespaces;
+
+    /**
+     * Init constructor.  Automatically sets things up.
+     *
+     * @param SearchNamespaces $searchNamespaces
+     */
+    public function __construct($searchNamespaces) {
+        $this->searchNamespaces = $searchNamespaces;
         $this->process();
     }
 
@@ -30,34 +39,8 @@ class Init {
     // Process core init logic.
     private function process() {
 
-        $applicationNamespace = Configuration::readParameter("application.namespace");
-
-        $bootstrap = null;
-        if ($applicationNamespace && class_exists($applicationNamespace . "\\Bootstrap")) {
-            $bootstrap = Container::instance()->get($applicationNamespace . "\\Bootstrap");
-        }
-
-        if ($bootstrap) {
-            $bootstrap->preInit();
-        }
-
-        // Core init function - can be overloaded.
-        $this->init();
-
-        if ($bootstrap) {
-            $bootstrap->postInit();
-        }
-
-
-    }
-
-
-    /**
-     * Overridable function for core init logic - useful for framework
-     * inits in sub frameworks.
-     */
-    protected function init() {
-
+        // Register an autoload function for application namespaces.
+        spl_autoload_register(array($this, "genericClassAutoloader"));
 
         // Set the default timezone to prevent issues with dates
         $configuredTimezone = Configuration::readParameter("default.timezone");
@@ -66,9 +49,16 @@ class Init {
         // Set a catch all error handler
         set_error_handler(array($this, "genericErrorHandler"), E_ALL);
 
-        // Register an autoload function for application namespaces.
-        spl_autoload_register(array($this, "genericClassAutoloader"));
 
+        $namespaces = $this->searchNamespaces->getNamespaces();
+
+        // Process search namespaces in reverse order.
+        for ($i = sizeof($namespaces) - 1; $i >= 0; $i--) {
+            if (class_exists($namespaces[$i] . "\\Bootstrap")) {
+                $bootstrap = Container::instance()->get($namespaces[$i] . "\\Bootstrap");
+                $bootstrap->setup();
+            }
+        }
 
     }
 
