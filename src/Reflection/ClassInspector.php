@@ -104,6 +104,7 @@ class ClassInspector {
         if (!$this->declaredNamespaces) {
 
             if (file_exists($this->reflectionClass->getFileName())) {
+
                 $source = file_get_contents($this->reflectionClass->getFileName());
                 $fragment = explode("class ", $source);
                 preg_match_all("/use (.*?);/", $fragment[0], $matches);
@@ -115,6 +116,24 @@ class ClassInspector {
                         $this->declaredNamespaces[$className] = "\\" . $namespacedClass;
                     }
                 }
+
+                $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
+
+                // If a parent class, parse this now.
+                if ($this->reflectionClass->getParentClass()) {
+                    $parentClassInspector = $classInspectorProvider->getClassInspector($this->reflectionClass->getParentClass()->getName());
+                    $this->declaredNamespaces = array_merge($this->declaredNamespaces, $parentClassInspector->getDeclaredNamespaceClasses());
+                }
+
+                // If contains traits, parse these now.
+                if ($this->reflectionClass->getTraits()) {
+                    foreach ($this->reflectionClass->getTraits() as $trait) {
+                        $traitInspector = $classInspectorProvider->getClassInspector($trait->getName());
+                        $this->declaredNamespaces = array_merge($this->declaredNamespaces, $traitInspector->getDeclaredNamespaceClasses());
+                    }
+                }
+
+
             }
         }
 
@@ -367,7 +386,7 @@ class ClassInspector {
         }
 
 
-        return $namespace . "\\".$className;
+        return $namespace . "\\" . $className;
     }
 
 }

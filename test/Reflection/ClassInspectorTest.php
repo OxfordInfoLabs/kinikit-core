@@ -35,6 +35,16 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testDeclaredNamespaceClassesAlsoIncludeNamespacesFromParentClassesAndTraits() {
+
+        $classInspector = new ClassInspector(TestExtendedPOPO::class);
+        $this->assertEquals(["Annotation" => "\Kinikit\Core\Annotation\Annotation"], $classInspector->getDeclaredNamespaceClasses());
+
+        $classInspector = new ClassInspector(TestTraitedPOPO::class);
+        $this->assertEquals(["Annotation" => "\Kinikit\Core\Annotation\Annotation"], $classInspector->getDeclaredNamespaceClasses());
+
+    }
+
 
     public function testCanGetConstructorAndPublicMethodsForTypedClass() {
 
