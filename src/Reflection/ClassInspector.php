@@ -122,7 +122,7 @@ class ClassInspector {
                 // If a parent class, parse this now.
                 if ($this->reflectionClass->getParentClass()) {
                     $parentClassInspector = $classInspectorProvider->getClassInspector($this->reflectionClass->getParentClass()->getName());
-                    $this->declaredNamespaces = array_merge($this->declaredNamespaces, $parentClassInspector->getDeclaredNamespaceClasses());
+                    $this->declaredNamespaces = array_merge($this->declaredNamespaces, $parentClassInspector->getDeclaredNamespaceClasses() ?? []);
                 }
 
                 // If contains traits, parse these now.
