@@ -170,7 +170,7 @@ class ObjectBinder {
 
                 $targetArray[$key] = $this->bindToArray($value, $publicOnly);
                 $processedKeys[$key] = 1;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Continue if exception on getter - omit from array.
             }
         }
