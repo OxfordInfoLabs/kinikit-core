@@ -110,7 +110,7 @@ class ObjectBinder {
                 $instance = $classInspector->createInstance($data);
                 $classInspector->setPropertyData($instance, $data, null, $publicOnly);
 
-             
+
             } catch (WrongParametersException $e) {
                 throw new ObjectBindingException($e);
             } catch (InsufficientParametersException $e) {
@@ -164,10 +164,15 @@ class ObjectBinder {
         // Work through getters first of all
         $getters = $classInspector->getGetters();
         foreach ($getters as $key => $getter) {
-            $value = $getter->call($object, []);
 
-            $targetArray[$key] = $this->bindToArray($value, $publicOnly);
-            $processedKeys[$key] = 1;
+            try {
+                $value = $getter->call($object, []);
+
+                $targetArray[$key] = $this->bindToArray($value, $publicOnly);
+                $processedKeys[$key] = 1;
+            } catch (\Exception $e) {
+                // Continue if exception on getter - omit from array.
+            }
         }
 
         // Now work through members.
