@@ -17,6 +17,8 @@ use Kinikit\Core\Configuration\Configuration;
  *
  * Class Init
  * @package Kinikit\Core
+ *
+ * @noProxy
  */
 class Init {
 
