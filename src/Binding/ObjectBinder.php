@@ -13,7 +13,7 @@ use Kinikit\Core\Reflection\Parameter;
 
 /**
  * Binder object used for converting an object (or an array of objects) recursively to associative array data
- * and vice versa.  Similar to GSON for Java
+ * and vice versa.  Similar to GSON for Java.
  *
  * @noProxy
  * @package Kinikit\Core\Object
