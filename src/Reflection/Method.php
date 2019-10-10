@@ -187,7 +187,9 @@ class Method {
                 if ($parameter->isPrimitive()) {
                     if (!Primitive::isOfPrimitiveType($parameter->getType(), $parameterValue))
                         $wrongParams[] = $parameter->getName();
-                } else if (!is_array($parameterValue) && (!is_object($parameterValue) || get_class($parameterValue) != trim($parameter->getType(), "\\")))
+                } else if (!is_array($parameterValue) && (!is_object($parameterValue)
+                        || !(get_class($parameterValue) == trim($parameter->getType(), "\\")
+                            || is_subclass_of($parameterValue, trim($parameter->getType(), "\\")))))
                     $wrongParams[] = $parameter->getName();
 
 

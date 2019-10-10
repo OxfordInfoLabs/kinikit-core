@@ -166,7 +166,8 @@ class Property {
             if (!Primitive::isOfPrimitiveType($this->getType(), $value))
                 $wrongType = true;
         } else if (is_object($value)) {
-            $wrongType = get_class($value) != trim($this->getType(), "\\");
+            $wrongType = !(get_class($value) == trim($this->getType(), "\\")
+                || is_subclass_of($value, trim($this->getType(), "\\")));
         } else if (!is_array($value) && $value !== null) {
             $wrongType = true;
         }

@@ -41,7 +41,7 @@ class Container {
      *
      * @var string[string]
      */
-    private $interfaceMappings = array();
+    private $classMappings = array();
 
 
     /**
@@ -102,6 +102,18 @@ class Container {
 
 
     /**
+     * Create a new instance of a class - if allowProxy is set this
+     * will create a proxy unless noProxy attribute has been set on the class (defaults to false).
+     *
+     * @param $className
+     * @param bool $allowProxy
+     */
+    public function new($className, $allowProxy = false) {
+        return $this->__doGet($className, true, $allowProxy);
+    }
+
+
+    /**
      * Set an instance for a specific class name.  Useful for testing purposes.
      *
      * @param $className
@@ -138,45 +150,59 @@ class Container {
 
 
     /**
-     * Add an explicit interface mapping for a given interface to a concrete implementation.
+     * Add a mapping for a class to another class.  This will affect calls made
+     * to get and new.
      *
-     * @param string $interfaceClassName
-     * @param string $implementationClassName
+     * @param string $sourceClass
+     * @param string $targetClass
      */
-    public function addInterfaceMapping($interfaceClassName, $implementationClassName) {
+    public function addClassMapping($sourceClass, $targetClass) {
 
-        $interfaceClassName = "\\" . ltrim(trim($interfaceClassName), "\\");
-        $implementationClassName = "\\" . ltrim(trim($implementationClassName), "\\");
+        $sourceClass = "\\" . ltrim(trim($sourceClass), "\\");
+        $targetClass = "\\" . ltrim(trim($targetClass), "\\");
 
-        $this->interfaceMappings[$interfaceClassName] = $implementationClassName;
+        $this->classMappings[$sourceClass] = $targetClass;
     }
 
 
     /**
+     * Return either a mapped class name or the original class if no mapping has been created.
+     *
      * @param $className
+     */
+    public function getClassMapping($className) {
+        $sourceClass = "\\" . ltrim(trim($className), "\\");
+        return $this->classMappings[$sourceClass] ?? $className;
+    }
+
+    /**
+     * @param $className
+     * @param bool $createNew
+     * @param bool $allowProxy
+     * @param array $dependentClasses
      * @return object
      * @throws \ReflectionException
      */
-    public function __doGet($className, $dependentClasses = array()) {
+    public function __doGet($className, $createNew = false, $allowProxy = true, $dependentClasses = array()) {
 
         // Remove leading \'s.
         $className = "\\" . ltrim(trim($className), "\\");
 
-        if (isset($this->interfaceMappings[$className])) {
-            $className = $this->interfaceMappings[$className];
+        if (isset($this->classMappings[$className])) {
+            $className = $this->classMappings[$className];
         }
 
 
         $dependentClasses[] = $className;
 
         // Shortcut if we already have this instance.
-        if (isset($this->instances[$className])) {
+        if (!$createNew && isset($this->instances[$className])) {
             return $this->instances[$className];
         }
 
         // Create a new proxy and ensure that we add it to our collection up front.
         $classInspector = $this->classInspectorProvider->getClassInspector($className);
-
+        $originalClassInspector = $classInspector;
 
         // If interface, attempt to resolve interface via annotations
         $newClass = $className;
@@ -185,35 +211,42 @@ class Container {
             $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
         }
 
-        // Create a proxy class provided the noProxy annotation is not set.
-        $proxy = false;
-        if (!isset($classInspector->getClassAnnotations()["noProxy"])) {
-            $proxy = true;
-            $newClass = $this->proxyGenerator->generateProxy($newClass, "Proxy", [Proxy::class]);
-        }
-
+        // Sort out parameters
         $params = array();
-        if ($constructor = $classInspector->getConstructor()) {
-            foreach ($constructor->getParameters() as $param) {
-                if (!in_array($param->getType(), Primitive::TYPES)) {
-                    if (in_array($param->getType(), $dependentClasses))
-                        throw new RecursiveDependencyException($param->getType());
+        if (!$createNew) {
+            if ($constructor = $classInspector->getConstructor()) {
+                foreach ($constructor->getParameters() as $param) {
 
-                    $params[] = $this->get($param->getType(), $dependentClasses);
+                    if (trim($param->getType(), "[]") == $param->getType() && !in_array($param->getType(), Primitive::TYPES)) {
+                        if (in_array($param->getType(), $dependentClasses))
+                            throw new RecursiveDependencyException($param->getType());
+
+                        $params[$param->getName()] = $this->__doGet($param->getType(), $createNew, $allowProxy, $dependentClasses);
+                    }
                 }
             }
         }
 
+
+        // Create a proxy class provided the noProxy annotation is not set.
+        $proxy = false;
+        if ($allowProxy && !isset($classInspector->getClassAnnotations()["noProxy"])) {
+            $proxy = true;
+            $newClass = $this->proxyGenerator->generateProxy($newClass, "Proxy", [Proxy::class]);
+            $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
+        }
+
+
         // Create the proxy object
-        $reflectionClass = new \ReflectionClass($newClass);
-        $instance = $reflectionClass->newInstanceArgs($params);
+        $instance = $classInspector->createInstance($params);
 
         // Populate with base functionality if a proxy.
         if ($proxy)
-            $instance->__populate($this->interceptors, $classInspector);
+            $instance->__populate($this->interceptors, $originalClassInspector);
 
-        // Store for future efficiency.
-        $this->instances[$className] = $instance;
+        // Store for future efficiency if not create new
+        if (!$createNew)
+            $this->instances[$className] = $instance;
 
         return $instance;
     }

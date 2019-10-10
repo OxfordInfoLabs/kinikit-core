@@ -93,7 +93,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
     public function testCanExplicitlyMapInterfaceToImplementation() {
 
         $container = new Container();
-        $container->addInterfaceMapping(InterfaceNoDefault::class, ImplementationNoDefault::class);
+        $container->addClassMapping(InterfaceNoDefault::class, ImplementationNoDefault::class);
 
         $implementation = $container->get(InterfaceNoDefault::class);
         $this->assertEquals(new ImplementationNoDefault(), $implementation);
@@ -138,5 +138,36 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanCreateNewInstances() {
+
+        $container = new Container();
+
+        // Add a couple of test cases
+        $container->addClassMapping(InterfaceNoDefault::class, ImplementationNoDefault::class);
+        Configuration::instance()->addParameter("interface.class", "second");
+
+        // Check an interface one.
+        $firstInstance = $container->new(InterfaceNoDefault::class);
+        $this->assertTrue($firstInstance instanceof ImplementationNoDefault);
+        $secondInstance = $container->new(InterfaceNoDefault::class);
+        $this->assertTrue($secondInstance instanceof ImplementationNoDefault);
+        $this->assertFalse($firstInstance === $secondInstance);
+
+        // Mapped one next
+        $firstInstance = $container->new(InterfaceWithMappings::class);
+        $this->assertTrue($firstInstance instanceof ImplementationMapping2);
+        $secondInstance = $container->new(InterfaceWithMappings::class);
+        $this->assertTrue($secondInstance instanceof ImplementationMapping2);
+        $this->assertFalse($firstInstance === $secondInstance);
+
+        // Regular one finally
+        $firstInstance = $container->new(SimpleService::class);
+        $this->assertTrue($firstInstance instanceof SimpleService);
+        $secondInstance = $container->new(SimpleService::class);
+        $this->assertTrue($secondInstance instanceof SimpleService);
+        $this->assertFalse($firstInstance === $secondInstance);
+
+    }
 
 }
