@@ -82,6 +82,7 @@ trait Proxy {
             }
         }
 
+
         $methodInspector = $this->classInspector->getPublicMethod($name);
 
 

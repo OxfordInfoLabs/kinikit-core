@@ -202,7 +202,6 @@ class Container {
 
         // Create a new proxy and ensure that we add it to our collection up front.
         $classInspector = $this->classInspectorProvider->getClassInspector($className);
-        $originalClassInspector = $classInspector;
 
         // If interface, attempt to resolve interface via annotations
         $newClass = $className;
@@ -210,6 +209,9 @@ class Container {
             $newClass = $this->interfaceResolver->getCurrentlyConfiguredImplementationClass($newClass);
             $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
         }
+
+        $originalClassInspector = $classInspector;
+
 
         // Sort out parameters
         $params = array();
