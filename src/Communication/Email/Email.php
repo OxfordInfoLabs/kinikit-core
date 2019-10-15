@@ -2,6 +2,9 @@
 
 namespace Kinikit\Core\Communication\Email;
 
+
+use Kinikit\Core\Communication\Email\Attachment\EmailAttachment;
+
 /**
  * Class Email
  */
@@ -84,7 +87,7 @@ class Email {
      * @param string $replyTo
      * @param EmailAttachment[] $attachments
      */
-    public function __construct($from, $recipients, $subject, $textBody, $cc = null, $bcc = null, $replyTo = null, array $attachments = []) {
+    public function __construct($from, $recipients, $subject, $textBody, $cc = null, $bcc = null, $replyTo = null,  $attachments = []) {
         $this->from = $from;
         $this->recipients = $recipients;
         $this->subject = $subject;

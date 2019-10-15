@@ -3,7 +3,9 @@
 namespace Kinikit\Core\Communication\Email;
 
 
+use Kinikit\Core\Communication\Email\Attachment\StringEmailAttachment;
 use Kinikit\Core\Validation\ValidationException;
+
 
 include_once __DIR__ . "/../../autoloader.php";
 

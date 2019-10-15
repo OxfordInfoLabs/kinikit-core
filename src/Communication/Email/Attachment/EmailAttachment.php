@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kinikit\Core\Communication\Email;
+namespace Kinikit\Core\Communication\Email\Attachment;
 
 /**
  * Email attachment interface - used for both string and file attachments here.

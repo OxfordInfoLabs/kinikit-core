@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Kinikit\Core\Communication\Email;
+namespace Kinikit\Core\Communication\Email\Attachment;
 
 
-class StringEmailAttachment implements EmailAttachment {
+class FileEmailAttachment implements EmailAttachment {
 
 
     /**
      * @var string
      */
-    private $content;
+    private $filename;
 
     /**
      * @var string
@@ -18,20 +18,15 @@ class StringEmailAttachment implements EmailAttachment {
     private $attachmentFilename;
 
     /**
-     * @var string
-     */
-    private $contentType;
-
-    /**
      * Construct with a filename for the source file and an optional attachment filename
      * if a different filename is desired for the attachment.
      *
      * FileEmailAttachment constructor.
      */
-    public function __construct($content, $attachmentFilename, $contentType = "text/plain") {
-        $this->content = $content;
-        $this->attachmentFilename = $attachmentFilename;
-        $this->contentType = $contentType;
+    public function __construct($filename, $attachmentFilename = null) {
+        $this->filename = $filename;
+        $explodedFilename = explode("/", $filename);
+        $this->attachmentFilename = $attachmentFilename ?? array_pop($explodedFilename);
     }
 
     /**
@@ -49,7 +44,7 @@ class StringEmailAttachment implements EmailAttachment {
      * @return string
      */
     public function getContentMimeType() {
-        return $this->contentType;
+        return mime_content_type($this->filename);
     }
 
     /**
@@ -58,6 +53,6 @@ class StringEmailAttachment implements EmailAttachment {
      * @return mixed
      */
     public function getContent() {
-        return $this->content;
+        return file_get_contents($this->filename);
     }
 }
