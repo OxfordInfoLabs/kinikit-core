@@ -124,6 +124,20 @@ class Container {
         $this->instances[$className] = $instance;
     }
 
+
+    /**
+     * Get an instance of a particular interface implementation (useful in cases where
+     * we need to use multiple types in the same application).
+     *
+     * @param $interfaceClass
+     * @param $implementationKey
+     */
+    public function getInterfaceImplementation($interfaceClass, $implementationKey) {
+        $interfaceClass = $this->interfaceResolver->getImplementationClassForKey($interfaceClass, $implementationKey);
+        return $this->get($interfaceClass);
+    }
+
+
     /**
      * @return ContainerInterceptors
      */

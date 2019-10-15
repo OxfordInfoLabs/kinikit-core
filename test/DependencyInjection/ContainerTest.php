@@ -170,4 +170,24 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanGetInterfaceImplementationsUsingKeysAndTheseReturnSingletons() {
+
+        $container = new Container();
+
+        $firstInstance = $container->getInterfaceImplementation(InterfaceWithMappings::class, "first");
+        $this->assertEquals(new ImplementationMapping1(), $firstInstance);
+        $firstInstance2 = $container->getInterfaceImplementation(InterfaceWithMappings::class, "first");
+        $this->assertTrue($firstInstance === $firstInstance2);
+
+
+        $secondInstance = $container->getInterfaceImplementation(InterfaceWithMappings::class, "second");
+        $this->assertEquals(new ImplementationMapping2(), $secondInstance);
+        $secondInstance2 = $container->getInterfaceImplementation(InterfaceWithMappings::class, "second");
+        $this->assertTrue($secondInstance === $secondInstance2);
+
+
+    }
+
+
 }
