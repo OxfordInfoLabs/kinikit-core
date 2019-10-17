@@ -45,7 +45,7 @@ class TemplatedEmail extends Email {
      * @throws MissingEmailTemplateException
      * @throws ValidationException
      */
-    public function __construct($templateName, $model = [], $recipients = [], $from = null, $subject = null, $cc = null, $bcc = null, $replyTo = null, $attachments = []) {
+    public function __construct($templateName, $model = [], $recipients = null, $from = null, $subject = null, $cc = null, $bcc = null, $replyTo = null, $attachments = []) {
 
         $this->model = $model;
 
