@@ -163,7 +163,7 @@ class Property {
         // If a primitive and not of right type, throw now.
         $wrongType = false;
         if ($this->isPrimitive()) {
-            if (!Primitive::isOfPrimitiveType($this->getType(), $value))
+            if (!Primitive::isOfPrimitiveType($this->getType(), $value) && $value !== null)
                 $wrongType = true;
         } else if (is_object($value)) {
             $wrongType = !(get_class($value) == trim($this->getType(), "\\")

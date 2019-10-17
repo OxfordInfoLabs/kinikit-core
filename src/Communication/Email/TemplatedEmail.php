@@ -19,6 +19,14 @@ use Kinikit\Core\Validation\Validator;
  */
 class TemplatedEmail extends Email {
 
+    /**
+     * Model for this email
+     *
+     * @var mixed[]
+     */
+    private $model;
+
+
 
     /**
      * Constructor - accepts a template name (relative to Config/email-templates in any of the FileResolver paths).
@@ -37,8 +45,12 @@ class TemplatedEmail extends Email {
      * @throws MissingEmailTemplateException
      * @throws ValidationException
      */
-    public function __construct($templateName, $model = [], $recipients = null, $from = null, $subject = null, $cc = null, $bcc = null, $replyTo = null, $attachments = []) {
+    public function __construct($templateName, $model = [], $recipients = [], $from = null, $subject = null, $cc = null, $bcc = null, $replyTo = null, $attachments = []) {
+
+        $this->model = $model;
+
         $templateData = $this->parseTemplate($templateName, $model);
+
         parent::__construct($from ?? $templateData["from"] ?? null,
             $recipients ?? $templateData["to"] ?? null,
             $subject ?? $templateData["subject"] ?? null,
@@ -55,7 +67,7 @@ class TemplatedEmail extends Email {
 
 
     // Parse out the template, return an array of data
-    private function parseTemplate($templateName, $model) {
+    protected function parseTemplate($templateName, $model) {
 
         $templateFile = Container::instance()->get(FileResolver::class)->resolveFile("Config/email-templates/$templateName.html");
         if (!$templateFile) {
@@ -106,6 +118,13 @@ class TemplatedEmail extends Email {
 
 
         return $data;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getModel() {
+        return $this->model;
     }
 
 }
