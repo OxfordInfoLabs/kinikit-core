@@ -3,42 +3,23 @@
 
 namespace Kinikit\Core;
 
+
 use ErrorException;
-use Kinikit\Core\Configuration\SearchNamespaces;
-use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Logging\Logger;
 
-
-/**
- * Generic initialiser.  This should be called to initialise the framework with default setup stuff.
- * This should be initialised explicitly for e.g. Command Line Applications but is called automatically
- * by the Dispatcher if using MVC framework.
- *
- * Class Init
- * @package Kinikit\Core
- *
- * @noProxy
- */
 class Init {
 
     /**
-     * @var SearchNamespaces
-     */
-    private $searchNamespaces;
-
-    /**
-     * Init constructor.  Automatically sets things up.
+     * Constructor
      *
-     * @param SearchNamespaces $searchNamespaces
+     * Init constructor.
      */
-    public function __construct($searchNamespaces) {
-        $this->searchNamespaces = $searchNamespaces;
+    public function __construct() {
         $this->process();
     }
 
-
-    // Process core init logic.
+    // Process method
     private function process() {
 
         // Register an autoload function for application namespaces.
@@ -50,17 +31,6 @@ class Init {
 
         // Set a catch all error handler
         set_error_handler(array($this, "genericErrorHandler"), E_ALL);
-
-
-        $namespaces = $this->searchNamespaces->getNamespaces();
-
-        // Process search namespaces in reverse order.
-        for ($i = sizeof($namespaces) - 1; $i >= 0; $i--) {
-            if (class_exists($namespaces[$i] . "\\Bootstrap")) {
-                $bootstrap = Container::instance()->get($namespaces[$i] . "\\Bootstrap");
-                $bootstrap->setup();
-            }
-        }
 
     }
 
@@ -100,5 +70,6 @@ class Init {
         Logger::log($message . ": at line $line in file $file");
         throw new ErrorException($message, 0, $severity, $file, $line);
     }
+
 
 }

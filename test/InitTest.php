@@ -11,7 +11,7 @@ class InitTest extends \PHPUnit\Framework\TestCase {
 
     public function testInitSetsTimeZoneAccordingToConfigParamOrDefaultToLondon() {
 
-        new Init(Container::instance()->get(SearchNamespaces::class));
+        new Bootstrapper(Container::instance()->get(SearchNamespaces::class));
 
         // Check that timezone is now correctly set.
         $this->assertEquals("Europe/London", date_default_timezone_get());
@@ -19,7 +19,7 @@ class InitTest extends \PHPUnit\Framework\TestCase {
 
         Configuration::instance()->addParameter("default.timezone", "Europe/Paris");
 
-        new Init(Container::instance()->get(SearchNamespaces::class));
+        new Bootstrapper(Container::instance()->get(SearchNamespaces::class));
 
         // Check that timezone is now correctly set.
         $this->assertEquals("Europe/Paris", date_default_timezone_get());
@@ -33,7 +33,7 @@ class InitTest extends \PHPUnit\Framework\TestCase {
         date_default_timezone_set("Europe/London");
         Configuration::instance()->addParameter("default.timezone", "Europe/Paris");
 
-        new Init(Container::instance()->get(SearchNamespaces::class));
+        new Bootstrapper(Container::instance()->get(SearchNamespaces::class));
 
         // Should be the single container managed version.
         $bootstrap = Container::instance()->get(Bootstrap::class);
