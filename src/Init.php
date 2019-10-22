@@ -41,8 +41,13 @@ class Init {
     private function genericClassAutoloader($class) {
 
         if (Configuration::readParameter("application.namespace")) {
-            $class = str_replace(Configuration::readParameter("application.namespace") . "\\", "", $class);
-            $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+            $newClass = str_replace(Configuration::readParameter("application.namespace") . "\\", "", $class);
+
+            // If no application namespace substitution return false
+            if ($newClass == $class)
+                return false;
+
+            $file = str_replace('\\', DIRECTORY_SEPARATOR, $newClass) . '.php';
 
             if (Configuration::readParameter("application.namespace.root"))
                 $file = Configuration::readParameter("application.namespace.root") . "/$file";

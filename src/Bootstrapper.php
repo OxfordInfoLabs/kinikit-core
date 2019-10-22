@@ -3,11 +3,9 @@
 
 namespace Kinikit\Core;
 
-use ErrorException;
 use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Configuration\Configuration;
+
 
 
 /**
@@ -20,7 +18,7 @@ use Kinikit\Core\Configuration\Configuration;
  *
  * @noProxy
  */
-class Bootstrapper extends Init {
+class Bootstrapper {
 
     /**
      * @var SearchNamespaces
@@ -31,9 +29,11 @@ class Bootstrapper extends Init {
      * Init constructor.  Automatically sets things up.
      *
      * @param SearchNamespaces $searchNamespaces
+     * @param Init $init
      */
-    public function __construct($searchNamespaces) {
-        parent::__construct();
+    public function __construct($searchNamespaces, $init) {
+
+        // Process our bootstrap
         $this->searchNamespaces = $searchNamespaces;
         $this->process();
     }
