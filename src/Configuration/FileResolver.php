@@ -25,7 +25,10 @@ class FileResolver {
     public function __construct() {
         if ($configuredSearchPaths = Configuration::readParameter("search.paths")) {
             $configuredPaths = explode(";", $configuredSearchPaths);
-            $this->searchPaths = array_merge($this->searchPaths, $configuredPaths);
+            foreach($configuredPaths as $configuredPath){
+                $this->addSearchPath($configuredPath);
+            }
+
         }
     }
 
@@ -36,7 +39,8 @@ class FileResolver {
      * @param $searchPath
      */
     public function addSearchPath($searchPath) {
-        $this->searchPaths[] = $searchPath;
+        if ($searchPath)
+            $this->searchPaths[] = $searchPath;
     }
 
 
@@ -69,7 +73,7 @@ class FileResolver {
                 $builtPath = $searchPath;
                 $fullPath = true;
                 foreach ($path as $pathElement) {
-                    
+
                     $iterator = new \DirectoryIterator($builtPath);
                     $elementMatch = false;
                     foreach ($iterator as $item) {
@@ -82,14 +86,13 @@ class FileResolver {
                     }
 
 
-
                     // Break if no element match
                     if (!$elementMatch) {
                         $fullPath = false;
                         break;
                     }
 
-                    $searchDir.= "/$pathElement";
+                    $searchDir .= "/$pathElement";
 
                 }
 
