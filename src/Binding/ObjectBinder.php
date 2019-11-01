@@ -52,8 +52,11 @@ class ObjectBinder {
 
             $result = [];
 
-            foreach ($data as $key => $dataItem) {
-                $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly);
+            if (is_array($data)) {
+
+                foreach ($data as $key => $dataItem) {
+                    $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly);
+                }
             }
 
         } else {
