@@ -138,7 +138,7 @@ class ObjectBinder {
      * @param $object
      * @return array
      */
-    public function bindToArray($object, $publicOnly = true) {
+    public function bindToArray($object, $publicOnly = true, $seenObjects = []) {
 
 
         if ($object === null) {
@@ -154,9 +154,16 @@ class ObjectBinder {
         if (is_array($object)) {
             $objects = [];
             foreach ($object as $key => $value) {
-                $objects[$key] = $this->bindToArray($value, $publicOnly);
+                $objects[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
             }
             return $objects;
+        }
+
+        // If we have already seen this object, return null
+        if (in_array($object, $seenObjects)) {
+            return null;
+        } else {
+            $seenObjects[] = $object;
         }
 
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
@@ -171,7 +178,7 @@ class ObjectBinder {
             try {
                 $value = $getter->call($object, []);
 
-                $targetArray[$key] = $this->bindToArray($value, $publicOnly);
+                $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
                 $processedKeys[$key] = 1;
             } catch (\Throwable $e) {
                 // Continue if exception on getter - omit from array.
@@ -183,7 +190,7 @@ class ObjectBinder {
         foreach ($members as $key => $member) {
             if (!isset($processedKeys[$key]) && (!$publicOnly || $member->getVisibility() == Property::VISIBILITY_PUBLIC)) {
                 $value = $member->get($object);
-                $targetArray[$key] = $this->bindToArray($value, $publicOnly);
+                $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
                 $processedKeys[$key] = 1;
             }
         }

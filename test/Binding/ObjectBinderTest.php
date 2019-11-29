@@ -343,4 +343,18 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testRecursiveObjectsAreNotBoundButReturnedAsNull() {
+
+        $recursiveObject = new RecursiveObject(23);
+        $recursiveObject->setSubObject($recursiveObject);
+
+        $array = $this->objectBinder->bindToArray($recursiveObject);
+
+        $this->assertEquals(["id" => 23, "subObject" => null], $array);
+
+
+    }
+
+
 }
