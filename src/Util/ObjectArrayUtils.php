@@ -60,25 +60,29 @@ class ObjectArrayUtils {
      */
     public static function indexArrayOfObjectsByMember($member, $objects) {
 
-        $returnValues = array();
 
-        $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
+        // Ensure we make an array to simplify processing of members below.
+        if (!is_array($member)) {
+            $member = [$member];
+        }
 
-        $currentInspector = null;
-        foreach ($objects as $value) {
 
-            if (is_object($value)) {
+        // Get the next member to use for indexing in order.
+        $nextMember = array_shift($member);
 
-                if (!$currentInspector || (get_class($value) != $currentInspector->getClassName())) {
-                    $currentInspector = $classInspectorProvider->getClassInspector(get_class($value));
-                }
+        $groupedItems = self::groupArrayOfObjectsByMember($nextMember, $objects);
 
-                $returnValues[$currentInspector->getPropertyData($value, $member)] = $value;
+        // Call this recursively if we have more members to process
+        foreach ($groupedItems as $key => $items) {
+            if (sizeof($member) > 0) {
+                $groupedItems[$key] = self::indexArrayOfObjectsByMember($member, $items);
+            } else {
+                $groupedItems[$key] = $items[0];
             }
         }
 
-        return $returnValues;
 
+        return $groupedItems;
     }
 
 

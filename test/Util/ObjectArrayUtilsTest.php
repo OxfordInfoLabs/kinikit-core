@@ -38,9 +38,6 @@ class ObjectArrayUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-
-
-
     public function testCanFilterArrayOfObjectsByMemberValue() {
 
         $object1 = new PublicGetterObject("Mark Jones", "Test", "Monkey");
@@ -95,9 +92,6 @@ class ObjectArrayUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-
-
-
     public function testCanGroupArrayOfObjectsByAMember() {
 
         $object1 = new PublicGetterObject("Mark Jones", "Test", "Monkey");
@@ -145,6 +139,42 @@ class ObjectArrayUtilsTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanIndexArrayOfObjectsBySingleOrMultipleMembers() {
+
+        $object1 = new PublicGetterObject("Mark Jones", "Test", "Monkey");
+        $object2 = new PublicGetterObject("Mary Smith", "Test", "Gorilla");
+        $object3 = new PublicGetterObject("Jane Grey", "Test2", "Monkey");
+        $object4 = new PublicGetterObject("Mark Smith", "Test2", "Monkey3");
+        $object5 = new PublicGetterObject("Mary Jones", "Test2", "Gorilla");
+        $object6 = new PublicGetterObject("Clive Staples", "Test 3", "Gorilla");
+
+        $allObjects = array($object1, $object2, $object3, $object4, $object5, $object6);
+
+
+        $this->assertEquals(array("Mark Jones" => $object1, "Mary Smith" => $object2,
+            "Jane Grey" => $object3, "Mark Smith" => $object4, "Mary Jones" => $object5, "Clive Staples" => $object6),
+            ObjectArrayUtils::indexArrayOfObjectsByMember("name", $allObjects));
+
+
+        $this->assertEquals(["Test" => [
+            "Mark Jones" => $object1,
+            "Mary Smith" => $object2
+        ],
+
+            "Test2" => [
+                "Jane Grey" => $object3,
+                "Mark Smith" => $object4,
+                "Mary Jones" => $object5
+            ]
+            ,
+
+            "Test 3" => [
+                "Clive Staples" => $object6
+            ]
+        ], ObjectArrayUtils::indexArrayOfObjectsByMember(["address", "name"], $allObjects));
+
+    }
 
 
 }

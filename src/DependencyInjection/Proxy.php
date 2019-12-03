@@ -108,6 +108,7 @@ trait Proxy {
                     }
                 }
 
+
                 return $reflectionMethod->invokeArgs($this, $invocationParams);
             };
 
