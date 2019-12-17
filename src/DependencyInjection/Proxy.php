@@ -86,10 +86,12 @@ trait Proxy {
         $methodInspector = $this->classInspector->getPublicMethod($name);
 
 
+
         // Evaluate before method interceptors - return input parameters
         foreach ($interceptors as $interceptor) {
             $params = $interceptor->beforeMethod($this, $name, $params, $methodInspector);
         }
+
 
         // Make the main call, wrap in exception handling
         try {
