@@ -94,8 +94,10 @@ class PHPMailerProvider implements EmailProvider {
         try {
 
             // Do the config of SMTP Stuff first
-            if ($this->smtpHost)
+            if ($this->smtpHost) {
+                $phpMailer->IsSMTP();
                 $phpMailer->Host = $this->smtpHost;
+            }
 
             if ($this->smtpPort)
                 $phpMailer->Port = $this->smtpPort;
