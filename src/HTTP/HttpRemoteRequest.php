@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\HTTP;
 
-use Kinikit\Core\Exception\HttpRequestErrorException;
 
 /**
  * Simple CURL-LESS Post request object for dispatching post requests,
@@ -18,6 +17,9 @@ class HttpRemoteRequest {
     private $headers = array();
     private $authUsername;
     private $authPassword;
+
+    // Response headers
+    private $lastResponseHeaders;
 
 
     /**
@@ -52,10 +54,6 @@ class HttpRemoteRequest {
         if (!isset($this->headers)) {
             $this->headers = array();
         }
-
-        if (!isset($this->headers["Content-Type"]))
-            $this->headers["Content-Type"] = "application/json";
-
 
         // If we have an auth username and password, use it.
         if ($this->authUsername && $this->authPassword) {
@@ -95,6 +93,9 @@ class HttpRemoteRequest {
 
         $results = file_get_contents($url, false, $context);
 
+        // Store last response headers.
+        $this->lastResponseHeaders = $http_response_header;
+
         $responseCode = explode(" ", $http_response_header[0])[1];
 
         if ($responseCode >= 400) {
@@ -103,6 +104,25 @@ class HttpRemoteRequest {
 
 
         return $results;
+    }
+
+
+    /**
+     * Get the response headers for the last request
+     */
+    public function getResponseHeaders() {
+
+        $head = array();
+        foreach ($this->lastResponseHeaders as $k => $v) {
+            $t = explode(':', $v, 2);
+            if (isset($t[1]))
+                $head[trim($t[0])] = trim($t[1]);
+            else if ($k == 0) {
+                if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#", $v, $out))
+                    $head['Response-Code'] = intval($out[1]);
+            }
+        }
+        return $head;
     }
 
 
