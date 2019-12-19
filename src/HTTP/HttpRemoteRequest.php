@@ -55,6 +55,10 @@ class HttpRemoteRequest {
             $this->headers = array();
         }
 
+        if ($this->method != "GET" && !isset($this->headers["Content-Type"]))
+            $this->headers["Content-Type"] = "application/json";
+
+
         // If we have an auth username and password, use it.
         if ($this->authUsername && $this->authPassword) {
             $this->headers["Authorization"] = "Basic " . base64_encode($this->authUsername . ":" . $this->authPassword);
