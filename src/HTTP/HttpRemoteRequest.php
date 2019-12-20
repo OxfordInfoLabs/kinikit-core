@@ -3,6 +3,8 @@
 namespace Kinikit\Core\HTTP;
 
 
+use Twig\Error\Error;
+
 /**
  * Simple CURL-LESS Post request object for dispatching post requests,
  *
@@ -95,7 +97,12 @@ class HttpRemoteRequest {
 
         $context = stream_context_create($options);
 
-        $results = file_get_contents($url, false, $context);
+
+        try {
+            $results = file_get_contents($url, false, $context);
+        } catch (\ErrorException $e) {
+            throw new HttpRequestErrorException($url, 500, "URL does not exist");
+        }
 
         // Store last response headers.
         $this->lastResponseHeaders = $http_response_header;
