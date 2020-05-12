@@ -162,7 +162,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
     public function testCustomValidationsMayBeUsedIfAddedAtRuntime() {
 
-        $this->validator->addValidator("macaroni", new RegexpFieldValidator("[0-9][A-Z]", "This field is not Macaroni"));
+        $this->validator->addValidator(new RegexpFieldValidator("[0-9][A-Z]", "macaroni", "This field is not Macaroni"));
 
 
         $customObject = new TestCustomValidatedObject();

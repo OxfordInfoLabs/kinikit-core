@@ -13,17 +13,25 @@ class RequiredFieldValidator extends ObjectFieldValidator {
 
 
     /**
+     * Validate a value
+     *
+     * @param $value
+     */
+    public function validate($value){
+        return $value ? true : false;
+    }
+
+    /**
      * Validate required field.
      *
      * @param string $value
      * @param $fieldName
      * @param SerialisableObject $targetObject
      * @param array $validatorParams
-     * @param $validatorKey
      * @return bool|string
      */
-    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams, $validatorKey) {
-        return $value ? true : false;
+    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
+        return $this->validate($value);
     }
 
 }

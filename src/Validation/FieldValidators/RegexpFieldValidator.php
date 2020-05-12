@@ -16,10 +16,23 @@ class RegexpFieldValidator extends ObjectFieldValidator {
 
     private $regexp;
 
-    public function __construct($regexp = null, $validationMessage = null) {
+    public function __construct($regexp = null, $validatorKey = null, $validationMessage = null) {
         $this->regexp = $regexp;
-        parent::__construct($validationMessage);
+        parent::__construct($validatorKey, $validationMessage);
     }
+
+
+    /**
+     * Validate the value using either the constructed or explicit regexp
+     *
+     * @param $value
+     * @param null $regexp
+     * @return bool
+     */
+    public function validate($value, $regexp = null) {
+        return preg_match("/^" . ($this->regexp ? $this->regexp : $regexp) . "$/", $value) == 1;
+    }
+
 
     /**
      * Validate a value
@@ -28,11 +41,10 @@ class RegexpFieldValidator extends ObjectFieldValidator {
      * @param $fieldName
      * @param $targetObject SerialisableObject
      * @param $validatorParams array
-     * @param $validatorKey
      * @return mixed
      * @throws MisconfiguredValidatorException
      */
-    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams, $validatorKey) {
+    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
         if (!$value) return true;
 
@@ -40,14 +52,14 @@ class RegexpFieldValidator extends ObjectFieldValidator {
             $regexp = $this->regexp;
         } else {
             if (sizeof($validatorParams) < 1) {
-                throw new MisconfiguredValidatorException($validatorKey, $fieldName, $targetObject);
+                throw new MisconfiguredValidatorException($this->getValidatorKey(), $fieldName, $targetObject);
             }
 
             $regexp = $validatorParams[0];
 
         }
 
-        return preg_match("/^" . $regexp . "$/", $value) == 1;
+        return $this->validate($value, $regexp);
 
     }
 

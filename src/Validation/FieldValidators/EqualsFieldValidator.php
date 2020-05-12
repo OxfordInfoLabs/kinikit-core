@@ -20,10 +20,11 @@ class EqualsFieldValidator extends ObjectFieldValidator {
      */
     private $classInspectorProvider;
 
-    public function __construct($classInspectorProvider, $validationMessage = null) {
-        parent::__construct($validationMessage);
+    public function __construct($classInspectorProvider, $validatorKey, $validationMessage = null) {
+        parent::__construct($validatorKey, $validationMessage);
         $this->classInspectorProvider = $classInspectorProvider;
     }
+
 
     /**
      * Validate a value
@@ -32,14 +33,13 @@ class EqualsFieldValidator extends ObjectFieldValidator {
      * @param $fieldName
      * @param $targetObject
      * @param $validatorParams array
-     * @param $validatorKey
      * @return mixed
      * @throws MisconfiguredValidatorException
      */
-    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams, $validatorKey) {
+    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
         if (sizeof($validatorParams) < 1) {
-            throw new MisconfiguredValidatorException($validatorKey, $fieldName, $targetObject);
+            throw new MisconfiguredValidatorException($this->getValidatorKey(), $fieldName, $targetObject);
         }
 
         $otherField = ltrim($validatorParams[0], "$");

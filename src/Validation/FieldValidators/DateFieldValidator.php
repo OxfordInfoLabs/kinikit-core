@@ -13,23 +13,21 @@ use Kinikit\Core\Object\SerialisableObject;
 
 class DateFieldValidator extends ObjectFieldValidator {
 
+
     /**
-     * Validate a value
+     * Validate the date field against the passed format (default to british date).
      *
-     * @param $value string
-     * @param $fieldName
-     * @param $targetObject SerialisableObject
-     * @param $validatorParams array
-     * @param $validatorKey
-     * @return mixed
+     *
+     * @param string $value
+     * @param string $dateFormat
      */
-    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams, $validatorKey) {
+    public function validate($value, $dateFormat = null) {
 
         if (!$value) return true;
 
-        if (sizeof($validatorParams) > 0) {
+        if ($dateFormat) {
 
-            switch ($validatorParams[0]) {
+            switch ($dateFormat) {
 
                 case "britishdate":
                     $format = "d/m/Y";
@@ -47,17 +45,36 @@ class DateFieldValidator extends ObjectFieldValidator {
                     $format = "Y-m-d H:i:s";
                     break;
                 default:
-                    $format = $validatorParams[0];
+                    $format = $dateFormat;
                     break;
             }
 
 
         } else {
-            $validatorParams[0] = $format = "d/m/Y";
+            $format = "d/m/Y";
         }
 
         return date_create_from_format($format, $value) ? true : false;
 
+    }
 
+
+    /**
+     * Validate a value
+     *
+     * @param $value string
+     * @param $fieldName
+     * @param $targetObject SerialisableObject
+     * @param $validatorParams array
+     * @return mixed
+     */
+    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
+
+        // Synchronise validator params if not set
+        if (!$validatorParams[0]) {
+            $validatorParams[0] = "d/m/Y";
+        }
+
+        return $this->validate($value, $validatorParams[0] ?? null);
     }
 }
