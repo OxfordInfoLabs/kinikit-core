@@ -13,7 +13,8 @@ class ContainerInterceptors {
      * @param ContainerInterceptor $interceptor
      */
     public function addInterceptor($interceptor) {
-        $this->interceptors[] = $interceptor;
+        if (!in_array($interceptor, $this->interceptors))
+            $this->interceptors[] = $interceptor;
     }
 
     /**
