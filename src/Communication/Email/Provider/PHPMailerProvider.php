@@ -6,6 +6,7 @@ namespace Kinikit\Core\Communication\Email\Provider;
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Logging\Logger;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -170,7 +171,6 @@ class PHPMailerProvider implements EmailProvider {
             return new EmailSendResult(EmailSendResult::STATUS_SENT);
 
         } catch (Exception $e) {
-            var_dump($e);
             return new EmailSendResult(EmailSendResult::STATUS_FAILED, $phpMailer->ErrorInfo);
         }
     }
@@ -188,7 +188,7 @@ class PHPMailerProvider implements EmailProvider {
             if (sizeof($matches) == 2) {
                 $addressAndNames[] = array($matches[1], trim(str_replace($matches[0], "", $addressComponent)));
             } else {
-                $addressAndNames[] = array($matches[1], null);
+                $addressAndNames[] = array($address[0], null);
             }
         }
 
