@@ -45,9 +45,9 @@ class Primitive {
                 return is_bool($value) || ($value === "true" || $value === "false") || self::isPrimitive(self::TYPE_INTEGER, $value);
             case self::TYPE_INT;
             case self::TYPE_INTEGER:
-                return is_int($value) || is_numeric($value) && is_int(+$value);
+                return is_int($value) || (is_numeric($value) && is_int(+$value));
             case self::TYPE_FLOAT:
-                return is_float($value) || self::isPrimitive(self::TYPE_INT, $value) || is_numeric($value) && is_float(+$value);
+                return is_float($value) || self::isOfPrimitiveType(self::TYPE_INT, $value) || (is_numeric($value) && is_float(+$value));
             case self::TYPE_STRING:
                 return is_string($value) || is_numeric($value) || is_float($value) || is_bool($value);
             case self::TYPE_MIXED:
