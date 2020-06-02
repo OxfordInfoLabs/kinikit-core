@@ -71,7 +71,7 @@ class DateFieldValidator extends ObjectFieldValidator {
     public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
         // Synchronise validator params if not set
-        if (!$validatorParams[0]) {
+        if (!($validatorParams[0] ?? null)) {
             $validatorParams[0] = "d/m/Y";
         }
 

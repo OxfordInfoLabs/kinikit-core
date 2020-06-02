@@ -67,6 +67,11 @@ class ObjectBinder {
             }
 
 
+            // if this is not an array we have a malformed data issue.
+            if (!is_array($data)) {
+                throw new ObjectBindingException("Bind data for object is not an array");
+            }
+
             try {
 
                 $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);

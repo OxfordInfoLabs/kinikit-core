@@ -116,9 +116,9 @@ class Method {
      * @param mixed $object
      * @param mixed[string] $arguments
      */
-    public function call($object, $arguments) {
+    public function call($object, $arguments, $allowMissingArgs = false) {
 
-        $orderedArguments = $this->__processMethodArguments($arguments);
+        $orderedArguments = $this->__processMethodArguments($arguments, $allowMissingArgs);
         return $this->reflectionMethod->invokeArgs($object, $orderedArguments);
 
     }
@@ -171,7 +171,7 @@ class Method {
      *
      * @param mixed[string] $arguments
      */
-    public function __processMethodArguments($arguments) {
+    public function __processMethodArguments($arguments, $allowMissingArgs = false) {
 
 
         // Loop through each parameter
@@ -197,12 +197,11 @@ class Method {
             } else {
 
                 if ($parameter->isRequired()) {
-
-                    // If explicitly typed, we register an error - otherwise push a null in.
-                    if ($parameter->isExplicitlyTyped())
+                    if ($parameter->isExplicitlyTyped() || !$allowMissingArgs)
                         $missingRequired[] = $parameter->getName();
                     else
                         $orderedArgs[] = $parameter->getDefaultValue();
+
                 } else if (!$parameter->isExplicitlyTyped()) {
                     $orderedArgs[] = $parameter->getDefaultValue();
                 }

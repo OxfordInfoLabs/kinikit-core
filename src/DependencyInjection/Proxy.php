@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
+use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Reflection\ClassInspector;
 
 
@@ -23,6 +24,9 @@ trait Proxy {
      * @var ClassInspector
      */
     private $classInspector;
+
+    // Undefined valud
+    private $UNDEFINED_VALUE = "<<<<<UNDEFINED>>>>>";
 
 
     /**
@@ -77,8 +81,8 @@ trait Proxy {
         if ($method) {
             $reflectionParams = $method->getParameters();
             foreach ($reflectionParams as $index => $param) {
-                $params[$param->getName()] = isset($arguments[$index]) ? ($param->isPassedByReference() ? $arguments[$index] : $arguments[$index]) :
-                    ($param->isOptional() ? $param->getDefaultValue() : null);
+                $params[$param->getName()] = array_key_exists($index, $arguments) ? ($param->isPassedByReference() ? $arguments[$index] : $arguments[$index]) :
+                    ($param->isOptional() ? $param->getDefaultValue() : $this->UNDEFINED_VALUE);
             }
         }
 
@@ -100,13 +104,21 @@ trait Proxy {
                 $reflectionMethod = $reflectionClass->getParentClass()->getMethod($name);
 
                 $paramValues = array_values($params);
+
                 $invocationParams = [];
                 foreach ($reflectionMethod->getParameters() as $index => $parameter) {
+
+                    if ($paramValues[$index] === $this->UNDEFINED_VALUE) {
+                        throw new InsufficientParametersException("Insufficient parameters passed to method $name");
+                    }
+
                     if ($parameter->isPassedByReference()) {
                         $invocationParams[] = &$paramValues[$index];
                     } else {
                         $invocationParams[] = $paramValues[$index];
                     }
+
+
                 }
 
 

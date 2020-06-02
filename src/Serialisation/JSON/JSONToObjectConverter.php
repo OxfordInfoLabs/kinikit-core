@@ -46,7 +46,7 @@ class JSONToObjectConverter implements FormatToObjectConverter {
         // Decode the string using PHP JSON Decode routine
         $converted = json_decode($jsonString, true);
 
-        if ($mapToClass) {
+        if ($mapToClass && $converted !== null) {
             $converted = $this->objectBinder->bindFromArray($converted, $mapToClass);
         }
 

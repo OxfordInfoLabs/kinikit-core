@@ -268,7 +268,7 @@ class ClassInspector {
      * @param mixed[string] $constructorArguments
      */
     public function createInstance($constructorArguments) {
-        $processedArguments = $this->getConstructor() ? $this->getConstructor()->__processMethodArguments($constructorArguments) : [];
+        $processedArguments = $this->getConstructor() ? $this->getConstructor()->__processMethodArguments($constructorArguments, true) : [];
 
         return $this->reflectionClass->newInstanceArgs($processedArguments);
     }
@@ -307,9 +307,11 @@ class ClassInspector {
             }
 
         } else {
+
             foreach ($data as $key => $datum) {
                 $this->setPropertyData($object, $datum, $key, $publicOnly);
             }
+
         }
 
     }
