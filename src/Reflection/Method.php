@@ -179,13 +179,12 @@ class Method {
         $missingRequired = [];
         $wrongParams = [];
         foreach ($this->getParameters() as $parameter) {
-            if (isset($arguments[$parameter->getName()])) {
+            if (array_key_exists($parameter->getName(), $arguments)) {
                 $parameterValue = $arguments[$parameter->getName()];
-
 
                 // If a primitive and not of right type, throw now.
                 if ($parameter->isPrimitive()) {
-                    if (!Primitive::isOfPrimitiveType($parameter->getType(), $parameterValue))
+                    if ($arguments[$parameter->getName()] && !Primitive::isOfPrimitiveType($parameter->getType(), $parameterValue))
                         $wrongParams[] = $parameter->getName();
                 } else if (!is_array($parameterValue) && (!is_object($parameterValue)
                         || !(get_class($parameterValue) == trim($parameter->getType(), "\\")
