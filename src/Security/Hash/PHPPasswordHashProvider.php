@@ -1,13 +1,10 @@
 <?php
 
+
 namespace Kinikit\Core\Security\Hash;
 
-/**
- * SHA 256 Hash provider
- *
- * Class SHA256HashProvider
- */
-class SHA512HashProvider implements HashProvider {
+
+class PHPPasswordHashProvider implements HashProvider {
 
     /**
      * Generate a hash for the supplied string value
@@ -16,7 +13,7 @@ class SHA512HashProvider implements HashProvider {
      * @return string mixed
      */
     public function generateHash($value) {
-        return hash("sha512", $value);
+        return password_hash($value, PASSWORD_DEFAULT);
     }
 
     /**
@@ -27,6 +24,6 @@ class SHA512HashProvider implements HashProvider {
      * @return boolean
      */
     public function verifyHash($value, $hash) {
-        return $this->generateHash($value) == $hash;
+        return password_verify($value, $hash);
     }
 }
