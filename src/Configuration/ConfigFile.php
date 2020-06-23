@@ -159,7 +159,16 @@ class ConfigFile {
 
                 // If there are not 2 or more array entries at this point we should complain unless we meet a blank line.
                 if ($positionOfFirstEquals) {
-                    $this->parameters [trim(substr($propertyLine, 0, $positionOfFirstEquals))] = trim(substr($propertyLine, $positionOfFirstEquals + 1));
+                    $value = trim(substr($propertyLine, $positionOfFirstEquals + 1));
+
+                    // Convert boolean strings to boolean values
+                    if ($value == "true") {
+                        $value = true;
+                    } else if ($value == "false") {
+                        $value = false;
+                    }
+
+                    $this->parameters [trim(substr($propertyLine, 0, $positionOfFirstEquals))] = $value;
                 } else {
                     throw new Exception ("Error in config file: Parameter '" . $propertyLine . "' Does not have a value");
                 }
