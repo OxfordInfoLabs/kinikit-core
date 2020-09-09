@@ -20,7 +20,7 @@ class ValidationException extends \Exception {
      */
     public function __construct($validationErrors) {
         $this->validationErrors = $validationErrors;
-        parent::__construct("The following fields have validation errors: " . join(", ", array_keys($this->validationErrors)));
+        parent::__construct("The following items have validation errors: " . join(", ", array_keys($this->validationErrors)));
     }
 
     /**
