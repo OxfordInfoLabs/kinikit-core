@@ -86,6 +86,7 @@ class Validator {
         return $this->validators[$key] ?? null;
     }
 
+
     /**
      * Validate an object using markup attributes.
      *
@@ -165,6 +166,76 @@ class Validator {
             if (sizeof($customValidation)) {
                 $validationErrors = array_merge($validationErrors, $customValidation);
             }
+        }
+
+        return $validationErrors;
+
+
+    }
+
+    /**
+     * Validate an array using a definition array passed in as a second argument.  This definition array
+     * matches the format as used in attribute markup for objects.  This is very useful for dynamic form
+     * validation etc where the definitions are encoded in e.g. JSON files
+     *
+     * @param array $validatedArray
+     * @param array $validationDefinition
+     */
+    public function validateArray($validatedArray, $validationDefinition) {
+
+        $validationErrors = array();
+
+        /**
+         * Loop through each validated field
+         */
+        foreach ($validationDefinition as $validatedField) {
+
+            // If we have no name, continue
+            if (!isset($validatedField["name"])) {
+                continue;
+            }
+
+            $valueKey = $validatedField["name"];
+
+            // Grab validator key and config
+            foreach ($validatedField as $validatorKey => $validatorConfig) {
+
+                // Handle collision with built in name validation
+                if ($validatorKey == "name")
+                    continue;
+
+                if ($validatorKey == "nameValidation")
+                    $validatorKey = "name";
+
+                if (isset($this->validators[$validatorKey])) {
+
+                    // If attribute set to false, skip this validator
+                    if (is_bool($validatorConfig)) {
+                        if (!$validatorConfig) continue;
+                        $validatorArgs = [];
+                    } else {
+                        $validatorArgs = is_array($validatorConfig) ? $validatorConfig : [$validatorConfig];
+                    }
+
+                    // Grab the validator
+                    $validator = $this->validators[$validatorKey];
+
+                    // Grab the value from the validated array
+                    $value = $validatedArray[$valueKey] ?? null;
+
+                    $valid = $validator->validateObjectFieldValue($value, $valueKey, $validatedArray, $validatorArgs);
+
+                    if ($valid !== true) {
+                        if (!isset($validationErrors[$valueKey])) $validationErrors[$valueKey] = array();
+                        $message = $validator->getEvaluatedValidationMessage($validatorArgs);
+                        $validationErrors[$valueKey][$validatorKey] = new FieldValidationError($valueKey, $validatorKey, $message);
+                    }
+
+
+                }
+
+            }
+
         }
 
         return $validationErrors;

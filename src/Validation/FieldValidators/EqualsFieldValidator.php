@@ -44,8 +44,15 @@ class EqualsFieldValidator extends ObjectFieldValidator {
 
         $otherField = ltrim($validatorParams[0], "$");
         if (trim($otherField, "'\"") == $otherField) {
-            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($targetObject));
-            $otherFieldValue = $classInspector->getPropertyData($targetObject, $otherField);
+
+            if (is_object($targetObject)) {
+                $classInspector = $this->classInspectorProvider->getClassInspector(get_class($targetObject));
+                $otherFieldValue = $classInspector->getPropertyData($targetObject, $otherField);
+            } else if (is_array($targetObject)) {
+                $otherFieldValue = $targetObject[$otherField] ?? null;
+            } else {
+                $otherFieldValue = null;
+            }
             return $value == $otherFieldValue;
         } else {
             return $value == $validatorParams[0];

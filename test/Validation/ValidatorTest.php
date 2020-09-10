@@ -206,4 +206,145 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanValidateArrayUsingValidationDefinition() {
+
+
+        $validationDefinition = json_decode(file_get_contents(__DIR__ . "/validation-definition.json"), true);
+        $validatedArray = [];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+
+        $this->assertEquals(3, sizeof($validationErrors));
+
+        $idErrors = $validationErrors["id"];
+
+        $this->assertEquals(1, sizeof($idErrors));
+        $this->assertEquals(new FieldValidationError("id", "required", "This field is required"), $idErrors["required"]);
+
+        $usernameErrors = $validationErrors["username"];
+        $this->assertEquals(1, sizeof($usernameErrors));
+        $this->assertEquals(new FieldValidationError("username", "required", "This field is required"), $usernameErrors["required"]);
+
+        $nameErrors = $validationErrors["name"];
+        $this->assertEquals(1, sizeof($nameErrors));
+        $this->assertEquals(new FieldValidationError("name", "required", "This field is required"), $nameErrors["required"]);
+
+
+        $validatedArray["id"] = "marky";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(3, sizeof($validationErrors));
+        $idErrors = $validationErrors["id"];
+        $this->assertEquals(1, sizeof($idErrors));
+        $this->assertEquals(new FieldValidationError("id", "numeric", "Value must be numeric"), $idErrors["numeric"]);
+
+        $validatedArray["username"] = "__";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(3, sizeof($validationErrors));
+        $usernameErrors = $validationErrors["username"];
+        $this->assertEquals(2, sizeof($usernameErrors));
+        $this->assertEquals(new FieldValidationError("username", "alphanumeric", "Value must be alphanumeric"), $usernameErrors["alphanumeric"]);
+        $this->assertEquals(new FieldValidationError("username", "minLength", "Value must be at least 3 characters"), $usernameErrors["minLength"]);
+
+
+        $validatedArray["name"] = "**Bang123**";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(3, sizeof($validationErrors));
+        $nameErrors = $validationErrors["name"];
+        $this->assertEquals(1, sizeof($nameErrors));
+        $this->assertEquals(new FieldValidationError("name", "name", "Value must be a valid name"), $nameErrors["name"]);
+
+        $validatedArray["password"] = "%%";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(5, sizeof($validationErrors));
+        $passwordErrors = $validationErrors["password"];
+        $this->assertEquals(2, sizeof($passwordErrors));
+        $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
+        $this->assertEquals(new FieldValidationError("password", "minLength", "Value must be at least 8 characters"), $passwordErrors["minLength"]);
+        $confirmPasswordErrors = $validationErrors["confirmPassword"];
+        $this->assertEquals(1, sizeof($confirmPasswordErrors));
+        $this->assertEquals(new FieldValidationError("confirmPassword", "equals", "Value does not match the password field"), $confirmPasswordErrors["equals"]);
+
+
+        $validatedArray["password"] = "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(5, sizeof($validationErrors));
+        $passwordErrors = $validationErrors["password"];
+        $this->assertEquals(2, sizeof($passwordErrors));
+        $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
+        $this->assertEquals(new FieldValidationError("password", "maxLength", "Value must be no greater than 16 characters"), $passwordErrors["maxLength"]);
+        $confirmPasswordErrors = $validationErrors["confirmPassword"];
+        $this->assertEquals(1, sizeof($confirmPasswordErrors));
+        $this->assertEquals(new FieldValidationError("confirmPassword", "equals", "Value does not match the password field"), $confirmPasswordErrors["equals"]);
+
+        $validatedArray["age"] = 10;
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(6, sizeof($validationErrors));
+        $ageErrors = $validationErrors["age"];
+        $this->assertEquals(1, sizeof($ageErrors));
+        $this->assertEquals(new FieldValidationError("age", "range", "Value must be between 18 and 65"), $ageErrors["range"]);
+
+        $validatedArray["age"] = 70;
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(6, sizeof($validationErrors));
+        $ageErrors = $validationErrors["age"];
+        $this->assertEquals(1, sizeof($ageErrors));
+        $this->assertEquals(new FieldValidationError("age", "range", "Value must be between 18 and 65"), $ageErrors["range"]);
+
+
+        $validatedArray["shoeSize"] = 2;
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(7, sizeof($validationErrors));
+        $shoeSizeErrors = $validationErrors["shoeSize"];
+        $this->assertEquals(1, sizeof($shoeSizeErrors));
+        $this->assertEquals(new FieldValidationError("shoeSize", "min", "Value must be at least 3"), $shoeSizeErrors["min"]);
+
+
+        $validatedArray["shoeSize"] = 12;
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(7, sizeof($validationErrors));
+        $shoeSizeErrors = $validationErrors["shoeSize"];
+        $this->assertEquals(1, sizeof($shoeSizeErrors));
+        $this->assertEquals(new FieldValidationError("shoeSize", "max", "Value must be no greater than 11"), $shoeSizeErrors["max"]);
+
+        $validatedArray["emailAddress"] = "pinky";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(8, sizeof($validationErrors));
+        $emailAddressErrors = $validationErrors["emailAddress"];
+        $this->assertEquals(1, sizeof($emailAddressErrors));
+        $this->assertEquals(new FieldValidationError("emailAddress", "email", "Value must be a valid email"), $emailAddressErrors["email"]);
+
+        $validatedArray["standardDate"] = "RRR";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(9, sizeof($validationErrors));
+        $dateErrors = $validationErrors["standardDate"];
+        $this->assertEquals(1, sizeof($dateErrors));
+        $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in d/m/Y format"), $dateErrors["date"]);
+
+        $validatedArray["customDate"] = "RRR";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(10, sizeof($validationErrors));
+        $dateErrors = $validationErrors["customDate"];
+        $this->assertEquals(1, sizeof($dateErrors));
+        $this->assertEquals(new FieldValidationError("customDate", "date", "Value must be a date in d-m-Y format"), $dateErrors["date"]);
+
+
+        // Now clear down the validation queue
+        $validatedArray["id"] = 44;
+        $validatedArray["username"] = "mark123";
+        $validatedArray["name"] = "Mark O'Reilly-Smythe";
+        $validatedArray["password"] = "55ttaabb";
+        $validatedArray["confirmPassword"] = "55ttaabb";
+        $validatedArray["age"] = 18;
+        $validatedArray["shoeSize"] = 11;
+        $validatedArray["emailAddress"] = "mark@oxil.gmail";
+        $validatedArray["standardDate"] = "06/12/1977";
+        $validatedArray["customDate"] = "01-01-2017";
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(0, sizeof($validationErrors));
+
+    }
+
+
 }

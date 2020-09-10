@@ -1,0 +1,52 @@
+[
+  {
+    "name": "id",
+    "required": true,
+    "numeric": true
+  },
+  {
+    "name": "username",
+    "required": true,
+    "alphanumeric": true,
+    "minLength": 3
+  },
+  {
+    "name": "name",
+    "required": true,
+    "nameValidation": true
+  },
+  {
+    "name": "password",
+    "regexp": "[0-9a-z]*",
+    "minLength": 8,
+    "maxLength": 16
+  },
+  {
+    "name": "confirmPassword",
+    "equals": "password"
+  },
+  {
+    "name": "age",
+    "range": [
+      18,
+      65
+    ]
+  },
+  {
+    "name": "shoeSize",
+    "min": 3,
+    "max": 11
+  },
+  {
+    "name": "emailAddress",
+    "email": true
+  },
+  {
+    "name": "standardDate",
+    "date": true
+  },
+  {
+    "name": "customDate",
+    "date": "d-m-Y"
+  }
+]
