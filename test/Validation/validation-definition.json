@@ -48,5 +48,28 @@
   {
     "name": "customDate",
     "date": "d-m-Y"
+  },
+  {
+    "name": "indexes",
+    "multiple": true,
+    "numeric": true
+  },
+  {
+    "name": "subItems",
+    "multiple": true,
+    "itemType": {
+      "ref": "sub-item",
+      "fields": [
+        {
+          "name": "title",
+          "required": true
+        },
+        {
+          "name": "subItems",
+          "multiple": true,
+          "itemType": "#sub-item"
+        }
+      ]
+    }
   }
 ]

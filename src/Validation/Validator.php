@@ -15,6 +15,7 @@ use Kinikit\Core\Exception\InvalidValidatorException;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Serialisation\XML\XMLToObjectConverter;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidators\DateFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\EqualsFieldValidator;
 use Kinikit\Core\Validation\FieldValidators\LengthFieldValidator;
@@ -38,6 +39,7 @@ class Validator {
     private $classInspectorProvider;
 
     private $validators;
+
 
     /**
      * Validator constructor.
@@ -182,6 +184,13 @@ class Validator {
      * @param array $validationDefinition
      */
     public function validateArray($validatedArray, $validationDefinition) {
+        return $this->doValidateArray($validatedArray, $validationDefinition);
+    }
+
+
+    // Internal do for validating arrays - maintains item type refs as required
+    private function doValidateArray($validatedArray, $validationDefinition, &$itemTypeRefs = []) {
+
 
         $validationErrors = array();
 
@@ -197,51 +206,102 @@ class Validator {
 
             $valueKey = $validatedField["name"];
 
-            // Grab validator key and config
-            foreach ($validatedField as $validatorKey => $validatorConfig) {
+            // Grab the value from the validated array
+            $value = $validatedArray[$valueKey] ?? null;
 
-                // Handle collision with built in name validation
-                if ($validatorKey == "name")
-                    continue;
-
-                if ($validatorKey == "nameValidation")
-                    $validatorKey = "name";
-
-                if (isset($this->validators[$validatorKey])) {
-
-                    // If attribute set to false, skip this validator
-                    if (is_bool($validatorConfig)) {
-                        if (!$validatorConfig) continue;
-                        $validatorArgs = [];
-                    } else {
-                        $validatorArgs = is_array($validatorConfig) ? $validatorConfig : [$validatorConfig];
+            if (isset($validatedField["multiple"]) && $validatedField["multiple"]) {
+                if ($value && (!is_array($value) || !isset($value[0]))) {
+                    $validationErrors[$valueKey]["multiple"] = new FieldValidationError($valueKey, "multiple", "Value must be an array");
+                } else if (is_array($value)) {
+                    foreach ($value as $index => $entry) {
+                        $this->validateArrayField($validatedArray, $validatedField, $entry, $valueKey . ":" . $index, $validationErrors, $itemTypeRefs);
                     }
-
-                    // Grab the validator
-                    $validator = $this->validators[$validatorKey];
-
-                    // Grab the value from the validated array
-                    $value = $validatedArray[$valueKey] ?? null;
-
-                    $valid = $validator->validateObjectFieldValue($value, $valueKey, $validatedArray, $validatorArgs);
-
-                    if ($valid !== true) {
-                        if (!isset($validationErrors[$valueKey])) $validationErrors[$valueKey] = array();
-                        $message = $validator->getEvaluatedValidationMessage($validatorArgs);
-                        $validationErrors[$valueKey][$validatorKey] = new FieldValidationError($valueKey, $validatorKey, $message);
-                    }
-
-
                 }
+            } else {
+                $this->validateArrayField($validatedArray, $validatedField, $value, $valueKey, $validationErrors, $itemTypeRefs);
 
             }
 
-        }
 
+        }
         return $validationErrors;
 
 
     }
 
 
+    /**
+     * @param $values
+     * @param $fieldDefinition
+     * @param $value
+     * @param $valueKey
+     * @param array $validationErrors
+     * @return array
+     */
+    private function validateArrayField($values, $fieldDefinition, $value, $valueKey, &$validationErrors, &$itemTypeRefs = []) {
+
+        // Grab validator key and config
+        foreach ($fieldDefinition as $validatorKey => $validatorConfig) {
+
+
+            // Handle collision with built in name validation
+            if ($validatorKey == "name")
+                continue;
+
+            if ($validatorKey == "nameValidation")
+                $validatorKey = "name";
+
+
+            if (isset($this->validators[$validatorKey])) {
+
+                // If attribute set to false, skip this validator
+                if (is_bool($validatorConfig)) {
+                    if (!$validatorConfig) continue;
+                    $validatorArgs = [];
+                } else {
+                    $validatorArgs = is_array($validatorConfig) ? $validatorConfig : [$validatorConfig];
+                }
+
+                // Grab the validator
+                $validator = $this->validators[$validatorKey];
+
+
+                $valid = $validator->validateObjectFieldValue($value, $valueKey, $values, $validatorArgs);
+
+                if ($valid !== true) {
+                    if (!isset($validationErrors[$valueKey])) $validationErrors[$valueKey] = array();
+                    $message = $validator->getEvaluatedValidationMessage($validatorArgs);
+                    $validationErrors[$valueKey][$validatorKey] = new FieldValidationError($valueKey, $validatorKey, $message);
+                }
+
+
+            }
+
+            // If there is an item type, need to recursively validate beneath.
+            if ($validatorKey == "itemType") {
+
+                // If reference, use it and poke in.
+                if (is_string($validatorConfig) && substr($validatorConfig, 0, 1) == "#") {
+                    $validatorConfig = $itemTypeRefs[substr($validatorConfig, 1)] ?? [];
+                }
+
+                // If a ref, store it
+                if (isset($validatorConfig["ref"])) {
+                    $itemTypeRefs[$validatorConfig["ref"]] = $validatorConfig;
+                }
+
+
+                $itemErrors = $this->doValidateArray($value, $validatorConfig["fields"] ?? [], $itemTypeRefs);
+                foreach ($itemErrors as $itemError) {
+                    foreach ($itemError as $fieldError) {
+                        $validationErrors[$valueKey . ":" . $fieldError->getFieldName()][$fieldError->getValidatorKey()] =
+                            new FieldValidationError($valueKey . ":" . $fieldError->getFieldName(),
+                                $fieldError->getValidatorKey(), $fieldError->getErrorMessage());
+                    }
+                }
+            }
+
+        }
+        return $validationErrors;
+    }
 }

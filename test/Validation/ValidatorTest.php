@@ -215,6 +215,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
 
+
         $this->assertEquals(3, sizeof($validationErrors));
 
         $idErrors = $validationErrors["id"];
@@ -343,6 +344,104 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
         $this->assertEquals(0, sizeof($validationErrors));
+
+
+        // Check validation for multiple item
+        $validatedArray["indexes"] = 44;
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(1, sizeof($validationErrors));
+        $indexesErrors = $validationErrors["indexes"];
+        $this->assertEquals(1, sizeof($indexesErrors));
+        $this->assertEquals(new FieldValidationError("indexes", "multiple", "Value must be an array"), $indexesErrors["multiple"]);
+
+        $validatedArray["indexes"] = [
+            "Hello",
+            "Dolly"
+        ];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(2, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("indexes:0", "numeric", "Value must be numeric"), $validationErrors["indexes:0"]["numeric"]);
+        $this->assertEquals(new FieldValidationError("indexes:1", "numeric", "Value must be numeric"), $validationErrors["indexes:1"]["numeric"]);
+
+
+        $validatedArray["indexes"] = [
+            0,
+            5
+        ];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(0, sizeof($validationErrors));
+
+
+        // Check validation for recursive inline item.
+        $validatedArray["subItems"] = [
+            "title" => "Bonzo"
+        ];
+
+        // Should be an array of objects
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(1, sizeof($validationErrors));
+        $subItemErrors = $validationErrors["subItems"];
+        $this->assertEquals(1, sizeof($subItemErrors));
+        $this->assertEquals(new FieldValidationError("subItems", "multiple", "Value must be an array"), $subItemErrors["multiple"]);
+
+
+        // Missing required fields
+        $validatedArray["subItems"] = [
+            [],
+            []
+        ];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(2, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("subItems:0:title", "required", "This field is required"), $validationErrors["subItems:0:title"]["required"]);
+        $this->assertEquals(new FieldValidationError("subItems:1:title", "required", "This field is required"), $validationErrors["subItems:1:title"]["required"]);
+
+
+        // Fix required fields
+        $validatedArray["subItems"] = [
+            ["title" => "Jones"],
+            ["title" => "Brown"]
+        ];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(0, sizeof($validationErrors));
+
+
+        $validatedArray["subItems"] = [
+            [
+                "title" => "Jones",
+                "subItems" => [
+                    [],
+                    []
+                ]
+            ]
+        ];
+
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(2, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("subItems:0:subItems:0:title", "required", "This field is required"), $validationErrors["subItems:0:subItems:0:title"]["required"]);
+        $this->assertEquals(new FieldValidationError("subItems:0:subItems:1:title", "required", "This field is required"), $validationErrors["subItems:0:subItems:1:title"]["required"]);
+
+
+        $validatedArray["subItems"] = [
+            [
+                "title" => "Jones",
+                "subItems" => [
+                    ["title" => "Smith",
+                        "subItems" => [
+                            []
+                        ]
+                    ],
+                    ["title" => "Davis"]
+                ]
+            ]
+        ];
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(1, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("subItems:0:subItems:0:subItems:0:title", "required", "This field is required"), $validationErrors["subItems:0:subItems:0:subItems:0:title"]["required"]);
+
 
     }
 
