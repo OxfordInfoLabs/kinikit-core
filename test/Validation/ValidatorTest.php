@@ -330,6 +330,21 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new FieldValidationError("customDate", "date", "Value must be a date in d-m-Y format"), $dateErrors["date"]);
 
 
+        $validatedArray["pickOne"] = "Ginger";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(11, sizeof($validationErrors));
+        $pickOneErrors = $validationErrors["pickOne"];
+        $this->assertEquals(1, sizeof($pickOneErrors));
+        $this->assertEquals(new FieldValidationError("pickOne", "values", "Value must be one of [Green, Blue, Silk]"), $pickOneErrors["values"]);
+
+
+        $validatedArray["pickMany"] = ["Ginger", "Spice"];
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(13, sizeof($validationErrors));
+         $this->assertEquals(new FieldValidationError("pickMany:0", "values", "Value must be one of [Green, Blue, Silk]"), $validationErrors["pickMany:0"]["values"]);
+        $this->assertEquals(new FieldValidationError("pickMany:1", "values", "Value must be one of [Green, Blue, Silk]"), $validationErrors["pickMany:1"]["values"]);
+
+
         // Now clear down the validation queue
         $validatedArray["id"] = 44;
         $validatedArray["username"] = "mark123";
@@ -341,6 +356,8 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $validatedArray["emailAddress"] = "mark@oxil.gmail";
         $validatedArray["standardDate"] = "06/12/1977";
         $validatedArray["customDate"] = "01-01-2017";
+        $validatedArray["pickOne"] = "Green";
+        $validatedArray["pickMany"]= ["Silk"];
 
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
         $this->assertEquals(0, sizeof($validationErrors));
@@ -353,6 +370,19 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $indexesErrors = $validationErrors["indexes"];
         $this->assertEquals(1, sizeof($indexesErrors));
         $this->assertEquals(new FieldValidationError("indexes", "multiple", "Value must be an array"), $indexesErrors["multiple"]);
+
+
+        // Associative array should fail
+        $validatedArray["indexes"] = [
+            "item1" => "Mark",
+            "item2" => "John"
+        ];
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(1, sizeof($validationErrors));
+        $indexesErrors = $validationErrors["indexes"];
+        $this->assertEquals(1, sizeof($indexesErrors));
+        $this->assertEquals(new FieldValidationError("indexes", "multiple", "Value must be an array"), $indexesErrors["multiple"]);
+
 
         $validatedArray["indexes"] = [
             "Hello",

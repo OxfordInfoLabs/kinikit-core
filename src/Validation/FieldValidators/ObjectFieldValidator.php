@@ -73,9 +73,16 @@ abstract class ObjectFieldValidator {
      */
     public function getEvaluatedValidationMessage($placeholderArguments = []) {
 
-        return preg_replace_callback("/\\$([0-9])/", function ($matches) use ($placeholderArguments) {
+        // Replace indexed params
+        $result = preg_replace_callback("/\\$([0-9])/", function ($matches) use ($placeholderArguments) {
             return $placeholderArguments[$matches[1] - 1];
         }, $this->getValidationMessage());
+
+
+        // Replace all
+        $result = str_replace('$ALL', join(", ", $placeholderArguments), $result);
+
+        return $result;
 
     }
 

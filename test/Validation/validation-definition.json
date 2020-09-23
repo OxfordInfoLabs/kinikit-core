@@ -50,6 +50,15 @@
     "date": "d-m-Y"
   },
   {
+    "name": "pickOne",
+    "values": ["Green", "Blue", "Silk"]
+  },
+  {
+    "name": "pickMany",
+    "values": ["Green", "Blue", "Silk"],
+    "multiple": true
+  },
+  {
     "name": "indexes",
     "multiple": true,
     "numeric": true
