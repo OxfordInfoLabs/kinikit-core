@@ -17,8 +17,8 @@ class RequiredFieldValidator extends ObjectFieldValidator {
      *
      * @param $value
      */
-    public function validate($value){
-        return $value ? true : false;
+    public function validate($value) {
+        return isset($value) && ($value !== "") && ($value !== []) ? true : false;
     }
 
     /**
