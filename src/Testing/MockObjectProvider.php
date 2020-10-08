@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Testing;
 
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Proxy\ProxyGenerator;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\Primitive;
@@ -33,6 +34,16 @@ class MockObjectProvider {
         $this->proxyGenerator = $proxyGenerator;
         $this->classInspectorProvider = $classInspectorProvider;
     }
+
+    /**
+     * Singleton instance for testing convenience
+     *
+     * @return MockObjectProvider
+     */
+    public static function instance() {
+        return Container::instance()->get(MockObjectProvider::class);
+    }
+
 
     /**
      * Get a mock instance for a given class name
