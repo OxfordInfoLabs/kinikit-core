@@ -9,6 +9,8 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
+use Kinikit\Core\Logging\Logger;
+
 abstract class ObjectFieldValidator {
 
     /**
@@ -77,10 +79,6 @@ abstract class ObjectFieldValidator {
         $result = preg_replace_callback("/\\$([0-9])/", function ($matches) use ($placeholderArguments) {
             return $placeholderArguments[$matches[1] - 1];
         }, $this->getValidationMessage());
-
-
-        // Replace all
-        $result = str_replace('$ALL', join(", ", $placeholderArguments), $result);
 
         return $result;
 

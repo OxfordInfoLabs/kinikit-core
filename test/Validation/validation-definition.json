@@ -51,11 +51,54 @@
   },
   {
     "name": "pickOne",
-    "values": ["Green", "Blue", "Silk"]
+    "values": [
+      "Green",
+      "Blue",
+      "Silk"
+    ]
+  },
+  {
+    "name": "pickOneStructured",
+    "values": [
+      {
+        "label": "Green",
+        "value": "green"
+      },
+      {
+        "label": "Blue",
+        "value": "blue"
+      },
+      {
+        "label": "Silk",
+        "value": "silk"
+      }
+    ]
   },
   {
     "name": "pickMany",
-    "values": ["Green", "Blue", "Silk"],
+    "values": [
+      "Green",
+      "Blue",
+      "Silk"
+    ],
+    "multiple": true
+  },
+  {
+    "name": "pickManyStructured",
+    "values": [
+      {
+        "label": "Green",
+        "value": "green"
+      },
+      {
+        "label": "Blue",
+        "value": "blue"
+      },
+      {
+        "label": "Silk",
+        "value": "silk"
+      }
+    ],
     "multiple": true
   },
   {

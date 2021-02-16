@@ -337,12 +337,27 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(1, sizeof($pickOneErrors));
         $this->assertEquals(new FieldValidationError("pickOne", "values", "Value must be one of [Green, Blue, Silk]"), $pickOneErrors["values"]);
 
+        $validatedArray["pickOneStructured"] = "ginger";
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(12, sizeof($validationErrors));
+        $pickOneStructuredErrors = $validationErrors["pickOneStructured"];
+        $this->assertEquals(1, sizeof($pickOneStructuredErrors));
+        $this->assertEquals(new FieldValidationError("pickOneStructured", "values", "Value must be one of [green, blue, silk]"), $pickOneStructuredErrors["values"]);
+
 
         $validatedArray["pickMany"] = ["Ginger", "Spice"];
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
-        $this->assertEquals(13, sizeof($validationErrors));
-         $this->assertEquals(new FieldValidationError("pickMany:0", "values", "Value must be one of [Green, Blue, Silk]"), $validationErrors["pickMany:0"]["values"]);
+        $this->assertEquals(14, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("pickMany:0", "values", "Value must be one of [Green, Blue, Silk]"), $validationErrors["pickMany:0"]["values"]);
         $this->assertEquals(new FieldValidationError("pickMany:1", "values", "Value must be one of [Green, Blue, Silk]"), $validationErrors["pickMany:1"]["values"]);
+
+
+        $validatedArray["pickManyStructured"] = ["Ginger", "Spice"];
+        $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
+        $this->assertEquals(16, sizeof($validationErrors));
+        $this->assertEquals(new FieldValidationError("pickManyStructured:0", "values", "Value must be one of [green, blue, silk]"), $validationErrors["pickManyStructured:0"]["values"]);
+        $this->assertEquals(new FieldValidationError("pickManyStructured:1", "values", "Value must be one of [green, blue, silk]"), $validationErrors["pickManyStructured:1"]["values"]);
+
 
 
         // Now clear down the validation queue
@@ -357,7 +372,9 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $validatedArray["standardDate"] = "06/12/1977";
         $validatedArray["customDate"] = "01-01-2017";
         $validatedArray["pickOne"] = "Green";
-        $validatedArray["pickMany"]= ["Silk"];
+        $validatedArray["pickOneStructured"] = "blue";
+        $validatedArray["pickMany"] = ["Silk"];
+        $validatedArray["pickManyStructured"] = ["green"];
 
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
         $this->assertEquals(0, sizeof($validationErrors));
