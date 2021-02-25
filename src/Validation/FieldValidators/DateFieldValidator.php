@@ -72,7 +72,7 @@ class DateFieldValidator extends ObjectFieldValidator {
 
         // Synchronise validator params if not set
         if (!($validatorParams[0] ?? null)) {
-            $validatorParams[0] = "d/m/Y";
+            $validatorParams[0] = "Y-m-d";
         }
 
         return $this->validate($value, $validatorParams[0] ?? null);

@@ -134,7 +134,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(9, sizeof($validationErrors));
         $dateErrors = $validationErrors["standardDate"];
         $this->assertEquals(1, sizeof($dateErrors));
-        $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in d/m/Y format"), $dateErrors["date"]);
+        $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in Y-m-d format"), $dateErrors["date"]);
 
         $validatedObject->setCustomDate("rrr");
         $validationErrors = $this->validator->validateObject($validatedObject);
@@ -153,7 +153,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $validatedObject->setAge(18);
         $validatedObject->setShoeSize(11);
         $validatedObject->setEmailAddress("mark@oxil.gmail");
-        $validatedObject->setStandardDate("06/12/1977");
+        $validatedObject->setStandardDate("1977-12-06");
         $validatedObject->setCustomDate("01-01-2017");
 
         $validationErrors = $this->validator->validateObject($validatedObject);
@@ -320,7 +320,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(9, sizeof($validationErrors));
         $dateErrors = $validationErrors["standardDate"];
         $this->assertEquals(1, sizeof($dateErrors));
-        $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in d/m/Y format"), $dateErrors["date"]);
+        $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in Y-m-d format"), $dateErrors["date"]);
 
         $validatedArray["customDate"] = "RRR";
         $validationErrors = $this->validator->validateArray($validatedArray, $validationDefinition);
@@ -359,7 +359,6 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new FieldValidationError("pickManyStructured:1", "values", "Value must be one of [green, blue, silk]"), $validationErrors["pickManyStructured:1"]["values"]);
 
 
-
         // Now clear down the validation queue
         $validatedArray["id"] = 44;
         $validatedArray["username"] = "mark123";
@@ -369,7 +368,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $validatedArray["age"] = 18;
         $validatedArray["shoeSize"] = 11;
         $validatedArray["emailAddress"] = "mark@oxil.gmail";
-        $validatedArray["standardDate"] = "06/12/1977";
+        $validatedArray["standardDate"] = "1977-12-06";
         $validatedArray["customDate"] = "01-01-2017";
         $validatedArray["pickOne"] = "Green";
         $validatedArray["pickOneStructured"] = "blue";
