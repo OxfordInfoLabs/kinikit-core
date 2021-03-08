@@ -4,6 +4,7 @@
 namespace Kinikit\Core\HTTP\Dispatcher;
 
 
+use Kinikit\Core\HTTP\HttpRequestTimeoutException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
@@ -29,13 +30,24 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
             [
                 "header" => $request->getHeaders()->getHeaders(),
                 "method" => $request->getMethod(),
-                "content" => $request->getBody()
+                "content" => $request->getBody(),
+                "ignore_errors" => true
             ]
         ];
+
+        // Configure timeout if required
+        if ($request->getTimeout()) {
+            $contextOptions["http"]["timeout"] = $request->getTimeout();
+        }
 
         $context = stream_context_create($contextOptions);
 
         $response = file_get_contents($request->getEvaluatedUrl(), false, $context);
+
+        // Detect and throw in timeout circumstance
+        if ($response === false && count($http_response_header) === 0) {
+            throw new HttpRequestTimeoutException();
+        }
 
         return $this->processResponse($request, $response, $http_response_header);
 

@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\HTTP\Dispatcher;
 
+use Kinikit\Core\HTTP\HttpRequestTimeoutException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 
@@ -56,13 +57,27 @@ class PHPRequestDispatcherTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testInvalidEndpointReturnsCorrectResponse(){
+    public function testInvalidEndpointReturnsCorrectResponse() {
 
         $request = new Request("https://jsonplaceholder.typicode.com/posts/900", Request::METHOD_GET);
 
         $response = $this->dispatcher->dispatch($request);
         $this->assertEquals(404, $response->getStatusCode());
-        
+
+    }
+
+
+    public function testIfTimeoutPassedInRequestThisIsPassedToDispatcher() {
+
+        $request = new Request("https://httpstat.us/200?sleep=5000", Request::METHOD_GET, [], null, null, 0.25);
+
+        try {
+            $this->dispatcher->dispatch($request);
+            $this->fail("Should have thrown here");
+        } catch (HttpRequestTimeoutException $e) {
+            $this->assertTrue(true);
+        }
+
     }
 
 }
