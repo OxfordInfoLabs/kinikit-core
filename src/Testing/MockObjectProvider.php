@@ -81,8 +81,12 @@ class MockObjectProvider {
 
 
         $mockInspector = $this->classInspectorProvider->getClassInspector($mockClass);
-        return $mockInspector->createInstance($params);
+        $instance = $mockInspector->createInstance($params);
 
+        // Set the underlying class inspector on the mock object for use to verify calls.
+        $mockInspector->setPropertyData($instance, $classInspector, "underlyingClassInspector", false);
+
+        return $instance;
     }
 
 }

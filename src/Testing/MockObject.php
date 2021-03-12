@@ -2,9 +2,19 @@
 
 namespace Kinikit\Core\Testing;
 
+use Kinikit\Core\Exception\NoneExistentMethodException;
+use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Util\Primitive;
 
 trait MockObject {
+
+
+    /**
+     * The class inspector for the underlying class which this mock represents
+     *
+     * @var mixed
+     */
+    private $underlyingClassInspector;
 
     /**
      * Array of programmed return values
@@ -44,8 +54,12 @@ trait MockObject {
      * @return MockObject
      */
     public function returnValue($methodName, $returnValue, $matchingArgs = null) {
+
+        $this->ensureMethodExists($methodName);
+
         $this->setArrayMethodValue($methodName, $returnValue, $matchingArgs, $this->returnValues);
         return $this;
+
     }
 
 
@@ -62,6 +76,9 @@ trait MockObject {
      * @return MockObject
      */
     public function throwException($methodName, $exception, $matchingArgs = null) {
+
+        $this->ensureMethodExists($methodName);
+
         $this->setArrayMethodValue($methodName, $exception, $matchingArgs, $this->exceptions);
 
         return $this;
@@ -118,6 +135,9 @@ trait MockObject {
      */
     public function __call($methodName, $arguments) {
 
+        // Check method exists
+        $this->ensureMethodExists($methodName);
+
         // Add calling arguments to history
         if (!isset($this->methodCallArguments[$methodName]))
             $this->methodCallArguments[$methodName] = [];
@@ -131,6 +151,14 @@ trait MockObject {
         }
 
 
+    }
+
+    // Ensure method exists
+    private function ensureMethodExists($methodName) {
+        if ($this->underlyingClassInspector &&
+            !($this->underlyingClassInspector->getPublicMethods()[$methodName] ?? null)) {
+            throw new NoneExistentMethodException($this->underlyingClassInspector->getClassName(), $methodName);
+        }
     }
 
 

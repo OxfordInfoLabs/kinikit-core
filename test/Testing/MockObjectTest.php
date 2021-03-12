@@ -9,6 +9,7 @@ use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Exception\NoneExistentMethodException;
 use Kinikit\Core\Exception\StatusException;
 use Kinikit\Core\Exception\WrongParametersException;
 
@@ -120,7 +121,35 @@ class MockObjectTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[1, 2, 3, 4], ["Mark", "Luke", "John", "Steve"]], $mockObject->getMethodCallHistory("echoParams"));
 
 
+    }
+
+
+    public function testAttemptToProgramOrCallNoneExistentMethodsThrowsException() {
+
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleService::class);
+
+        try {
+            $mockObject->returnValue("iDontExist", 12345);
+            $this->fail("Should have thrown here");
+        } catch (NoneExistentMethodException $e) {
+            $this->assertTrue(true);
+        }
+
+        try {
+            $mockObject->throwException("iDontExist", new \Exception("Test Exception"));
+            $this->fail("Should have thrown here");
+        } catch (NoneExistentMethodException $e) {
+            $this->assertTrue(true);
+        }
+
+        try {
+            $mockObject->myDummyFunction("Hello");
+            $this->fail("Should have thrown here");
+        } catch (NoneExistentMethodException $e) {
+            $this->assertTrue(true);
+        }
 
     }
+
 
 }
