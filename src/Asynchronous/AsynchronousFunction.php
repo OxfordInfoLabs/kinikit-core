@@ -38,6 +38,6 @@ class AsynchronousFunction extends Asynchronous {
      * @return mixed|void
      */
     public function run() {
-
+        return $this->function->call($this);
     }
 }
