@@ -9,10 +9,10 @@ use Kinikit\Core\DependencyInjection\Container;
 
 include "autoloader.php";
 
-class PCNTLAsynchronousProcessorTest extends \PHPUnit\Framework\TestCase {
+class SynchronousProcessorTest extends \PHPUnit\Framework\TestCase {
 
     /**
-     * @var PCNTLAsynchronousProcessor
+     * @var SynchronousProcessor
      */
     private $processor;
 
@@ -21,7 +21,7 @@ class PCNTLAsynchronousProcessorTest extends \PHPUnit\Framework\TestCase {
      * Set up function
      */
     public function setUp(): void {
-        $this->processor = Container::instance()->get(PCNTLAsynchronousProcessor::class);
+        $this->processor = Container::instance()->get(SynchronousProcessor::class);
     }
 
     public function testExecuteAndWaitCorrectlyWaitsForAllBackgroundThreadsToExecuteAndUpdatesDataAndStatus() {
@@ -78,5 +78,4 @@ class PCNTLAsynchronousProcessorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(Asynchronous::STATUS_COMPLETED, $asynchronous3->getStatus());
 
     }
-
 }

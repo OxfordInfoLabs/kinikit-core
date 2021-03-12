@@ -7,6 +7,9 @@ include "autoloader.php";
 
 class AsynchronousFunctionTest extends \PHPUnit\Framework\TestCase {
 
+
+    private $name = "Mark";
+
     public function testAsynchronousFunctionRunsTheFunctionAndAttachesValue() {
 
         $asynchronousFunction = new AsynchronousFunction(function () {
@@ -30,4 +33,15 @@ class AsynchronousFunctionTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanConstructWithThisObject() {
+
+        $asynchronousFunction = new AsynchronousFunction(function () {
+            return $this->name;
+        }, $this);
+
+        $this->assertEquals("Mark", $asynchronousFunction->run());
+
+
+    }
 }

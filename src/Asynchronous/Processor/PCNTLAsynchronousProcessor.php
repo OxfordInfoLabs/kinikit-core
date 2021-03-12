@@ -69,16 +69,31 @@ class PCNTLAsynchronousProcessor implements AsynchronousProcessor {
 
                 } catch (\Exception $e) {
 
+                    $exceptionArray = $this->objectBinder->bindToArray($e);
+
+                    if (is_array($exceptionArray)) {
+                        unset($exceptionArray["file"]);
+                        unset($exceptionArray["line"]);
+                        unset($exceptionArray["previous"]);
+                        unset($exceptionArray["trace"]);
+                        unset($exceptionArray["traceAsString"]);
+                    }
+
+
                     // Update status and exception
                     $classInspector->setPropertyData($instance, Asynchronous::STATUS_FAILED, "status", false);
-
-                    $classInspector->setPropertyData($instance, $e, "exception", false);
+                    $classInspector->setPropertyData($instance, $exceptionArray, "exceptionData", false);
 
                 }
+
 
                 // Write the file to the temp file.
                 file_put_contents($tempFile, serialize($instance));
 
+                // Prevent resources from being removed on child exit by killing via posix functions.
+                register_shutdown_function(function () {
+                    posix_kill(getmypid(), SIGKILL);
+                });
 
                 exit(0);
 
@@ -100,7 +115,7 @@ class PCNTLAsynchronousProcessor implements AsynchronousProcessor {
                     $classInspector = $this->classInspectorProvider->getClassInspector(get_class($instance));
 
                     // Set the property data from serialised version
-                    $propertyData = $classInspector->getPropertyData($unserialised,null, false);
+                    $propertyData = $classInspector->getPropertyData($unserialised, null, false);
                     $classInspector->setPropertyData($instance, $propertyData, null, false);
 
                     // Unset the instances by file reference.

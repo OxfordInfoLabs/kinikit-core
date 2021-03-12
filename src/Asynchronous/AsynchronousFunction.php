@@ -23,12 +23,18 @@ class AsynchronousFunction extends Asynchronous {
     private $function;
 
     /**
+     * @var mixed
+     */
+    private $thisObject;
+
+    /**
      * AsynchronousFunction constructor.
      *
      * @param \Closure $function
      */
-    public function __construct($function) {
+    public function __construct($function, $thisObject = null) {
         $this->function = $function;
+        $this->thisObject = $thisObject ?? $this;
     }
 
 
@@ -38,6 +44,13 @@ class AsynchronousFunction extends Asynchronous {
      * @return mixed|void
      */
     public function run() {
-        return $this->function->call($this);
+
+        $function = $this->function;
+        $thisObject = $this->thisObject;
+
+        $this->function = null;
+        $this->thisObject = null;
+
+        return $function->call($thisObject);
     }
 }

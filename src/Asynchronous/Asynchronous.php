@@ -30,11 +30,11 @@ abstract class Asynchronous {
 
 
     /**
-     * The exception instance if the run function failed
+     * The core data for the exception if one was raised
      *
-     * @var \Exception
+     * @var array
      */
-    protected $exception;
+    protected $exceptionData;
 
 
     // Status constants
@@ -63,10 +63,10 @@ abstract class Asynchronous {
     }
 
     /**
-     * @return \Exception
+     * @return array
      */
-    public function getException() {
-        return $this->exception;
+    public function getExceptionData() {
+        return $this->exceptionData;
     }
 
 
