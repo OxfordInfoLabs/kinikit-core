@@ -88,6 +88,7 @@ class ProxyGenerator {
         }";
 
 
+
         eval($classString);
 
         return $className . $proxySuffix;
@@ -130,6 +131,7 @@ class ProxyGenerator {
             $params[] = $param;
         }
         $paramsString = join(",", $params);
+
 
         return $paramsString;
 
