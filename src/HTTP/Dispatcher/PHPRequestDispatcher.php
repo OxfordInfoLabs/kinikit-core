@@ -31,9 +31,14 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
             $headers = ["Content-Type" => "application/x-www-form-urlencoded"];
         }
 
+        $headersString = "";
+        foreach ($headers as $header => $value) {
+            $headersString .= $header . ": " . $value . "\r\n";
+        }
+
         $contextOptions = ["http" =>
             [
-                "header" => $headers,
+                "header" => $headersString,
                 "method" => $request->getMethod(),
                 "content" => $request->getBody(),
                 "ignore_errors" => true

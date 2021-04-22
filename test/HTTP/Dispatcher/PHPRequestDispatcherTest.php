@@ -59,7 +59,7 @@ class PHPRequestDispatcherTest extends \PHPUnit\Framework\TestCase {
 
     public function testInvalidEndpointReturnsCorrectResponse() {
 
-        $request = new Request("https://jsonplaceholder.typicode.com/posts/900", Request::METHOD_GET);
+        $request = new Request("https://jsonplaceholder.typicode.com/posts/101", Request::METHOD_GET);
 
         $response = $this->dispatcher->dispatch($request);
         $this->assertEquals(404, $response->getStatusCode());
