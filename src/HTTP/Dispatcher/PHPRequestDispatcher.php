@@ -26,9 +26,14 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
      */
     public function dispatch($request) {
 
+        $headers = $request->getHeaders()->getHeaders();
+        if (!sizeof($headers) && $request->getMethod() != Request::METHOD_GET) {
+            $headers = ["Content-Type" => "application/x-www-form-urlencoded"];
+        }
+
         $contextOptions = ["http" =>
             [
-                "header" => $request->getHeaders()->getHeaders(),
+                "header" => $headers,
                 "method" => $request->getMethod(),
                 "content" => $request->getBody(),
                 "ignore_errors" => true
