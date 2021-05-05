@@ -107,6 +107,7 @@ class Validator {
 
         $validationErrors = array();
 
+
         foreach ($validationFields as $field => $annotations) {
 
             $value = $classInspector->getProperties()[$field]->get($object);

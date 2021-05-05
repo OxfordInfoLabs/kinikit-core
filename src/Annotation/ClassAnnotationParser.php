@@ -38,6 +38,7 @@ class ClassAnnotationParser {
         $fieldAnnotations = array();
         $properties = $class->getProperties();
 
+
         foreach ($properties as $property) {
 
             if ($property->isStatic())

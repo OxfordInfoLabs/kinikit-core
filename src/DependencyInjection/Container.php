@@ -139,6 +139,18 @@ class Container {
 
 
     /**
+     * Get the underlying class for an interface implementation.  Particularly useful when creating
+     * new instances via the new method
+     *
+     * @param $interfaceClass
+     * @param $implementationKey
+     */
+    public function getInterfaceImplementationClass($interfaceClass, $implementationKey) {
+        return $this->interfaceResolver->getImplementationClassForKey($interfaceClass, $implementationKey);
+    }
+
+
+    /**
      * @return ContainerInterceptors
      */
     public function getInterceptors() {

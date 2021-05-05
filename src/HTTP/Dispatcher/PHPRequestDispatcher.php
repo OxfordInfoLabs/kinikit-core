@@ -5,6 +5,7 @@ namespace Kinikit\Core\HTTP\Dispatcher;
 
 
 use Kinikit\Core\HTTP\HttpRequestTimeoutException;
+use Kinikit\Core\HTTP\Request\Headers as RequestHeaders;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
@@ -27,9 +28,13 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
     public function dispatch($request) {
 
         $headers = $request->getHeaders()->getHeaders();
-        if (!sizeof($headers) && $request->getMethod() != Request::METHOD_GET) {
-            $headers = ["Content-Type" => "application/x-www-form-urlencoded"];
+
+        // Ensure we have a default content type for requests
+        if (!isset($headers[RequestHeaders::CONTENT_TYPE]) && $request->getMethod() != Request::METHOD_GET) {
+            $request->getHeaders()->set(RequestHeaders::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
+        
+        $headers = $request->getHeaders()->getHeaders();
 
         $headersString = "";
         foreach ($headers as $header => $value) {
