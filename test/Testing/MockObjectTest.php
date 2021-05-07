@@ -152,4 +152,15 @@ class MockObjectTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testAttemptToProgramOrCallNonExistentMethodsWhereMagicCallFunctionExistsSucceed() {
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleServiceWithCallMethod::class);
+
+        $mockObject->returnValue("iDontExist", 12345);
+        $mockObject->throwException("iDontExist", new \Exception("Test Exception"));
+        $mockObject->myDummyFunction("Hello");
+
+        $this->assertTrue(true);
+    }
+
+
 }

@@ -156,7 +156,9 @@ trait MockObject {
     // Ensure method exists
     private function ensureMethodExists($methodName) {
         if ($this->underlyingClassInspector &&
-            !($this->underlyingClassInspector->getPublicMethods()[$methodName] ?? null)) {
+            !($this->underlyingClassInspector->getPublicMethods()[$methodName] ?? null)
+            && !($this->underlyingClassInspector->getPublicMethods()["__call"] ?? null)
+        ) {
             throw new NoneExistentMethodException($this->underlyingClassInspector->getClassName(), $methodName);
         }
     }

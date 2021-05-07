@@ -49,34 +49,40 @@ class MockObjectProvider {
      * Get a mock instance for a given class name
      *
      * All injected dependencies will be stubbed out with mock instances for convenience.
+     * Constructor params if passed will be used instead of autodetection
      *
      * @param $className
      * @return MockObject
      */
-    public function getMockInstance($className) {
+    public function getMockInstance($className, $constructorParams = null) {
 
         // Make a mockery.
-        $mockClass = $this->proxyGenerator->generateProxy($className, "Mock", [MockObject::class]);
+        $mockClass = $this->proxyGenerator->generateProxy($className, "Mock", [MockObject::class], true);
 
         // Get inspector for the new mock class
         $classInspector = $this->classInspectorProvider->getClassInspector($className);
 
         $constructor = $classInspector->getConstructor();
 
-        if ($constructor) {
-            $constructorParams = $constructor->getIndexedParameters();
-            $params = [];
-            foreach ($constructorParams as $key => $value) {
-                if (!in_array($value->getType(), Primitive::TYPES)) {
-                    if ($value->isArray()) {
-                        $params[$key] = [];
-                    } else {
-                        $params[$key] = $this->getMockInstance($value->getType());
+
+        if (!is_array($constructorParams)) {
+            if ($constructor) {
+                $constructorParams = $constructor->getIndexedParameters();
+                $params = [];
+                foreach ($constructorParams as $key => $value) {
+                    if (!in_array($value->getType(), Primitive::TYPES)) {
+                        if ($value->isArray()) {
+                            $params[$key] = [];
+                        } else {
+                            $params[$key] = $this->getMockInstance($value->getType());
+                        }
                     }
                 }
+            } else {
+                $params = [];
             }
         } else {
-            $params = [];
+            $params = $constructorParams;
         }
 
 

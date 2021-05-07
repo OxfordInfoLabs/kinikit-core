@@ -29,7 +29,7 @@ class ProxyGenerator {
      *
      * @return string
      */
-    public function generateProxy($className, $proxySuffix, $includedTraits) {
+    public function generateProxy($className, $proxySuffix, $includedTraits, $blankConstructor = false) {
 
         $classInspector = new ClassInspector($className);
 
@@ -60,8 +60,10 @@ class ProxyGenerator {
 
         if ($classInspector->getConstructor()) {
             $classString .= "
-            public function __construct($constructorParams){
-                (new \ReflectionClass(\$this))->getParentClass()->getMethod('__construct')->invokeArgs(\$this, func_get_args());
+            public function __construct($constructorParams){";
+            if (!$blankConstructor)
+                $classString .= "(new \ReflectionClass(\$this))->getParentClass()->getMethod('__construct')->invokeArgs(\$this, func_get_args());";
+            $classString .= "
             }
           
         ";
@@ -70,8 +72,9 @@ class ProxyGenerator {
         // Loop through all public methods and reimplement.
         foreach ($classInspector->getPublicMethods() as $method) {
 
-            if ($method->isStatic())
+            if ($method->isStatic() || $method->isFinal() || $method->getMethodName() == "__call")
                 continue;
+
 
             $paramsString = $this->getMethodParamsString($method);
             $returnType = $method->getReturnType() && $method->getReturnType()->isExplicitlyTyped() ? ":" . $method->getReturnType()->getType() : "";

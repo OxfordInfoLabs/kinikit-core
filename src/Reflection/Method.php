@@ -110,6 +110,16 @@ class Method {
 
 
     /**
+     * Return boolean indicating final
+     *
+     * @return bool
+     */
+    public function isFinal(){
+        return $this->reflectionMethod->isFinal();
+    }
+
+
+    /**
      * Call this method on the supplied object using arguments which are
      * in key / value format for convenience.
      *
