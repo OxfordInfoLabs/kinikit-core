@@ -14,7 +14,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
 
         $stream = new ReadOnlyHttpStream("https://jsonplaceholder.typicode.com/posts");
         $this->assertTrue(sizeof($stream->getResponseHeaders()) > 0);
-        $this->assertContains("200", $stream->getResponseHeaders()[0]);
+        $this->assertStringContainsString("200", $stream->getResponseHeaders()[0]);
 
     }
 

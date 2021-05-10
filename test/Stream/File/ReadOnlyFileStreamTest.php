@@ -16,7 +16,7 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
             new ReadOnlyFileStream(__DIR__ . "/bad.txt");
             $this->fail("Should have thrown here");
         } catch (StreamException $e) {
-            $this->assertContains("failed to open stream: No such file or directory", $e->getMessage());
+            $this->assertStringContainsString("failed to open stream: No such file or directory", $e->getMessage());
         }
 
 
@@ -24,7 +24,7 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
             new ReadOnlyFileStream("http://gfdgsdgs.com");
             $this->fail("Should have thrown here");
         } catch (StreamException $e) {
-            $this->assertContains("php_network_getaddresses", $e->getMessage());
+            $this->assertStringContainsString("php_network_getaddresses", $e->getMessage());
         }
 
     }

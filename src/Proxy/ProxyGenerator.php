@@ -118,7 +118,7 @@ class ProxyGenerator {
 
                 $defaultValueString = $parameter->getDefaultValue();
                 if (is_string($defaultValueString)) {
-                    $defaultValueString = '"' . $defaultValueString . '"';
+                    $defaultValueString = '"' . str_replace('"', '\\"', $defaultValueString) . '"';
                 } else if (is_bool($defaultValueString)) {
                     $defaultValueString = $defaultValueString ? "true" : "false";
                 } else if ($defaultValueString === null) {
