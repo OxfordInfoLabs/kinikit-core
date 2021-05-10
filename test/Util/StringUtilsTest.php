@@ -75,6 +75,48 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testCanConvertStringToCamelCase() {
+
+        // Check already in camel case
+        $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("happyHappyJoyJoy"));
+
+        // Check one with initial caps
+        $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("HappyHappyJoyJoy"));
+
+        // Check ordinary spaced capitalised one
+        $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("Happy Happy Joy Joy"));
+
+        // Check lower cased spaced one
+        $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("happy happy joy joy"));
+
+        // Check for hyphenated formats
+        $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("happy_happy_joy_joy"));
+
+
+    }
+
+    public function testCanConvertStringFromCamelCase() {
+
+        // Already not in camel case
+        $this->assertEquals("Happy Happy Joy Joy", StringUtils::convertFromCamelCase("Happy Happy Joy Joy"));
+
+        // Standard substitution
+        $this->assertEquals("Happy Happy Joy Joy", StringUtils::convertFromCamelCase("happyHappyJoyJoy"));
+
+
+        // Just first word converted
+        $this->assertEquals("Happy Happy joyJoy", StringUtils::convertFromCamelCase("happyHappy joyJoy"));
+
+        // Numbers also split
+        $this->assertEquals("Happy 11", StringUtils::convertFromCamelCase("happy11"));
+
+        // Underscore also used as delimeter
+        $this->assertEquals("Happy Happy Joy Joy", StringUtils::convertFromCamelCase("happy_happy_joy_joy"));
+
+
+    }
+
+
 }
 
 ?>

@@ -36,7 +36,57 @@ class StringUtils {
         return $string;
     }
 
-    
+
+    /**
+     * Convert a string with spaces etc to Camel Case
+     *
+     * @param $string
+     */
+    public static function convertToCamelCase($string) {
+
+        // Grab all words first of all in a unicode supporting manner
+        preg_match_all('/\pL+/u', $string, $allWords);
+
+        $newString = "";
+        foreach ($allWords[0] as $index => $word) {
+            $newString .= ($index == 0 ? lcfirst($word) : ucfirst($word));
+        }
+
+        return $newString;
+
+    }
+
+
+    /**
+     * Convert a string from camel case to space formatted with caps etc
+     *
+     * @param $string
+     */
+    public static function convertFromCamelCase($string) {
+
+        $string = preg_replace_callback('/(^|\W)([a-z].*?)($|\W)/', function ($matches) {
+
+            $splitCase = preg_split("/([A-Z0-9_]+)/", ucfirst($matches[2]), -1, PREG_SPLIT_DELIM_CAPTURE);
+
+            $replacedString = "";
+            foreach ($splitCase as $index => $item) {
+                if (($index + 1) % 2 == 0) {
+                    $replacedString .= " ";
+                }
+                if ($item !== "_")
+                    $replacedString .= (($splitCase[$index - 1] ?? "") == "_") ? ucfirst($item) : $item;
+            }
+
+            return $matches[1] . trim($replacedString) . $matches[3];
+
+        }, $string);
+
+
+        return $string;
+
+    }
+
+
 }
 
 ?>

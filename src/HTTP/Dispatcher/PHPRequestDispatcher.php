@@ -9,6 +9,9 @@ use Kinikit\Core\HTTP\Request\Headers as RequestHeaders;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
+use Kinikit\Core\Stream\File\ReadOnlyFileStream;
+use Kinikit\Core\Stream\Http\ReadOnlyHttpStream;
+use Kinikit\Core\Stream\StreamException;
 
 
 /**
@@ -33,7 +36,7 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
         if (!isset($headers[RequestHeaders::CONTENT_TYPE]) && $request->getMethod() != Request::METHOD_GET) {
             $request->getHeaders()->set(RequestHeaders::CONTENT_TYPE, "application/x-www-form-urlencoded");
         }
-        
+
         $headers = $request->getHeaders()->getHeaders();
 
         $headersString = "";
@@ -57,14 +60,21 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
 
         $context = stream_context_create($contextOptions);
 
-        $response = file_get_contents($request->getEvaluatedUrl(), false, $context);
+        try {
+            $stream = new ReadOnlyHttpStream($request->getEvaluatedUrl(), $context);
 
-        // Detect and throw in timeout circumstance
-        if ($response === false && count($http_response_header) === 0) {
-            throw new HttpRequestTimeoutException();
+            return $this->processResponse($request, $stream);
+
+
+        } catch (StreamException $e) {
+
+            // Detect and throw in timeout circumstance
+            if ($e->getMessage() == "Request timed out for stream") {
+                throw new HttpRequestTimeoutException();
+            } else {
+                throw ($e);
+            }
         }
-
-        return $this->processResponse($request, $response, $http_response_header);
 
 
     }
@@ -73,10 +83,12 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
     /**
      * Get the response headers for the last request
      */
-    private function processResponse($request, $responseBody, $headersObject) {
+    private function processResponse($request, $responseStream) {
 
         $headers = array();
         $responseCode = 0;
+
+        $headersObject = $responseStream->getResponseHeaders();
 
         foreach ($headersObject as $k => $v) {
             $t = explode(':', $v, 2);
@@ -87,7 +99,7 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
                     $responseCode = intval($out[1]);
             }
         }
-        return new Response($responseBody, $responseCode, new Headers($headers), $request);
+        return new Response($responseStream, $responseCode, new Headers($headers), $request);
     }
 
 

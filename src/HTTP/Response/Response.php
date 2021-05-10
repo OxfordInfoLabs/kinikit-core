@@ -5,16 +5,16 @@ namespace Kinikit\Core\HTTP\Response;
 
 
 use Kinikit\Core\HTTP\Request\Request;
+use Kinikit\Core\Stream\ReadableStream;
 
 class Response {
-
 
     /**
      * The raw response body
      *
-     * @var string
+     * @var ReadableStream
      */
-    private $body;
+    private $stream;
 
     /**
      * The status code for this response
@@ -41,13 +41,14 @@ class Response {
     /**
      * Response constructor.
      *
-     * @param string $body
+     * @param ReadableStream $stream
      * @param int $statusCode
      * @param Headers $headers
      * @param Request $request
      */
-    public function __construct($body, $statusCode, $headers, $request) {
-        $this->body = $body;
+    public function __construct($stream, $statusCode, $headers, $request) {
+
+        $this->stream = $stream;
         $this->statusCode = $statusCode;
         $this->headers = $headers;
         $this->request = $request;
@@ -55,10 +56,21 @@ class Response {
 
 
     /**
+     * Get the Readable File stream
+     *
+     * @return ReadableStream
+     */
+    public function getStream() {
+        return $this->stream;
+    }
+
+    /**
+     * Get the body, provided the stream hasn't already been read
+     *
      * @return string
      */
     public function getBody() {
-        return $this->body;
+        return $this->stream->getContents();
     }
 
     /**
