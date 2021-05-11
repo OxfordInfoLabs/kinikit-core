@@ -101,6 +101,7 @@ class Validator {
         // Get a class inspector instance for this object.
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
+        
         // Look up field annotations of type validation.
         $classAnnotations = $classInspector->getClassAnnotationsObject();
         $validationFields = $classAnnotations->getFieldAnnotations();
