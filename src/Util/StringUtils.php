@@ -64,7 +64,7 @@ class StringUtils {
      */
     public static function convertFromCamelCase($string) {
 
-        $string = preg_replace_callback('/(^|\W)([a-z].*?)($|\W)/', function ($matches) {
+        $string = preg_replace_callback('/(^|\W)([a-zA-Z].*?)($|\W)/', function ($matches) {
 
             $splitCase = preg_split("/([A-Z0-9_]+)/", ucfirst($matches[2]), -1, PREG_SPLIT_DELIM_CAPTURE);
 
