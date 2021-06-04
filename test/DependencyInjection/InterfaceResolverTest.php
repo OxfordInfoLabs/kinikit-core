@@ -75,4 +75,27 @@ class InterfaceResolverTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanAddImplementationClassForKey() {
+
+        /**
+         * @var InterfaceResolver $interfaceResolver
+         */
+        $interfaceResolver = Container::instance()->get(InterfaceResolver::class);
+
+        // Check non exists to start with
+        try {
+            $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class, "thirdimplementation");
+            $this->fail("Should have thrown here");
+        } catch (MissingInterfaceImplementationException $e) {
+            // Success
+        }
+
+        $interfaceResolver->addImplementationClassForKey(InterfaceWithMappings::class, "thirdimplementation", ImplementationMapping3::class);
+
+
+        $this->assertEquals(ImplementationMapping3::class, $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class, "thirdimplementation"));
+
+    }
+
 }

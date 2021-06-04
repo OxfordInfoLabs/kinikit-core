@@ -22,16 +22,17 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
      * Construct with a filename and optional context options
      *
      * @param $url
-     * @param null $contextOptions
+     * @param null $context
      */
-    public function __construct($url, $contextOptions = null) {
+    public function __construct($url, $context = null) {
 
         try {
 
-            if (!$contextOptions) {
+
+            if (!$context) {
                 $this->resource = fopen($url, "r", false);
             } else {
-                $this->resource = fopen($url, "r", false, $contextOptions);
+                $this->resource = fopen($url, "r", false, $context);
             }
 
             // If no resource, throw stream exception with message

@@ -39,14 +39,14 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
 
         $headers = $request->getHeaders()->getHeaders();
 
-        $headersString = "";
+        $headerStrings = [];
         foreach ($headers as $header => $value) {
-            $headersString .= $header . ": " . $value . "\r\n";
+            $headerStrings[] = $header . ": " . $value;
         }
 
         $contextOptions = ["http" =>
             [
-                "header" => $headersString,
+                "header" => $headerStrings,
                 "method" => $request->getMethod(),
                 "content" => $request->getBody(),
                 "ignore_errors" => true
@@ -59,6 +59,7 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
         }
 
         $context = stream_context_create($contextOptions);
+
 
         try {
             $stream = new ReadOnlyHttpStream($request->getEvaluatedUrl(), $context);

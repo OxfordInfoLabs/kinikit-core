@@ -64,14 +64,14 @@ class Request {
      * @param string $url
      * @param string $method
      * @param string $parameters
-     * @param string $poyload
+     * @param string $payload
      * @param Headers $headers
      */
-    public function __construct($url, $method = self::METHOD_POST, $parameters = [], $poyload = null, $headers = null, $timeout = null) {
+    public function __construct($url, $method = self::METHOD_POST, $parameters = [], $payload = null, $headers = null, $timeout = null) {
         $this->url = $url;
         $this->method = $method;
         $this->parameters = $parameters;
-        $this->payload = $poyload;
+        $this->payload = $payload;
         $this->headers = $headers ? $headers : new Headers();
         $this->timeout = $timeout;
     }

@@ -189,5 +189,17 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanSetNewInterfaceImplementationOnContainerForKey() {
+
+        $container = new Container();
+        $container->addInterfaceImplementation(InterfaceWithMappings::class, "third", ImplementationMapping3::class);
+
+        $thirdInstance = $container->getInterfaceImplementation(InterfaceWithMappings::class, "third");
+        $this->assertEquals(new ImplementationMapping3(), $thirdInstance);
+        $thirdInstance2 = $container->getInterfaceImplementation(InterfaceWithMappings::class, "third");
+        $this->assertTrue($thirdInstance === $thirdInstance2);
+
+    }
+
 
 }

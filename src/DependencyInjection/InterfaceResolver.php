@@ -15,6 +15,14 @@ use Kinikit\Core\Reflection\ClassInspectorProvider;
  */
 class InterfaceResolver {
 
+    /**
+     * Explicit implementations set by the add method
+     *
+     * @var array
+     */
+    private $explicitImplementations = [];
+
+
     private $classInspectorProvider;
 
     /**
@@ -41,8 +49,6 @@ class InterfaceResolver {
         // Get the annotations for the class
         $classInspector = $this->classInspectorProvider->getClassInspector($interfaceClass);
         $classAnnotations = $classInspector->getClassAnnotations();
-
-        $className = null;
 
         // Look for implementation configs and parameter
         $configValue = null;
@@ -75,6 +81,12 @@ class InterfaceResolver {
 
         if ($implementationKey) {
 
+
+            // if an explicit implementation set, return it straight away
+            if (isset($this->explicitImplementations[$interfaceClass][$implementationKey])) {
+                return $this->explicitImplementations[$interfaceClass][$implementationKey];
+            }
+
             $implementations = $classAnnotations["implementation"] ?? [];
             foreach ($implementations as $implementation) {
                 $explodedImp = explode(" ", trim($implementation->getValue()));
@@ -99,6 +111,21 @@ class InterfaceResolver {
             }
         }
 
+    }
+
+
+    /**
+     * Add an implementation class for the supplied key
+     *
+     * @param $interfaceClass
+     * @param $implementationKey
+     * @param $implementationClass
+     */
+    public function addImplementationClassForKey($interfaceClass, $implementationKey, $implementationClass) {
+        if (!isset($this->explicitImplementations[$interfaceClass])) {
+            $this->explicitImplementations[$interfaceClass] = [];
+        }
+        $this->explicitImplementations[$interfaceClass][$implementationKey] = $implementationClass;
     }
 
 

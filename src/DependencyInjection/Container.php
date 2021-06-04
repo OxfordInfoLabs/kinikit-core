@@ -151,6 +151,19 @@ class Container {
 
 
     /**
+     * Add a new interface implementation (useful as part of bootstrapping apps).  Allow for
+     * a short key to be associated with an implementation if required.
+     *
+     * @param $interfaceClass
+     * @param $implementationKey
+     * @param $implementationClass
+     */
+    public function addInterfaceImplementation($interfaceClass, $implementationKey, $implementationClass) {
+        $this->interfaceResolver->addImplementationClassForKey($interfaceClass, $implementationKey, $implementationClass);
+    }
+
+
+    /**
      * @return ContainerInterceptors
      */
     public function getInterceptors() {
