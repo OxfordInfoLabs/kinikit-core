@@ -15,23 +15,41 @@ use Kinikit\Core\Util\Logging\Logger;
 class HttpSession {
 
     private static $instance;
-    private $sessionData = null;
 
     // Private constructor - should use instance method
     private function __construct() {
+
+        $cookieDomain = Configuration::instance()->getParameter('session.cookie.domain');
+
+        if ($cookieDomain) {
+            if ($cookieDomain == "WILDCARD") {
+                $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
+                $explodedHost = explode(":", $host);
+                $host = $explodedHost[0];
+                if ($host) {
+                    $splitHost = explode(".", $host);
+                    $tld = array_pop($splitHost);
+                    $domain = array_pop($splitHost);
+                    $cookieDomain = ".$domain.$tld";
+                } else {
+                    return;
+                }
+            }
+
+            ini_set("session.cookie_domain", $cookieDomain);
+        }
+
     }
 
     /**
      * Set a session value by key and invalidate the session data
      *
      * @param string $key
-     * @param mixed $value
+     * @param any $value
      */
     public function setValue($key, $value) {
         $this->startSession();
         $_SESSION [$key] = $value;
-        $this->sessionData = null;
-        session_write_close();
     }
 
     /**
@@ -52,15 +70,8 @@ class HttpSession {
      * Get all values - return as array and close session to prevent threading locks.
      */
     public function getAllValues($lockSession = false) {
-
-        if (!$this->sessionData || $lockSession) {
-            $this->startSession();
-            $this->sessionData = isset($_SESSION) ? $_SESSION : array();
-            if (!$lockSession)
-                session_write_close();
-        }
-
-        return $this->sessionData;
+        $this->startSession();
+        return $_SESSION;
     }
 
 
@@ -69,9 +80,7 @@ class HttpSession {
      *
      */
     public function clearAll() {
-        $this->startSession();
         $_SESSION = array();
-        $this->sessionData = null;
         session_write_close();
     }
 
@@ -88,7 +97,6 @@ class HttpSession {
      * Force a reload of the session
      */
     public function reload() {
-        $this->sessionData = null;
         $this->getAllValues();
     }
 
@@ -99,33 +107,17 @@ class HttpSession {
         if (session_id() == "" || session_id() == null) {
             if (isset ($_REQUEST ["HTTPSESSID"])) {
                 session_id($_REQUEST ["HTTPSESSID"]);
-            }
-            else if (isset ($_REQUEST ["PHPSESSID"])) {
+            } else if (isset ($_REQUEST ["PHPSESSID"])) {
                 session_id($_REQUEST ["PHPSESSID"]);
             }
-        }
 
-        $cookieDomain = Configuration::instance()->getParameter('session.cookie.domain');
-        if ($cookieDomain) {
-
-            if ($cookieDomain == "WILDCARD") {
-                $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "";
-                if ($host) {
-                    $splitHost = explode(".", $host);
-                    $tld = array_pop($splitHost);
-                    $domain = array_pop($splitHost);
-                    $cookieDomain = ".$domain.$tld";
-                } else {
-                    return;
-                }
+            try {
+                @session_start();
+            } catch (Exception $e) {
+                @session_regenerate_id();
             }
-
-
-
-            ini_set("session.cookie_domain", $cookieDomain);
         }
 
-        @session_start();
 
     }
 
