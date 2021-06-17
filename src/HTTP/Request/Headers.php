@@ -22,7 +22,7 @@ class Headers {
     const ACCEPT_ENCODING = "Accept-Encoding";
     const ACCEPT_LANGUAGE = "Accept-Language";
     const ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
-    const AUTHORISATION = "Authorisation";
+    const AUTHORISATION = "Authorization";
     const CACHE_CONTROL = "Cache-Control";
     const CONNECTION = "Connection";
     const CONTENT_ENCODING = "Content-Encoding";

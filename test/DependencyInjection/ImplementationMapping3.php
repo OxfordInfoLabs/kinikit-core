@@ -5,7 +5,7 @@ namespace Kinikit\Core\DependencyInjection;
 
 /**
  *
- * @noProxy 
+ * @noProxy
  * Class ImplementationMapping3
  * @package Kinikit\Core\DependencyInjection
  */

@@ -53,6 +53,7 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
             ]
         ];
 
+
         // Configure timeout if required
         if ($request->getTimeout()) {
             $contextOptions["http"]["timeout"] = $request->getTimeout();
