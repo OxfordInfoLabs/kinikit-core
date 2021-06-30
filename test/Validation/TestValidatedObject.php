@@ -8,7 +8,7 @@
 
 namespace Kinikit\Core\Validation;
 
-class TestValidatedObject  {
+class TestValidatedObject {
 
 
     /**
@@ -69,6 +69,23 @@ class TestValidatedObject  {
      * @date d-m-Y
      */
     private $customDate;
+
+
+    /**
+     * @requiredEither requiredFirstGroup2
+     */
+    private $requiredFirstGroup1;
+
+
+    private $requiredFirstGroup2;
+
+
+    /**
+     * @requiredEither requiredSecondGroup2
+     */
+    private $requiredSecondGroup1;
+
+    private $requiredSecondGroup2;
 
 
     /**
@@ -209,6 +226,62 @@ class TestValidatedObject  {
      */
     public function setCustomDate($customDate) {
         $this->customDate = $customDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequiredFirstGroup1() {
+        return $this->requiredFirstGroup1;
+    }
+
+    /**
+     * @param mixed $requiredFirstGroup1
+     */
+    public function setRequiredFirstGroup1($requiredFirstGroup1) {
+        $this->requiredFirstGroup1 = $requiredFirstGroup1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequiredFirstGroup2() {
+        return $this->requiredFirstGroup2;
+    }
+
+    /**
+     * @param mixed $requiredFirstGroup2
+     */
+    public function setRequiredFirstGroup2($requiredFirstGroup2) {
+        $this->requiredFirstGroup2 = $requiredFirstGroup2;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequiredSecondGroup1() {
+        return $this->requiredSecondGroup1;
+    }
+
+    /**
+     * @param mixed $requiredSecondGroup1
+     */
+    public function setRequiredSecondGroup1($requiredSecondGroup1) {
+        $this->requiredSecondGroup1 = $requiredSecondGroup1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequiredSecondGroup2() {
+        return $this->requiredSecondGroup2;
+    }
+
+    /**
+     * @param mixed $requiredSecondGroup2
+     */
+    public function setRequiredSecondGroup2($requiredSecondGroup2) {
+        $this->requiredSecondGroup2 = $requiredSecondGroup2;
     }
 
 

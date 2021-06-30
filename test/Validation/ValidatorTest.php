@@ -30,7 +30,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validationErrors = $this->validator->validateObject($validatedObject);
 
-        $this->assertEquals(3, sizeof($validationErrors));
+        $this->assertEquals(5, sizeof($validationErrors));
 
         $idErrors = $validationErrors["id"];
 
@@ -45,17 +45,26 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(1, sizeof($nameErrors));
         $this->assertEquals(new FieldValidationError("name", "required", "This field is required"), $nameErrors["required"]);
 
+        $requiredFirstGroup1Errors = $validationErrors["requiredFirstGroup1"];
+        $this->assertEquals(1, sizeof($requiredFirstGroup1Errors));
+        $this->assertEquals(new FieldValidationError("requiredFirstGroup1", "requiredEither", "One of the fields requiredFirstGroup1, requiredFirstGroup2 is required"), $requiredFirstGroup1Errors["requiredEither"]);
+
+
+        $requiredSecondGroup1Errors = $validationErrors["requiredSecondGroup1"];
+        $this->assertEquals(1, sizeof($requiredSecondGroup1Errors));
+        $this->assertEquals(new FieldValidationError("requiredSecondGroup1", "requiredEither", "One of the fields requiredSecondGroup1, requiredSecondGroup2 is required"), $requiredSecondGroup1Errors["requiredEither"]);
+
 
         $validatedObject->setId("marky");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(3, sizeof($validationErrors));
+        $this->assertEquals(5, sizeof($validationErrors));
         $idErrors = $validationErrors["id"];
         $this->assertEquals(1, sizeof($idErrors));
         $this->assertEquals(new FieldValidationError("id", "numeric", "Value must be numeric"), $idErrors["numeric"]);
 
         $validatedObject->setUsername("__");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(3, sizeof($validationErrors));
+        $this->assertEquals(5, sizeof($validationErrors));
         $usernameErrors = $validationErrors["username"];
         $this->assertEquals(2, sizeof($usernameErrors));
         $this->assertEquals(new FieldValidationError("username", "alphanumeric", "Value must be alphanumeric"), $usernameErrors["alphanumeric"]);
@@ -64,14 +73,14 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validatedObject->setName("**Bang123**");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(3, sizeof($validationErrors));
+        $this->assertEquals(5, sizeof($validationErrors));
         $nameErrors = $validationErrors["name"];
         $this->assertEquals(1, sizeof($nameErrors));
         $this->assertEquals(new FieldValidationError("name", "name", "Value must be a valid name"), $nameErrors["name"]);
 
         $validatedObject->setPassword("%%");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(5, sizeof($validationErrors));
+        $this->assertEquals(7, sizeof($validationErrors));
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
         $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
@@ -83,7 +92,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validatedObject->setPassword("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(5, sizeof($validationErrors));
+        $this->assertEquals(7, sizeof($validationErrors));
         $passwordErrors = $validationErrors["password"];
         $this->assertEquals(2, sizeof($passwordErrors));
         $this->assertEquals(new FieldValidationError("password", "regexp", "Value does not match the required format"), $passwordErrors["regexp"]);
@@ -94,14 +103,14 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validatedObject->setAge(10);
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(6, sizeof($validationErrors));
+        $this->assertEquals(8, sizeof($validationErrors));
         $ageErrors = $validationErrors["age"];
         $this->assertEquals(1, sizeof($ageErrors));
         $this->assertEquals(new FieldValidationError("age", "range", "Value must be between 18 and 65"), $ageErrors["range"]);
 
         $validatedObject->setAge(70);
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(6, sizeof($validationErrors));
+        $this->assertEquals(8, sizeof($validationErrors));
         $ageErrors = $validationErrors["age"];
         $this->assertEquals(1, sizeof($ageErrors));
         $this->assertEquals(new FieldValidationError("age", "range", "Value must be between 18 and 65"), $ageErrors["range"]);
@@ -109,7 +118,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validatedObject->setShoeSize(2);
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(7, sizeof($validationErrors));
+        $this->assertEquals(9, sizeof($validationErrors));
         $shoeSizeErrors = $validationErrors["shoeSize"];
         $this->assertEquals(1, sizeof($shoeSizeErrors));
         $this->assertEquals(new FieldValidationError("shoeSize", "min", "Value must be at least 3"), $shoeSizeErrors["min"]);
@@ -117,31 +126,53 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase {
 
         $validatedObject->setShoeSize(12);
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(7, sizeof($validationErrors));
+        $this->assertEquals(9, sizeof($validationErrors));
         $shoeSizeErrors = $validationErrors["shoeSize"];
         $this->assertEquals(1, sizeof($shoeSizeErrors));
         $this->assertEquals(new FieldValidationError("shoeSize", "max", "Value must be no greater than 11"), $shoeSizeErrors["max"]);
 
         $validatedObject->setEmailAddress("pinky");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(8, sizeof($validationErrors));
+        $this->assertEquals(10, sizeof($validationErrors));
         $emailAddressErrors = $validationErrors["emailAddress"];
         $this->assertEquals(1, sizeof($emailAddressErrors));
         $this->assertEquals(new FieldValidationError("emailAddress", "email", "Value must be a valid email"), $emailAddressErrors["email"]);
 
         $validatedObject->setStandardDate("rrr");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(9, sizeof($validationErrors));
+        $this->assertEquals(11, sizeof($validationErrors));
         $dateErrors = $validationErrors["standardDate"];
         $this->assertEquals(1, sizeof($dateErrors));
         $this->assertEquals(new FieldValidationError("standardDate", "date", "Value must be a date in Y-m-d format"), $dateErrors["date"]);
 
         $validatedObject->setCustomDate("rrr");
         $validationErrors = $this->validator->validateObject($validatedObject);
-        $this->assertEquals(10, sizeof($validationErrors));
+        $this->assertEquals(12, sizeof($validationErrors));
         $dateErrors = $validationErrors["customDate"];
         $this->assertEquals(1, sizeof($dateErrors));
         $this->assertEquals(new FieldValidationError("customDate", "date", "Value must be a date in d-m-Y format"), $dateErrors["date"]);
+
+        $validatedObject->setRequiredFirstGroup1("Hello");
+        $validationErrors = $this->validator->validateObject($validatedObject);
+        $this->assertEquals(11, sizeof($validationErrors));
+        $this->assertFalse(isset($validationErrors["requiredFirstGroup1"]));
+
+        $validatedObject->setRequiredFirstGroup1(null);
+        $validatedObject->setRequiredFirstGroup2("Hello");
+        $validationErrors = $this->validator->validateObject($validatedObject);
+        $this->assertEquals(11, sizeof($validationErrors));
+        $this->assertFalse(isset($validationErrors["requiredFirstGroup1"]));
+
+        $validatedObject->setRequiredSecondGroup1("Hello");
+        $validationErrors = $this->validator->validateObject($validatedObject);
+        $this->assertEquals(10, sizeof($validationErrors));
+        $this->assertFalse(isset($validationErrors["requiredSecondGroup1"]));
+
+        $validatedObject->setRequiredSecondGroup1(null);
+        $validatedObject->setRequiredSecondGroup2("Hello");
+        $validationErrors = $this->validator->validateObject($validatedObject);
+        $this->assertEquals(10, sizeof($validationErrors));
+        $this->assertFalse(isset($validationErrors["requiredSecondGroup1"]));
 
 
         // Now clear down the validation queue
