@@ -99,6 +99,7 @@ class ProxyGenerator {
     }
 
 
+
     // Get method params for a method object
     private function getMethodParamsString($method) {
 

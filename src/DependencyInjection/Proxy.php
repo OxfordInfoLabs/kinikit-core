@@ -71,7 +71,7 @@ trait Proxy {
      */
     public function __call($name, $arguments) {
 
-        $interceptors = $this->interceptors->getInterceptors();
+        $interceptors = $this->interceptors ? $this->interceptors->getInterceptors() : [];
 
         // If we have interceptors, calculate the parameters
         $params = array();

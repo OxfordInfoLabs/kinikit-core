@@ -118,7 +118,7 @@ class Validator {
             foreach ($annotations as $annotation) {
 
                 $validatorKey = $annotation[0]->getLabel();
-                $validatorArgs = $annotation[0]->getValue() ? explode(",", $annotation[0]->getValue()) : [];
+                $validatorArgs = $annotation[0]->getValue() !== null ? explode(",", $annotation[0]->getValue()) : [];
 
                 $validator = isset($this->validators[$validatorKey]) ? $this->validators[$validatorKey] : null;
                 if (isset($validator)) {

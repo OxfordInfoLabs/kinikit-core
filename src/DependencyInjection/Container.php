@@ -269,9 +269,9 @@ class Container {
         }
 
 
-        // Create a proxy class provided the noProxy annotation is not set.
+        // Create a proxy class provided the noProxy annotation is not set and there is not already a proxy applied
         $proxy = false;
-        if ($allowProxy && !isset($classInspector->getClassAnnotations()["noProxy"])) {
+        if ($allowProxy && !isset($classInspector->getClassAnnotations()["noProxy"]) && !isset($classInspector->getPublicMethods()["__call"])) {
             $proxy = true;
             $newClass = $this->proxyGenerator->generateProxy($newClass, "Proxy", [Proxy::class]);
             $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
