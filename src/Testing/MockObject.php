@@ -184,10 +184,11 @@ trait MockObject {
 
             $matches = sizeof($args) == sizeof($matchingArgs);
 
+
             if ($matches) {
-                foreach ($args as $index => $arg) {
-                    $matches = $matches && Primitive::isPrimitive($arg) == Primitive::isPrimitive($matchingArgs[$index]);
-                    $matches = $matches && $arg == $matchingArgs[$index];
+                foreach ($args as $argIndex => $arg) {
+                    $matches = $matches && Primitive::isPrimitive($arg) == Primitive::isPrimitive($matchingArgs[$argIndex]);
+                    $matches = $matches && $arg == $matchingArgs[$argIndex];
                 }
             }
 
