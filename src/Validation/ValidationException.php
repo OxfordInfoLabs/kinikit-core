@@ -20,7 +20,11 @@ class ValidationException extends \Exception {
      */
     public function __construct($validationErrors) {
         $this->validationErrors = $validationErrors;
-        parent::__construct("The following validation errors occurred: " . join(", ", array_keys($this->validationErrors)));
+
+        // Create a message appropriately.
+        $validationErrorMessages = $this->generateValidationMessages($this->validationErrors);
+
+        parent::__construct("The following validation errors occurred: " . join("<br>", $validationErrorMessages));
     }
 
     /**
@@ -28,6 +32,29 @@ class ValidationException extends \Exception {
      */
     public function getValidationErrors() {
         return $this->validationErrors;
+    }
+
+
+    // Generate validation messages from a message array
+    private function generateValidationMessages($messageArray, $parentKey = "") {
+        $messages = [];
+        foreach ($messageArray as $key => $items) {
+
+            // Check for submessages at this level
+            $subMessages = [];
+            foreach ($items as $subItemKey => $subItem) {
+                if ($subItem instanceof FieldValidationError) {
+                    $subMessages[] = $subItem->getErrorMessage();
+                }
+            }
+            if (sizeof($subMessages) > 0) {
+                $messages[] = $parentKey . $key . ": " . join(", ", $subMessages);
+            } else {
+                $messages = array_merge($messages, $this->generateValidationMessages($items, $key . "->"));
+            }
+        }
+
+        return $messages;
     }
 
 }
