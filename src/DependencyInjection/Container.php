@@ -244,7 +244,7 @@ class Container {
 
         // If interface, attempt to resolve interface via annotations
         $newClass = $className;
-        if ($classInspector->isInterface()) {
+        if ($classInspector->isInterface() || $classInspector->isAbstract()) {
             $newClass = $this->interfaceResolver->getCurrentlyConfiguredImplementationClass($newClass);
             $classInspector = $this->classInspectorProvider->getClassInspector($newClass);
         }

@@ -78,6 +78,16 @@ class ClassInspector {
 
 
     /**
+     * Return boolean as to whether or not this is an abstract class.
+     *
+     * @return bool
+     */
+    public function isAbstract() {
+        return $this->reflectionClass->isAbstract();
+    }
+
+
+    /**
      * Get the constructor as a method inspector object.
      *
      * @return Method
