@@ -289,4 +289,19 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testConstructorHandlesSamePropertyNamesWithKeyExtension() {
+
+        $classInspector = new ClassInspector(TestPOPOSimilarProperties::class);
+        $constructorParameters = $classInspector->getConstructor()->getParameters();
+
+        $this->assertEquals(2, sizeof($constructorParameters));
+        $this->assertEquals("nameKey", $constructorParameters[0]->getName());
+        $this->assertEquals("string", $constructorParameters[0]->getType());
+        $this->assertEquals("name", $constructorParameters[1]->getName());
+        $this->assertEquals("string", $constructorParameters[1]->getType());
+
+
+    }
+
 }

@@ -12,7 +12,9 @@ namespace Kinikit\Core\Validation;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Exception\InvalidValidatorException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Serialisation\XML\XMLToObjectConverter;
 use Kinikit\Core\Util\ObjectArrayUtils;
@@ -100,6 +102,10 @@ class Validator {
      */
     public function validateObject($object) {
 
+        // Shortcut for known recursion.
+        if (get_class($object) == ClassInspector::class)
+            return [];
+
         // Get a class inspector instance for this object.
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
@@ -113,7 +119,7 @@ class Validator {
 
         foreach ($validationFields as $field => $annotations) {
 
-            $value = $classInspector->getProperties()[$field]->get($object);
+            $value = $classInspector->getPropertyData($object, $field);
 
             foreach ($annotations as $annotation) {
 

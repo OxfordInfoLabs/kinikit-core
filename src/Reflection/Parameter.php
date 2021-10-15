@@ -75,9 +75,9 @@ class Parameter {
             $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
 
             foreach ($methodAnnotations as $annotation) {
-                if (strpos($annotation->getValue(), '$' . $reflectionParameter->getName())) {
-                    $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
+                if (preg_match("/.+?\\$" . $reflectionParameter->getName()."($|\\[| )/", $annotation->getValue())) {
 
+                    $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
                     list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
                     if (!in_array($type, Primitive::TYPES)) {

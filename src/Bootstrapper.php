@@ -7,7 +7,6 @@ use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
 
 
-
 /**
  * Generic initialiser.  This should be called to initialise the framework with default setup stuff.
  * This should be initialised explicitly for e.g. Command Line Applications but is called automatically
