@@ -4,6 +4,8 @@
 namespace Kinikit\Core\HTTP\Request;
 
 
+use Kinikit\Core\Logging\Logger;
+
 class Request {
 
     /**
