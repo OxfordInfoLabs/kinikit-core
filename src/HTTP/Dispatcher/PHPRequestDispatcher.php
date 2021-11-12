@@ -64,8 +64,7 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
 
         try {
             $stream = new ReadOnlyHttpStream($request->getEvaluatedUrl(), $context);
-
-            return $this->processResponse($request, $stream);
+            return new Response($stream, $stream->getResponseCode(), new Headers($stream->getResponseHeaders()), $request);
 
 
         } catch (StreamException $e) {
@@ -79,29 +78,6 @@ class PHPRequestDispatcher implements HttpRequestDispatcher {
         }
 
 
-    }
-
-
-    /**
-     * Get the response headers for the last request
-     */
-    private function processResponse($request, $responseStream) {
-
-        $headers = array();
-        $responseCode = 0;
-
-        $headersObject = $responseStream->getResponseHeaders();
-
-        foreach ($headersObject as $k => $v) {
-            $t = explode(':', $v, 2);
-            if (isset($t[1]))
-                $headers[trim($t[0])] = trim($t[1]);
-            else if ($k == 0) {
-                if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#", $v, $out))
-                    $responseCode = intval($out[1]);
-            }
-        }
-        return new Response($responseStream, $responseCode, new Headers($headers), $request);
     }
 
 

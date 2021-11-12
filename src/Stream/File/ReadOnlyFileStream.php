@@ -141,6 +141,13 @@ class ReadOnlyFileStream implements ReadableStream {
         fclose($this->resource);
     }
 
+    /**
+     * @return resource
+     */
+    public function getResource() {
+        return $this->resource;
+    }
+
 
     // Throw the last stream error
     protected function throwLastStreamError($message = null) {

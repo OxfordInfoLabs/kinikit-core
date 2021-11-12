@@ -18,6 +18,9 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
     // Response headers from stream
     private $responseHeaders = [];
 
+    // Response code
+    private $responseCode = 0;
+
     /**
      * Construct with a filename and optional context options
      *
@@ -45,7 +48,25 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
                 $this->throwLastStreamError();
             } else {
                 if (isset($http_response_header)) {
-                    $this->responseHeaders = $http_response_header;
+
+                    $headers = array();
+                    $responseCode = 0;
+
+                    $headersObject = $http_response_header;
+
+                    foreach ($headersObject as $k => $v) {
+                        $t = explode(':', $v, 2);
+                        if (isset($t[1]))
+                            $headers[strtolower(trim($t[0]))] = trim($t[1]);
+                        else if ($k == 0) {
+                            if (preg_match("#HTTP/[0-9\.]+\s+([0-9]+)#", $v, $out))
+                                $responseCode = intval($out[1]);
+                        }
+                    }
+
+                    // Update response headers and response code
+                    $this->responseHeaders = $headers;
+                    $this->responseCode = $responseCode;
                 }
             }
 
@@ -68,6 +89,16 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
      */
     public function getResponseHeaders() {
         return $this->responseHeaders;
+    }
+
+
+    /**
+     * Get a response code if one was found.
+     *
+     * @return int
+     */
+    public function getResponseCode() {
+        return $this->responseCode;
     }
 
 

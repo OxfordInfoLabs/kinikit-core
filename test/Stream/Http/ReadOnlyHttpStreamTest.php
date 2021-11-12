@@ -10,11 +10,12 @@ include_once "autoloader.php";
 class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
 
 
-    public function testResponseHeadersCapturedCorrectlyForValidHTTPRequest() {
+    public function testStatusAndResponseHeadersCapturedCorrectlyForValidHTTPRequest() {
 
         $stream = new ReadOnlyHttpStream("https://jsonplaceholder.typicode.com/posts");
         $this->assertTrue(sizeof($stream->getResponseHeaders()) > 0);
-        $this->assertStringContainsString("200", $stream->getResponseHeaders()[0]);
+        $this->assertEquals("200", $stream->getResponseCode());
+        $this->assertEquals("1000", $stream->getResponseHeaders()["x-ratelimit-limit"]);
 
     }
 
