@@ -75,6 +75,16 @@ class ReadOnlyFileStream implements ReadableStream {
         return $bytes;
     }
 
+    /**
+     * Read a line from a stream
+     *
+     * @return mixed|void
+     */
+    public function readLine() {
+        $this->checkReadOperationPossible();
+
+        return trim(fgets($this->resource));
+    }
 
     /**
      * Read a CSV line using the passed separator and enclosures
@@ -171,4 +181,6 @@ class ReadOnlyFileStream implements ReadableStream {
             throw new StreamException("Cannot read bytes as end of stream reached");
         }
     }
+
+
 }

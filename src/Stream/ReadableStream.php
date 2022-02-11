@@ -18,6 +18,14 @@ interface ReadableStream extends Stream {
 
 
     /**
+     * Read a whole line as a string
+     *
+     * @return mixed
+     */
+    public function readLine();
+
+
+    /**
      * Read a CSV line using the passed separator and enclosures
      */
     public function readCSVLine($separator = ",", $enclosure = '"');

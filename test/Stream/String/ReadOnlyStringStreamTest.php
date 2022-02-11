@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Stream\String;
 
+use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\StreamException;
 
 include_once "autoloader.php";
@@ -41,7 +42,17 @@ class ReadOnlyStringStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testCanGetContentsAtAnyTime(){
+    public function testCanReadLineFromStringsStream() {
+
+        $stream = new ReadOnlyStringStream(file_get_contents(__DIR__ . "/../File/test-multiline.txt"));
+        $this->assertEquals("Hello", $stream->readLine());
+        $this->assertEquals("World", $stream->readLine());
+        $this->assertEquals("Of", $stream->readLine());
+        $this->assertEquals("Fun and Games", $stream->readLine());
+
+    }
+
+    public function testCanGetContentsAtAnyTime() {
 
         $stream = new ReadOnlyStringStream("Bingo Bango");
         $this->assertEquals("Bingo Bango", $stream->getContents());
@@ -53,13 +64,12 @@ class ReadOnlyStringStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testOpenAlwaysTrueAndCloseDoesNothing(){
+    public function testOpenAlwaysTrueAndCloseDoesNothing() {
 
         $stream = new ReadOnlyStringStream("Bingo Bango");
         $this->assertTrue($stream->isOpen());
         $stream->close();
         $this->assertTrue($stream->isOpen());
-
 
 
     }

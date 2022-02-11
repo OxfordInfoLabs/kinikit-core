@@ -129,4 +129,13 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testCanGetLineFromStream(){
+        $stream = new ReadOnlyFileStream(__DIR__ . "/test-multiline.txt");
+        $this->assertEquals("Hello", $stream->readLine());
+        $this->assertEquals("World", $stream->readLine());
+        $this->assertEquals("Of", $stream->readLine());
+        $this->assertEquals("Fun and Games", $stream->readLine());
+    }
+
 }

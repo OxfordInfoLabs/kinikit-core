@@ -49,6 +49,23 @@ class ReadOnlyStringStream implements ReadableStream {
     }
 
     /**
+     * Read a line from the string
+     *
+     * @return mixed|void
+     */
+    public function readLine() {
+        if (!$this->isEof()) {
+            $lineEnding = strpos(substr($this->string, $this->pointer), "\n");
+            $line = substr($this->string, $this->pointer, $lineEnding);
+            $this->pointer += $lineEnding + 1;
+            return $line;
+        } else {
+            throw new StreamException("Cannot read bytes as end of stream reached");
+        }
+    }
+
+
+    /**
      * Read a CSV line
      *
      * @param string $separator
@@ -97,4 +114,6 @@ class ReadOnlyStringStream implements ReadableStream {
      */
     public function close() {
     }
+
+
 }
