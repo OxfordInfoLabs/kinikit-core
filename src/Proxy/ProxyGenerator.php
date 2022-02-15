@@ -79,9 +79,11 @@ class ProxyGenerator {
             $paramsString = $this->getMethodParamsString($method);
             $returnType = $method->getReturnType() && $method->getReturnType()->isExplicitlyTyped() ? ":" . $method->getReturnType()->getType() : "";
 
+            $returnInstruction = ($method->getReturnType() && $method->getReturnType() !== "void") ? "return" : "";
+
             $classString .= "
             public function {$method->getMethodName()}($paramsString)$returnType{
-                return \$this->__call('{$method->getMethodName()}', func_get_args());
+                $returnInstruction \$this->__call('{$method->getMethodName()}', func_get_args());
             }
             
             ";
@@ -97,7 +99,6 @@ class ProxyGenerator {
 
 
     }
-
 
 
     // Get method params for a method object
