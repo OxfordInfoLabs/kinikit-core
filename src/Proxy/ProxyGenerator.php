@@ -79,7 +79,7 @@ class ProxyGenerator {
             $paramsString = $this->getMethodParamsString($method);
             $returnType = $method->getReturnType() && $method->getReturnType()->isExplicitlyTyped() ? ":" . $method->getReturnType()->getType() : "";
 
-            $returnInstruction = ($method->getReturnType() && $method->getReturnType() !== "void") ? "return" : "";
+            $returnInstruction = $returnType !== ":void" ? "return" : "";
 
             $classString .= "
             public function {$method->getMethodName()}($paramsString)$returnType{
