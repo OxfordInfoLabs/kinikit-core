@@ -148,7 +148,11 @@ class ReadOnlyFileStream implements ReadableStream {
      * @return mixed|void
      */
     public function close() {
-        fclose($this->resource);
+        try {
+            fclose($this->resource);
+        } catch (\Exception $e){
+            // Ignore
+        }
     }
 
     /**
