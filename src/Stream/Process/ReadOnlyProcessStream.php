@@ -31,7 +31,6 @@ class ReadOnlyProcessStream extends ReadOnlyFileStream {
 
         $descriptorSpec = [
             ["pipe", "r"],
-            ["pipe", "w"],
             ["pipe", "w"]
         ];
 
