@@ -28,7 +28,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
             new ReadOnlyHttpStream("https://httpstat.us/200?sleep=5000", $context);
             $this->fail("Should have thrown here");
         } catch (StreamException $e) {
-            $this->assertEquals("Request timed out for stream", $e->getMessage());
+            $this->assertStringContainsString("timed out", $e->getMessage());
         }
     }
 
