@@ -6,6 +6,7 @@ namespace Kinikit\Core\Stream\Process;
 
 use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\ReadableStream;
+use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 
 /**
  * Read only process stream which creates a process using the passed
@@ -14,7 +15,7 @@ use Kinikit\Core\Stream\ReadableStream;
  * Class ReadOnlyProcessStream
  * @package Kinikit\Core\Stream\Process
  */
-class ReadOnlyProcessStream extends ReadOnlyFileStream {
+class ReadOnlyProcessStream extends ReadOnlyFilePointerResourceStream {
 
     /**
      * @var mixed
@@ -38,7 +39,7 @@ class ReadOnlyProcessStream extends ReadOnlyFileStream {
         $this->proc = proc_open($command,
             $descriptorSpec, $pipes);
 
-        $this->resource = $pipes[1];
+        parent::__construct($pipes[1]);
     }
 
 

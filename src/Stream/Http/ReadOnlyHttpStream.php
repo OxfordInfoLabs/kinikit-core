@@ -5,6 +5,7 @@ namespace Kinikit\Core\Stream\Http;
 
 
 use Kinikit\Core\Stream\File\ReadOnlyFileStream;
+use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 use Kinikit\Core\Stream\StreamException;
 
 /**
@@ -13,7 +14,7 @@ use Kinikit\Core\Stream\StreamException;
  * Class ReadOnlyHttpStream
  * @package Kinikit\Core\Stream\Http
  */
-class ReadOnlyHttpStream extends ReadOnlyFileStream {
+class ReadOnlyHttpStream extends ReadOnlyFilePointerResourceStream {
 
     // Response headers from stream
     private $responseHeaders = [];
@@ -33,13 +34,13 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
 
 
             if (!$context) {
-                $this->resource = fopen($url, "r", false);
+                $resource = fopen($url, "r", false);
             } else {
-                $this->resource = fopen($url, "r", false, $context);
+                $resource = fopen($url, "r", false, $context);
             }
 
             // If no resource, throw stream exception with message
-            if ($this->resource === false) {
+            if ($resource === false) {
 
                 if (isset($http_response_header) && count($http_response_header) == 0) {
                     throw new StreamException("Request timed out for stream");
@@ -47,6 +48,7 @@ class ReadOnlyHttpStream extends ReadOnlyFileStream {
 
                 $this->throwLastStreamError();
             } else {
+                parent::__construct($resource);
                 if (isset($http_response_header)) {
 
                     $headers = array();

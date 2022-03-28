@@ -171,6 +171,12 @@ class ObjectBinder {
             $seenObjects[] = $object;
         }
 
+
+        // if a resource, return intact
+        if (!is_object($object)) {
+            return $object;
+        }
+
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
         $processedKeys = [];
