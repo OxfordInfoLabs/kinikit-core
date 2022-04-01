@@ -4,6 +4,8 @@ namespace Kinikit\Core\Stream\File;
 
 use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\StreamException;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
 
 include_once "autoloader.php";
 
@@ -68,7 +70,6 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse($stream->isOpen());
 
 
-
     }
 
 
@@ -130,12 +131,15 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testCanGetLineFromStream(){
+    public function testCanGetLineFromStream() {
         $stream = new ReadOnlyFileStream(__DIR__ . "/test-multiline.txt");
         $this->assertEquals("Hello", $stream->readLine());
         $this->assertEquals("World", $stream->readLine());
         $this->assertEquals("Of", $stream->readLine());
         $this->assertEquals("Fun and Games", $stream->readLine());
     }
+
+
+
 
 }
