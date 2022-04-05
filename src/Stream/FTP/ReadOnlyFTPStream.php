@@ -37,7 +37,7 @@ class ReadOnlyFTPStream extends ReadOnlyFilePointerResourceStream {
             $sftpContext = [];
             if ($username) $sftpContext["username"] = $username;
             if ($password) $sftpContext["password"] = $password;
-            if ($privateKey) $sftpContext["privkey"] = PublicKeyLoader::load(file_get_contents($privateKey));
+            if ($privateKey) $sftpContext["privkey"] = PublicKeyLoader::load($privateKey);
 
             $context = [
                 "sftp" => $sftpContext
