@@ -6,6 +6,7 @@ namespace Kinikit\Core\Stream\FTP;
 
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Net\SFTP;
 use phpseclib3\Net\SFTP\Stream;
 
 /**
@@ -32,20 +33,13 @@ class ReadOnlyFTPStream extends ReadOnlyFilePointerResourceStream {
         // Secure case
         if ($secure) {
 
-            Stream::register("sftp");
+            $sftp = new SFTP($hostname);
+            $sftp->login($username, $privateKey ? PublicKeyLoader::load($privateKey) : $password);
 
-            $sftpContext = [];
-            if ($username) $sftpContext["username"] = $username;
-            if ($password) $sftpContext["password"] = $password;
-            if ($privateKey) $sftpContext["privkey"] = PublicKeyLoader::load($privateKey);
-
-            $context = [
-                "sftp" => $sftpContext
-            ];
-
-            $context = stream_context_create($context);
-
-            parent::__construct(fopen("sftp://$hostname/$filePath", "r", false, $context));
+            $tmpDir = sys_get_temp_dir();
+            $download = tempnam($tmpDir, "ftp");
+            $sftp->get($filePath, $download);
+            parent::__construct(fopen($download, "r"));
 
         } else // Insecure case
         {
@@ -57,7 +51,7 @@ class ReadOnlyFTPStream extends ReadOnlyFilePointerResourceStream {
                     $outputHandle = fopen("php://temp", "r+");
 
                     ftp_pasv($ftp, true);
-                    ftp_fget($ftp, $outputHandle, $filePath,  FTP_ASCII);
+                    ftp_fget($ftp, $outputHandle, $filePath, FTP_ASCII);
 
                     parent::__construct($outputHandle);
                 }
