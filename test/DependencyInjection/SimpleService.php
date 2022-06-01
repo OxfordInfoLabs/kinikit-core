@@ -32,4 +32,14 @@ class SimpleService {
         return array($a, $b, $c, $d);
     }
 
+
+    /**
+     * By reference param
+     *
+     * @param $a
+     */
+    public function byReference(&$a) {
+        $a["prop"] = "Bingo";
+    }
+
 }

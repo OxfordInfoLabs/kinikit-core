@@ -4,6 +4,8 @@
 namespace Kinikit\Core\Stream\FTP;
 
 
+use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
@@ -34,11 +36,18 @@ class ReadOnlyFTPStream extends ReadOnlyFilePointerResourceStream {
         if ($secure) {
 
             $sftp = new SFTP($hostname);
-            $sftp->login($username, $privateKey ? PublicKeyLoader::load($privateKey) : $password);
+            $authenticated = $sftp->login($username, $privateKey ? PublicKeyLoader::load($privateKey) : $password);
+
+            if (!$authenticated) {
+                throw new AccessDeniedException("Could not connect to FTP server with supplied credentials");
+            }
 
             $tmpDir = sys_get_temp_dir();
             $download = tempnam($tmpDir, "ftp");
-            $sftp->get($filePath, $download);
+            $downloaded = $sftp->get($filePath, $download);
+            if (!$downloaded) {
+                throw new FileNotFoundException("The file at path $filePath cannot be found on the FTP server");
+            }
             parent::__construct(fopen($download, "r"));
 
         } else // Insecure case

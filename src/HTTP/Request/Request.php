@@ -176,7 +176,7 @@ class Request {
                 $url .= (strpos($url, "?") ? "&" : "?") . $queryString;
             }
         }
-
+        
         return $url;
     }
 

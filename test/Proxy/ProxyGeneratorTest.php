@@ -42,12 +42,20 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($echoParams->getDeclaringClass()->getName(), "Kinikit\Core\DependencyInjection\SimpleServiceProxy");
         $this->assertEquals(4, sizeof($echoParams->getParameters()));
 
+        $byReferenceParams = $reflectionClass->getMethod("byReference");
+        $this->assertEquals($byReferenceParams->getDeclaringClass()->getName(), "Kinikit\Core\DependencyInjection\SimpleServiceProxy");
+        $this->assertEquals(1, sizeof($byReferenceParams->getParameters()));
+
+
         // Check that the methods can be called as usual on the proxy
         $proxy = new \Kinikit\Core\DependencyInjection\SimpleServiceProxy();
         $proxy->__populate(new ContainerInterceptors(), new ClassInspector(SimpleService::class));
 
+
         $this->assertEquals("Hello wonderful world of fun", $proxy->getName());
         $this->assertEquals(array("A", "B", "C", "D"), $proxy->echoParams("A", "B", "C", "D"));
+
+
 
 
     }
