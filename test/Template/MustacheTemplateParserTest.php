@@ -4,6 +4,8 @@ namespace Kinikit\Core\Template;
 
 use Kinikit\Core\DependencyInjection\Container;
 
+include_once "autoloader.php";
+
 /**
  * Test cases for the PHP template parser
  *
@@ -52,5 +54,21 @@ class MustacheTemplateParserTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("<h1>Hello</h1> You must have an age of 33", $this->parser->parseTemplateText($templateText, $model));
     }
 
+
+    public function testIfIncludeBasePathNotSuppliedPartialsAreResolvedUsingModel(){
+        $model = ["test" => "Hello", "age" => "33"];
+        $templateText = "Before {{> test }} After {{> age}}";
+
+        $this->assertEquals("Before Hello After 33", $this->parser->parseTemplateText($templateText, $model));
+    }
+
+    public function testIfIncludeBasePathSuppliedThisIsUsedToResolveNestedPartials() {
+
+        $model = ["test" => "Hello", "age" => "33"];
+        $templateText = "Before {{> test_include }} After";
+
+        $this->assertEquals("Before Content Hello Age 33 After", $this->parser->parseTemplateText($templateText, $model, "Template/"));
+
+    }
 
 }

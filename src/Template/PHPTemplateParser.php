@@ -23,7 +23,7 @@ class PHPTemplateParser implements TemplateParser {
      * @param $templateText
      * @param $model
      */
-    public function parseTemplateText($templateText, &$model) {
+    public function parseTemplateText($templateText, &$model, $includePathBase = null) {
 
         // Extract all template parameters into scope.
         extract($model);

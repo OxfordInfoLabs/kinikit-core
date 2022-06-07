@@ -6,6 +6,7 @@ namespace Kinikit\Core\Communication\Email;
 
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Template\TemplateParser;
 use Kinikit\Core\Validation\ValidationException;
 use Kinikit\Core\Validation\Validator;
@@ -26,6 +27,8 @@ class TemplatedEmail extends Email {
      */
     private $model;
 
+    // Template root
+    const TEMPLATE_ROOT = "Config/email-templates";
 
 
     /**
@@ -69,7 +72,8 @@ class TemplatedEmail extends Email {
     // Parse out the template, return an array of data
     protected function parseTemplate($templateName, $model) {
 
-        $templateFile = Container::instance()->get(FileResolver::class)->resolveFile("Config/email-templates/$templateName.html");
+
+        $templateFile = Container::instance()->get(FileResolver::class)->resolveFile(self::TEMPLATE_ROOT . "/$templateName.html");
         if (!$templateFile) {
             throw new MissingEmailTemplateException($templateName);
         }
@@ -104,18 +108,18 @@ class TemplatedEmail extends Email {
                     $data[$key] = [];
                     $explodedValue = explode(",", $value);
                     foreach ($explodedValue as $valueComponent) {
-                        $data[$key][] = $templateParser->parseTemplateText(trim($valueComponent), $model);
+                        $data[$key][] = $templateParser->parseTemplateText(trim($valueComponent), $model, self::TEMPLATE_ROOT);
                     }
                 } else {
-                    $data[$key] = $templateParser->parseTemplateText(trim($value), $model);
+                    $data[$key] = $templateParser->parseTemplateText(trim($value), $model, self::TEMPLATE_ROOT);
                 }
             }
 
         }
 
+        $model = array_merge($data, $model);
 
-        $data["body"] = $templateParser->parseTemplateText($template, $model);
-
+        $data["body"] = $templateParser->parseTemplateText($template, $model, self::TEMPLATE_ROOT);
 
         return $data;
     }

@@ -99,4 +99,37 @@ class TemplatedEmailTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testMetaDataMadeAvailableToBody() {
+
+        $templatedEmail = new TemplatedEmail("test-with-meta", ["name" => "Dave", "domainName" => "test.fun", "toEmail" => "dave@pickmeup.com"]);
+
+        $this->assertEquals("Welcome Dave", $templatedEmail->getSubject());
+        $this->assertEquals(["dave@pickmeup.com"], $templatedEmail->getRecipients());
+        $this->assertEquals("jane@test.fun", $templatedEmail->getFrom());
+        $this->assertEquals(["cc@test.fun", "cc2@test.fun"], $templatedEmail->getCc());
+        $this->assertEquals(["bcc@test.fun", "bcc2@test.fun"], $templatedEmail->getBcc());
+        $this->assertEquals("admin@test.fun", $templatedEmail->getReplyTo());
+
+        // Now check meta data evaluated in body
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "Subject: Welcome Dave") > 0);
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "From: jane@test.fun") > 0);
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "To: dave@pickmeup.com") > 0);
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "ReplyTo: admin@test.fun") > 0);
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "CC: cc@test.funcc2@test.fun") > 0);
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "BCC: bcc@test.funbcc2@test.fun") > 0);
+
+    }
+
+
+    public function testBodyWithIncludeIsResolvedCorrectlyRelativeToEmailTemplatesDirectory() {
+
+        $templatedEmail = new TemplatedEmail("test-with-include", ["name" => "Bob"], ["james@test.com"], "mark@bingo.com", "Test example", ["admin@test.com"],
+            ["bcc@test.com"], "replyto@test.com", [new StringEmailAttachment("PINEAPPLE", "pineapple.txt")]);
+
+        $this->assertTrue(strpos($templatedEmail->getTextBody(), "Hello, Bob, welcome to my email thread") > 0);
+
+
+    }
+
+
 }

@@ -43,7 +43,7 @@ class TwigTemplateParser implements TemplateParser {
      * @param $templateText
      * @param $model
      */
-    public function parseTemplateText($templateText, &$model) {
+    public function parseTemplateText($templateText, &$model, $includePathBase = null) {
 
         // Do a PHP parse initially
         $templateText = $this->phpTemplateParser->parseTemplateText($templateText, $model);

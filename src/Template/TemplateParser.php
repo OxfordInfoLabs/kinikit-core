@@ -23,6 +23,6 @@ use Kinikit\Core\Template\Parser\TwigTemplateParser;
 interface TemplateParser {
 
     // Parse the template text and return the modified string.  The model is passed as a reference to allow mutability of the model if required.
-    public function parseTemplateText($templateText, &$model);
+    public function parseTemplateText($templateText, &$model, $includeBasePath = null);
 
 }
