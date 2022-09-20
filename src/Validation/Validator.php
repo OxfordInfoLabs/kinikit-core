@@ -177,7 +177,7 @@ class Validator {
         // validation errors in.
         if (isset($classInspector->getPublicMethods()["validate"])) {
             $customValidation = $object->validate();
-            if (sizeof($customValidation)) {
+            if (is_array($customValidation) && sizeof($customValidation)) {
                 $validationErrors = array_merge($validationErrors, $customValidation);
             }
         }
