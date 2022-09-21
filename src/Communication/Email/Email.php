@@ -4,6 +4,9 @@ namespace Kinikit\Core\Communication\Email;
 
 
 use Kinikit\Core\Communication\Email\Attachment\EmailAttachment;
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 
 /**
  * Class Email
@@ -87,7 +90,7 @@ class Email {
      * @param string $replyTo
      * @param EmailAttachment[] $attachments
      */
-    public function __construct($from, $recipients, $subject, $textBody, $cc = null, $bcc = null, $replyTo = null,  $attachments = []) {
+    public function __construct($from, $recipients, $subject, $textBody, $cc = null, $bcc = null, $replyTo = null, $attachments = []) {
         $this->from = $from;
         $this->recipients = $recipients;
         $this->subject = $subject;
@@ -169,5 +172,22 @@ class Email {
         $this->attachments = $attachments;
     }
 
+
+    /**
+     * Get a hash for this email - useful for detecting whether an email has been sent before
+     * The default implementation for this is to combine the subject, recipients and text body
+     * and hash using built in hash implementation
+     */
+    public function getHash() {
+        /**
+         * @var HashProvider $hasher
+         */
+        $hasher = Container::instance()->get(SHA512HashProvider::class);
+
+        $joinedRecipients = $this->getRecipients() ? join(",", $this->getRecipients()) : "";
+
+        // Return hash value based upon recipients, subject and text body
+        return $hasher->generateHash($joinedRecipients . $this->getSubject() . $this->getTextBody());
+    }
 
 }
