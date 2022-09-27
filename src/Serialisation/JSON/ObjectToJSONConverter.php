@@ -3,6 +3,7 @@
 namespace Kinikit\Core\Serialisation\JSON;
 
 use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Serialisation\ObjectToFormatConverter;
 
 /**
@@ -35,8 +36,8 @@ class ObjectToJSONConverter implements ObjectToFormatConverter {
         // Convert to array form first (public only).
         $object = $this->objectBinder->bindToArray($object);
 
-        // Then simply encode using PHP JSON libraries.
-        return json_encode($object, $prettyPrint ? JSON_PRETTY_PRINT : null);
+        // Then simply encode using PHP JSON libraries - ignore UTF8 issues
+        return json_encode($object, JSON_INVALID_UTF8_IGNORE + ($prettyPrint ? JSON_PRETTY_PRINT : null));
     }
 
 
