@@ -33,4 +33,13 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testIfRedirectedDomainRedirectionStatusIsCapturedToo(){
+        $stream = new ReadOnlyHttpStream("https://apple.co.uk");
+        $this->assertTrue(sizeof($stream->getResponseHeaders()) > 0);
+        $this->assertEquals("301", $stream->getResponseCode());
+        $this->assertEquals("200", $stream->getRedirectResponseCode());
+
+    }
+
+
 }
