@@ -38,19 +38,23 @@ class ValidationException extends \Exception {
     // Generate validation messages from a message array
     private function generateValidationMessages($messageArray, $parentKey = "") {
         $messages = [];
-        foreach ($messageArray as $key => $items) {
+        if (is_array($messageArray)) {
+            foreach ($messageArray as $key => $items) {
 
-            // Check for submessages at this level
-            $subMessages = [];
-            foreach ($items as $subItemKey => $subItem) {
-                if ($subItem instanceof FieldValidationError) {
-                    $subMessages[] = $subItem->getErrorMessage();
+                // Check for submessages at this level
+                $subMessages = [];
+                if (is_array($items)) {
+                    foreach ($items as $subItemKey => $subItem) {
+                        if ($subItem instanceof FieldValidationError) {
+                            $subMessages[] = $subItem->getErrorMessage();
+                        }
+                    }
                 }
-            }
-            if (sizeof($subMessages) > 0) {
-                $messages[] = $parentKey . $key . ": " . join(", ", $subMessages);
-            } else {
-                $messages = array_merge($messages, $this->generateValidationMessages($items, $key . "->"));
+                if (sizeof($subMessages) > 0) {
+                    $messages[] = $parentKey . $key . ": " . join(", ", $subMessages);
+                } else {
+                    $messages = array_merge($messages, $this->generateValidationMessages($items, $key . "->"));
+                }
             }
         }
 
