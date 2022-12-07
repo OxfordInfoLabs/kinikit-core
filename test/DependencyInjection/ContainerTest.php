@@ -38,18 +38,18 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testObjectInterceptorsAreCalledOnObjectCreation() {
+    public function testGlobalObjectInterceptorsAreCalledOnObjectCreation() {
         $container = new Container();
         $methodInterceptor = new TestContainerInterceptor();
         $container->addInterceptor($methodInterceptor);
 
-        $complexService = $container->get("Kinikit\Core\DependencyInjection\SecondaryService");
+        $complexService = $container->get(SecondaryService::class);
 
-        $this->assertTrue(in_array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", $methodInterceptor->afterCreates));
+        $this->assertTrue(in_array(SecondaryService::class . "Proxy", $methodInterceptor->afterCreates));
     }
 
 
-    public function testObjectInterceptorsAreCalledForPreAndPostMethodCallsAndOnExceptions() {
+    public function testGlobalObjectInterceptorsAreCalledForPreAndPostMethodCallsAndOnExceptions() {
 
         $container = new Container();
         $methodInterceptor = new TestContainerInterceptor();
@@ -77,6 +77,38 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
 
 
         }
+    }
+
+    public function testCanAddInterceptorToSelectiveClassesIdentifiedAsArrayOfClassNames() {
+
+        $container = new Container();
+        $methodInterceptor = new TestContainerInterceptor();
+        $container->addInterceptor($methodInterceptor, [SecondaryService::class]);
+
+        $secondaryService = $container->get(SecondaryService::class);
+
+        // Get a title
+        $secondaryService->ok();
+
+        $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
+        $this->assertEquals(array(SecondaryService::class . "Proxy", "ok"), $methodInterceptor->beforeCalls[0]);
+
+        $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
+        $this->assertEquals(array(SecondaryService::class . "Proxy", "ok"), $methodInterceptor->afterCalls[0]);
+
+
+        // Now call an unattached one
+
+        $simpleService = $container->get(SimpleService::class);
+
+        // Get a title
+        $simpleService->getName();
+
+        // Check no additional calls
+        $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
+        $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
+
+
     }
 
 

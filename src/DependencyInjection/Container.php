@@ -180,11 +180,14 @@ class Container {
 
     /**
      * Add a method interceptor to the list defined for this container.
+     * If an array of applicable classes supplied limit to these classes otherwise
+     * assume global
      *
      * @param ContainerInterceptor $interceptor
+     * @param string[] $applicableClasses
      */
-    public function addInterceptor($interceptor) {
-        $this->interceptors->addInterceptor($interceptor);
+    public function addInterceptor($interceptor, $applicableClasses = []) {
+        $this->interceptors->addInterceptor($interceptor, $applicableClasses);
     }
 
 
