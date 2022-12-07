@@ -302,15 +302,18 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
         $complexObject->setGames(array("hockey", "tennis", "football"));
         $complexObject->setTitle("Pineapple");
         $complexObject->setOtherObjs($otherObjs);
+        $complexObject->setResource(fopen(__DIR__ . "/RecursiveObject.php", "r"));
 
         $array = $this->objectBinder->bindToArray($complexObject);
+
 
         $this->assertEquals(["title" => "Pineapple",
             "games" => ["hockey", "tennis", "football"],
             "simpleObject" => ["name" => "Bingo", "age" => 23, "dob" => "06/12/1977"],
             "otherObjs" => ["primary" => [["name" => "Mark", "age" => 12, "dob" => "01/01/1990"]],
                 "secondary" => [["name" => "Mark", "age" => 22, "dob" => "01/01/1999"],
-                    ["name" => "Luke", "age" => 33, "dob" => "01/01/1985"]]]], $array);
+                    ["name" => "Luke", "age" => 33, "dob" => "01/01/1985"]]],
+            "resource" => null], $array);
     }
 
 

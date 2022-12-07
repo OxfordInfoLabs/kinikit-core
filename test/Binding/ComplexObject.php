@@ -34,6 +34,12 @@ class ComplexObject {
 
 
     /**
+     * @var resource
+     */
+    private $resource;
+
+
+    /**
      * ComplexObject constructor.
      * @param SimpleGetterSetterObj $simpleObject
      */
@@ -93,6 +99,20 @@ class ComplexObject {
      */
     public function setOtherObjs($otherObjs) {
         $this->otherObjs = $otherObjs;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getResource() {
+        return $this->resource;
+    }
+
+    /**
+     * @param resource $resource
+     */
+    public function setResource($resource) {
+        $this->resource = $resource;
     }
 
 

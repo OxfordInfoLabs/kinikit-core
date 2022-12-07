@@ -173,10 +173,16 @@ class ObjectBinder {
         }
 
 
+        // If a resource we can't serialise
+        if (is_resource($object)) {
+            return null;
+        }
+
         // if a resource, return intact
         if (!is_object($object)) {
             return $object;
         }
+
 
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
