@@ -15,7 +15,7 @@ use Kinikit\Core\Reflection\ClassInspector;
 trait Proxy {
 
     /**
-     * @var ContainerInterceptor[]
+     * @var ContainerInterceptors
      */
     private $interceptors;
 
@@ -32,13 +32,15 @@ trait Proxy {
     /**
      * Internal function called by Container to populate with bits required.
      *
-     * @param ContainerInterceptor[] $interceptors
+     * @param ContainerInterceptors $containerInterceptors
      * @param ClassInspector $classInspector
      */
-    public function __populate($interceptors, $classInspector) {
-        $this->interceptors = $interceptors;
+    public function __populate($containerInterceptors, $classInspector) {
         $this->classInspector = $classInspector;
+        $this->interceptors = $containerInterceptors;
 
+
+        // Add explicitly defined interceptors from annotations
         $interceptorAnnotations = isset($classInspector->getClassAnnotations()["interceptor"]) ?
             $classInspector->getClassAnnotations()["interceptor"] : array();
 
@@ -46,12 +48,13 @@ trait Proxy {
 
             foreach ($interceptorAnnotations as $interceptor) {
                 $interceptorClass = $interceptor->getValue();
-                $this->interceptors->addInterceptor(new $interceptorClass());
+                $newInterceptor = new $interceptorClass();
+                $this->interceptors->addInterceptor($newInterceptor, [$classInspector->getClassName()]);
             }
         }
 
-        $interceptors = $this->interceptors->getInterceptors();
-        foreach ($interceptors as $interceptor) {
+        // Call after create omn each interceptor
+        foreach ($this->interceptors->getInterceptorsForClass($classInspector->getClassName()) as $interceptor) {
             $interceptor->afterCreate($this, $classInspector);
         }
     }
@@ -71,7 +74,6 @@ trait Proxy {
      */
     public function __call($name, $arguments) {
 
-        $interceptors = $this->interceptors ? $this->interceptors->getInterceptors() : [];
 
         // If we have interceptors, calculate the parameters
         $params = array();
@@ -89,9 +91,12 @@ trait Proxy {
 
         $methodInspector = $this->classInspector->getPublicMethod($name);
 
+        // Grab the class interceptors
+        $classInterceptors = $this->interceptors->getInterceptorsForClass($this->classInspector->getClassName());
+
 
         // Evaluate before method interceptors - return input parameters
-        foreach ($interceptors as $interceptor) {
+        foreach ($classInterceptors as $interceptor) {
             $params = $interceptor->beforeMethod($this, $name, $params, $methodInspector);
         }
 
@@ -126,7 +131,7 @@ trait Proxy {
             };
 
             // Evaluate after method interceptors.
-            foreach ($interceptors as $interceptor) {
+            foreach ($classInterceptors as $interceptor) {
                 $callable = $interceptor->methodCallable($callable, $name, $params, $methodInspector);
             }
 
@@ -135,14 +140,14 @@ trait Proxy {
 
 
             // Evaluate after method interceptors, return a return value
-            foreach ($interceptors as $interceptor) {
+            foreach ($classInterceptors as $interceptor) {
                 $returnValue = $interceptor->afterMethod($this, $name, $params, $returnValue, $methodInspector);
             }
 
             return $returnValue;
 
         } catch (\Throwable $e) {
-            foreach ($interceptors as $interceptor) {
+            foreach ($classInterceptors as $interceptor) {
                 $interceptor->onException($this, $name, $params, $e, $methodInspector);
             }
 
