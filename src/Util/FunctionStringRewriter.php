@@ -99,7 +99,7 @@ class FunctionStringRewriter {
             $replace = str_replace("$" . $i, $arg, $replace);
         }
 
-        $result = str_replace($function, $replace, $string);
+        $result = str_ireplace($function, $replace, $string);
 
 
         return $result;
@@ -128,8 +128,7 @@ class FunctionStringRewriter {
             $bracketCount = 0;
             $remainingString = substr($string, $cursor);
 
-            preg_match("/[\s,(]$search\(|^$search\(/", $remainingString, $matches, PREG_OFFSET_CAPTURE);
-
+            preg_match("/[\s,(]$search\(|^$search\(/i", $remainingString, $matches, PREG_OFFSET_CAPTURE);
 
             $instanceStartPos = $matches[0][1] ?? null;
 
