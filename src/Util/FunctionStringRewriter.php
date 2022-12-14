@@ -130,27 +130,28 @@ class FunctionStringRewriter {
 
             preg_match("/[\s,(]$search\(|^$search\(/i", $remainingString, $matches, PREG_OFFSET_CAPTURE);
 
-            $instanceStartPos = $matches[0][1] ?? null;
+            $relativeInstanceStartPos = $matches[0][1] ?? null;
 
 
-            if (is_null($instanceStartPos)) {
+            if (is_null($relativeInstanceStartPos)) {
                 $result .= substr($string, $cursor) ?? "";
                 break;
             }
 
 
-
-            if ($instanceStartPos > 0) {
-                $instanceStartPos += 1;
-                $result .= substr($remainingString, 0, $instanceStartPos);
-                $cursor += $instanceStartPos;
+            if ($relativeInstanceStartPos > 0) {
+                $relativeInstanceStartPos += 1;
+                $result .= substr($remainingString, 0, $relativeInstanceStartPos);
+                $cursor += $relativeInstanceStartPos;
             }
 
-            $cursor += strlen($search);
+            $trueInstanceStartPos = $relativeInstanceStartPos + (strlen($string) - strlen($remainingString));
+
+            $argStart = $cursor + strlen($search);
 
             $found = false;
 
-            for ($i = $cursor; $i < strlen($string); $i++) {
+            for ($i = $argStart; $i < strlen($string); $i++) {
                 $char = $string[$i];
 
                 switch ($char) {
@@ -165,8 +166,9 @@ class FunctionStringRewriter {
                 if ($bracketCount == 0) {
                     $found = true;
                     $instanceEndPos = $i + 1;
-                    $functionInstance = substr($remainingString, $instanceStartPos, $instanceEndPos - $instanceStartPos);
-                    $cursor += strlen($functionInstance) - strlen($search);
+                    $length = $instanceEndPos - $trueInstanceStartPos;
+                    $functionInstance = substr($string, $trueInstanceStartPos, $length);
+                    $cursor += strlen($functionInstance);
                     break;
                 }
 

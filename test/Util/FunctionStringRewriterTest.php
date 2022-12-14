@@ -73,9 +73,9 @@ class FunctionStringRewriterTest extends TestCase {
 
     public function testCanReplaceMultipleInstancesOfFunctionAtTopLevel() {
 
-        $sql = "POW(COUNT(X),COUNT(Y))";
+        $sql = "POW(COUNT(X), COUNT(Y))";
         $result = FunctionStringRewriter::rewrite($sql, "COUNT", "SUM($1)", [null]);
-        $this->assertEquals("POW(SUM(X),SUM(Y))", $result);
+        $this->assertEquals("POW(SUM(X), SUM(Y))", $result);
 
         $sql = "DO INSTR(X,CONCAT(Z,Y)) WHERE CONCAT(A,B,C) IS NULL";
         $result = FunctionStringRewriter::rewrite($sql, "CONCAT", "MIN($1,$2)", [5, 6]);
