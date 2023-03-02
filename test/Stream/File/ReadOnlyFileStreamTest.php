@@ -18,7 +18,7 @@ class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
             new ReadOnlyFileStream(__DIR__ . "/bad.txt");
             $this->fail("Should have thrown here");
         } catch (StreamException $e) {
-            $this->assertStringContainsString("failed to open stream: No such file or directory", $e->getMessage());
+            $this->assertStringContainsString("Failed to open stream: No such file or directory", $e->getMessage());
         }
 
 

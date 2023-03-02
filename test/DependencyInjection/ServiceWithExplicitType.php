@@ -7,6 +7,7 @@ namespace Kinikit\Core\DependencyInjection;
 class ServiceWithExplicitType {
 
     private $simpleService;
+    private $secondaryService;
     private $complexService;
 
     /**

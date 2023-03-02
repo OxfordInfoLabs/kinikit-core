@@ -24,7 +24,7 @@ class StatusException extends \Exception {
 
 
     public function __construct($message, $statusCode, $code = null) {
-        parent::__construct($message, $code);
+        parent::__construct($message, $code ?? 0);
         $this->statusCode = $statusCode;
     }
 
