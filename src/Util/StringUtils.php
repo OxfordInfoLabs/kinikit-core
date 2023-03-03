@@ -44,6 +44,8 @@ class StringUtils {
      */
     public static function convertToCamelCase($string) {
 
+        $string = $string ?? "";
+
         // Grab all words first of all in a unicode supporting manner
         preg_match_all('/\pL+/u', $string, $allWords);
 

@@ -43,7 +43,7 @@ class MustacheTemplateParser implements TemplateParser {
     public function parseTemplateText($templateText, &$model, $includeBasePath = null) {
 
         // Do a PHP parse initially
-        $templateText = $this->phpTemplateParser->parseTemplateText($templateText, $model);
+        $templateText = $this->phpTemplateParser->parseTemplateText($templateText, $model) ?? "";
 
         $config = [
             "escape" => function ($value) {
