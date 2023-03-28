@@ -28,6 +28,8 @@ class MustacheTemplateParserTest extends \PHPUnit\Framework\TestCase {
 
         $model = ["test" => "Hello"];
         $this->assertEquals("Jumperoo <h1>My little smiler</h1>", $this->parser->parseTemplateText("Jumperoo <h1>My little smiler</h1>", $model));
+        $this->assertEquals("Bingo <h1>My little smiler</h1>", $this->parser->parseTemplateText("Bingo <h1>My little smiler</h1>", $model));
+
 
     }
 

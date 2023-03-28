@@ -41,7 +41,7 @@ class PHPTemplateParser implements TemplateParser {
         // Add any newly scoped variables
         $postVariables = get_defined_vars() ? get_defined_vars() : array();
         foreach ($postVariables as $key => $value) {
-            if ($key == "model") continue;
+            if ($key == "model" || $key == "templateText") continue;
             if (!isset($preVariables[$key]) || ($value != $preVariables[$key])) {
                 $model[$key] = $value;
             }
