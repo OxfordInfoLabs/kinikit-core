@@ -9,6 +9,34 @@ namespace Kinikit\Core\Util;
  */
 class DateTimeUtils {
 
+    const JS_TO_PHP_DATE_FORMATS = [
+        "YYYY" => "Y",
+        "YY" => "y",
+        "MMMM" => "F",
+        "MMM" => "M",
+        "MM" => "m",
+        "M" => "n",
+        "Do" => "jS",
+        "DD" => "d",
+        "D" => "j",
+        "HH" => "H",
+        "H" => "G",
+        "hh" => "h",
+        "h" => "g",
+        "mm" => "i",
+        "m" => "i",
+        "ss" => "s",
+        "s" => "s",
+        "SSS" => "v",
+        "SS" => "v",
+        "S" => "v",
+        "ZZ" => "O",
+        "Z" => "P",
+        "A" => "A",
+        "a" => "a",
+        "X" => "U"
+    ];
+
     /**
      * Convert a date from one format to another
      *
@@ -73,5 +101,15 @@ class DateTimeUtils {
         return $dateObj->format($dateFormat);
     }
 
+    public static function convertJSDateFormatToPHP($format) {
+
+        $matchString = join("|", array_keys(self::JS_TO_PHP_DATE_FORMATS));
+
+        $format = preg_replace_callback("/$matchString/", function ($matches) {
+            return self::JS_TO_PHP_DATE_FORMATS[$matches[0]] ?? $matches[0];
+        }, $format);
+
+        return $format;
+    }
 
 }

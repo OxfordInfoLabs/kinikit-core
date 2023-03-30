@@ -11,8 +11,17 @@ class StringValueFunction extends ValueFunctionWithArguments {
         "explode",
         "replace",
         "contains",
-        "toUpper",
-        "toLower"
+        "uppercase",
+        "lowercase",
+        "append",
+        "prepend",
+        "split",
+        "initialCaps",
+        "words",
+        "hash",
+        "md5",
+        "startsWith",
+        "endsWith"
     ];
 
     /**
@@ -63,6 +72,7 @@ class StringValueFunction extends ValueFunctionWithArguments {
                 case "trim":
                     return trim($value, $functionArgs[0]);
 
+                case "split":
                 case "explode":
                     return explode($functionArgs[0], $value);
 
@@ -81,11 +91,41 @@ class StringValueFunction extends ValueFunctionWithArguments {
                 case "contains":
                     return (bool)strpos($value, $functionArgs[0]);
 
-                case "toLower":
+                case "lowercase":
                     return strtolower($value);
 
-                case "toUpper":
+                case "uppercase":
                     return strtoupper($value);
+
+                case "append":
+                    foreach ($functionArgs as $arg) {
+                        $value .= $arg;
+                    }
+                    return $value;
+
+                case "prepend":
+                    foreach ($functionArgs as $arg) {
+                        $value = $arg . $value;
+                    }
+                    return $value;
+
+                case "initialCaps":
+                    return strlen($value) > 1 ? strtoupper(substr($value, 0, 1)) . strtolower(substr($value, 1)) : strtoupper($value);
+
+                case "words":
+                    return explode(" ", $value);
+
+                case "hash":
+                    return hash("sha512", $value);
+
+                case "md5":
+                    return md5($value);
+
+                case "startsWith":
+                    return substr($value, 0, 1);
+
+                case "endsWith":
+                    return substr($value, -1);
             }
 
             return $value;

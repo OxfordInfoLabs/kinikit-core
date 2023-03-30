@@ -70,6 +70,10 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
 
         if ($expression == "null") {
             return null;
+        } elseif ($expression == "true") {
+            return true;
+        } elseif ($expression == "false") {
+            return false;
         }
 
         $explodedExpression = explode(".", $expression);

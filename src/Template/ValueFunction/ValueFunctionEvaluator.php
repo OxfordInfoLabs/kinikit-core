@@ -25,7 +25,9 @@ class ValueFunctionEvaluator {
             new ConversionValueFunction(),
             new ArrayValueFunction(),
             new StringValueFunction(),
-            new ObjectValueFunction()
+            new ObjectValueFunction(),
+            new MathsValueFunction(),
+            new SharedValueFunction()
         ];
     }
 

@@ -103,25 +103,104 @@ class StringValueFunctionTest extends TestCase {
 
     public function testCanConvertStringToUpper() {
         $function = new StringValueFunction();
-        $this->assertTrue($function->doesFunctionApply("toUpper"));
+        $this->assertTrue($function->doesFunctionApply("uppercase"));
 
-        $this->assertEquals("TEST", $function->applyFunction("toUpper", "test", null));
-        $this->assertEquals("EXAMPLE STRING", $function->applyFunction("toUpper", "example string", null));
-        $this->assertEquals("I'M A SHOUTY MAN!", $function->applyFunction("toUpper", "I'm a shouty man!", null));
-        $this->assertEquals("ARRGHHHH", $function->applyFunction("toUpper", "arrghhhh", null));
-        $this->assertEquals("OH NO!", $function->applyFunction("toUpper", "oh no!", null));
+        $this->assertEquals("TEST", $function->applyFunction("uppercase", "test", null));
+        $this->assertEquals("EXAMPLE STRING", $function->applyFunction("uppercase", "example string", null));
+        $this->assertEquals("I'M A SHOUTY MAN!", $function->applyFunction("uppercase", "I'm a shouty man!", null));
+        $this->assertEquals("ARRGHHHH", $function->applyFunction("uppercase", "arrghhhh", null));
+        $this->assertEquals("OH NO!", $function->applyFunction("uppercase", "oh no!", null));
 
     }
 
     public function testCanConvertStringToLower() {
         $function = new StringValueFunction();
-        $this->assertTrue($function->doesFunctionApply("toLower"));
+        $this->assertTrue($function->doesFunctionApply("lowercase"));
 
-        $this->assertEquals("test", $function->applyFunction("toLower", "TEST", null));
-        $this->assertEquals("shhhhhh", $function->applyFunction("toLower", "SHhHHhh", null));
-        $this->assertEquals("it's so quiet....", $function->applyFunction("toLower", "IT'S SO quiet....", null));
-        $this->assertEquals("hello!", $function->applyFunction("toLower", "HELLO!", null));
-        $this->assertEquals("low low low", $function->applyFunction("toLower", "LOW low LOW", null));
+        $this->assertEquals("test", $function->applyFunction("lowercase", "TEST", null));
+        $this->assertEquals("shhhhhh", $function->applyFunction("lowercase", "SHhHHhh", null));
+        $this->assertEquals("it's so quiet....", $function->applyFunction("lowercase", "IT'S SO quiet....", null));
+        $this->assertEquals("hello!", $function->applyFunction("lowercase", "HELLO!", null));
+        $this->assertEquals("low low low", $function->applyFunction("lowercase", "LOW low LOW", null));
+
+    }
+
+    public function testCanAppendAndPrependToStrings() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("append"));
+        $this->assertTrue($function->doesFunctionApply("prepend"));
+
+        $this->assertEquals("abcde", $function->applyFunction("append de", "abc", null));
+        $this->assertEquals("abcde", $function->applyFunction("append c de", "ab", null));
+        $this->assertEquals("abcde", $function->applyFunction("append b c d e", "a", null));
+
+        $this->assertEquals("deabc", $function->applyFunction("prepend de", "abc", null));
+        $this->assertEquals("decab", $function->applyFunction("prepend c de", "ab", null));
+        $this->assertEquals("edcba", $function->applyFunction("prepend b c d e", "a", null));
+
+    }
+
+    public function testCanEvaluateSplitStringExpressionsCorrectly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("split"));
+
+        $string1 = "1,2,3,4";
+        $string2 = "first second third";
+
+        $this->assertEquals(["1", "2", "3", "4"], $function->applyFunction("split ','", $string1, null));
+        $this->assertEquals(["first", "second", "third"], $function->applyFunction("split ' '", $string2, null));
+        $this->assertEquals(["1,2,3,4"], $function->applyFunction("split ' '", $string1, null));
+
+    }
+
+    public function testCanEvaluateInitialCapsExpressionsCorrectly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("initialCaps"));
+
+        $this->assertEquals("Hello", $function->applyFunction("initialCaps", "hElLo", null));
+        $this->assertEquals("Look", $function->applyFunction("initialCaps", "LOOK", null));
+        $this->assertEquals("I", $function->applyFunction("initialCaps", "i", null));
+
+    }
+
+    public function testCanEvaluateWordCountInStringCorrectly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("words"));
+
+        $this->assertEquals(["Live", "long", "and", "prosper"], $function->applyFunction("words", "Live long and prosper", null));
+        $this->assertEquals(["So", "long", "and", "thanks", "for", "all", "the", "fish"], $function->applyFunction("words", "So long and thanks for all the fish", null));
+        $this->assertEquals(["Beware", "the", "Jabberwock", "my", "son"], $function->applyFunction("words", "Beware the Jabberwock my son", null));
+
+    }
+
+    public function testCanHashAStringCorrectly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("hash"));
+
+        $this->assertEquals(hash("sha512", "string"), $function->applyFunction("hash", "string", null));
+
+    }
+
+    public function testCanHasStringWithMD5Correctly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("md5"));
+
+        $this->assertEquals(md5("string"), $function->applyFunction("md5", "string", null));
+
+    }
+
+    public function testCanCorrectlyEvaluateFirstAndLastCharacterOfStrings() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("startsWith"));
+        $this->assertTrue($function->doesFunctionApply("endsWith"));
+
+        $this->assertEquals("h", $function->applyFunction("startsWith", "hiya", null));
+        $this->assertEquals("O", $function->applyFunction("startsWith", "Oops!", null));
+        $this->assertEquals("L", $function->applyFunction("startsWith", "Long string", null));
+
+        $this->assertEquals("a", $function->applyFunction("endsWith", "hiya", null));
+        $this->assertEquals("!", $function->applyFunction("endsWith", "Oops!", null));
+        $this->assertEquals("g", $function->applyFunction("endsWith", "Long string", null));
 
     }
 }

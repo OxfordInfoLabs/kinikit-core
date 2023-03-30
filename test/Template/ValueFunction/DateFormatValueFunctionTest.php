@@ -22,11 +22,15 @@ class DateFormatValueFunctionTest extends TestCase {
         $this->assertTrue($function->doesFunctionApply("monthName"));
         $this->assertTrue($function->doesFunctionApply("month"));
         $this->assertTrue($function->doesFunctionApply("year"));
+        $this->assertTrue($function->doesFunctionApply("date"));
+        $this->assertTrue($function->doesFunctionApply("dateAdd"));
+        $this->assertTrue($function->doesFunctionApply("dateSub"));
+        $this->assertTrue($function->doesFunctionApply("formattedDuration"));
 
     }
 
 
-    public function testCanEnsureDateFormat(){
+    public function testCanEnsureDateFormat() {
         $function = new DateFormatValueFunction();
         $this->assertEquals('2020-01-01', $function->applyFunction("ensureDateFormat 'Y-m-d'", "2020-01-01", []));
         $this->assertNull($function->applyFunction("ensureDateFormat 'Y-m-d'", "01/01/2020", []));
@@ -84,6 +88,35 @@ class DateFormatValueFunctionTest extends TestCase {
 
         $function = new DateFormatValueFunction();
         $this->assertEquals(2021, $function->applyFunction("year", "2021-12-02", []));
+
+    }
+
+    public function testCanConvertJSDateFormatIntoPHP() {
+
+        $function = new DateFormatValueFunction();
+        $this->assertEquals("2023-01-02 08:00:00", $function->applyFunction("date 'YYYY-MM-DD HH:mm:ss'", "08:00 2-1-2023", null));
+
+    }
+
+    public function testCanEvaluateAddAndASubtractDateExpressionsCorrectly() {
+
+        $function = new DateFormatValueFunction();
+        $this->assertEquals(date_create("08:00:00"), $function->applyFunction("dateAdd 'hours' 2", "06:00:00", null));
+        $this->assertEquals(date_create("2023-02-01"), $function->applyFunction("dateAdd 'months' 1", "2023-01-01", null));
+        $this->assertEquals(date_create("2023-02-15 10:00:00"), $function->applyFunction("dateAdd 'days' 14", "2023-02-01 10:00:00", null));
+
+        $this->assertEquals(date_create("04:00:00"), $function->applyFunction("dateSub 'hours' 2", "06:00:00", null));
+        $this->assertEquals(date_create("2023-02-01"), $function->applyFunction("dateSub 'months' 1", "2023-03-01", null));
+        $this->assertEquals(date_create("2023-01-18 10:00:00"), $function->applyFunction("dateSub 'days' 14", "2023-02-01 10:00:00", null));
+    }
+
+    public function testCanFormatADurationCorrectly() {
+
+        $function = new DateFormatValueFunction();
+        $this->assertEquals("1 Day", $function->applyFunction("formattedDuration", 86400000, null));
+        $this->assertEquals("1 Day", $function->applyFunction("formattedDuration seconds", 86400, null));
+        $this->assertEquals("1 Minute", $function->applyFunction("formattedDuration milliseconds 1", 80123, null));
+        $this->assertEquals("2 Days 4 Hours 3 Seconds", $function->applyFunction("formattedDuration", 187203000, null));
 
     }
 

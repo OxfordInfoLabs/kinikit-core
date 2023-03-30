@@ -47,7 +47,42 @@ class ObjectValueFunctionTest extends TestCase {
             ]
         ], $function->applyFunction("keyValueArray 'property' 'output'", $testObject, null));
 
+    }
 
+    public function testCanEvaluateObjectKeysCorrectly() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("keys"));
+
+        $this->assertEquals(["one", "two"], $function->applyFunction("keys", ["one" => "bob", "two" => "steve"], null));
+        $this->assertEquals([0, 1, 2], $function->applyFunction("keys", ["first", "second", "third"], null));
+
+    }
+
+    public function testCanEvaluateObjectValuesCorrectly() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("values"));
+
+        $this->assertEquals(["bob", "steve"], $function->applyFunction("values", ["one" => "bob", "two" => "steve"], null));
+        $this->assertEquals(["first", "second", "third"], $function->applyFunction("values", ["first", "second", "third"], null));
+
+    }
+
+    public function testCanCombineAnObjectCorrectly() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("combine"));
+
+        $this->assertEquals([1, 2, 3, 4, 5, 6], $function->applyFunction("combine array2 array3", [1, 2], ["array2" => [3, 4], "array3" => [5, 6]]));
+    }
+
+    public function testCanWrapObjectAsAnArray() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("wrapAsArray"));
+
+        $this->assertEquals(["dummy"], $function->applyFunction("wrapAsArray", ["dummy"], null));
 
     }
 }

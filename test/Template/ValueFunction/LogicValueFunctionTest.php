@@ -23,45 +23,6 @@ class LogicValueFunctionTest extends TestCase {
         // Check nested one
         $this->assertEquals("Buffalo", $function->applyFunction("ifNot text.nested", "", ["text" => ["nested" => "Buffalo"]]));
 
-
-    }
-
-
-    public function testAddAndSubtractFunctionsEvaluateCorrectlyForMemberAndLiteralValues() {
-
-        $function = new LogicValueFunction();
-        $this->assertEquals(40, $function->applyFunction("add 10", 30, []));
-        $this->assertEquals(40, $function->applyFunction("add hello", 20, ["hello" => 20]));
-        $this->assertEquals(-4.23, $function->applyFunction("add float", -5, ["float" => 0.77]));
-
-        $this->assertEquals(20, $function->applyFunction("subtract 10", 30, []));
-        $this->assertEquals(0, $function->applyFunction("subtract hello", 20, ["hello" => 20]));
-        $this->assertEquals(1.8, round($function->applyFunction("subtract float", 1.4, ["float" => -0.4]), 1));
-
-    }
-
-    public function testMultiplyAndDivideFunctionsEvaluateCorrectlyForMemberAndLiteralValues() {
-        $function = new LogicValueFunction();
-        $this->assertEquals(143, $function->applyFunction("multiply 11", 13, []));
-        $this->assertEquals(-24, $function->applyFunction("multiply -6", 4, []));
-        $this->assertEquals(3, $function->applyFunction("multiply hello", 0.5, ["hello" => 6]));
-        $this->assertEquals(-3.2, $function->applyFunction("multiply float", 2, ["float" => -1.6]));
-
-        $this->assertEquals(5, $function->applyFunction("divide 2", 10, []));
-        $this->assertEquals(2.5, $function->applyFunction("divide 4", 10, []));
-        $this->assertEquals(-11 / 13, $function->applyFunction("divide hello", 11, ["hello" => -13]));
-        $this->assertEquals(2, $function->applyFunction("divide float", 1.4, ["float" => 0.7]));
-    }
-
-    public function testModuloAndFloorFunctionsEvaluateCorrectlyForMemberAndLiteralValues() {
-        $function = new LogicValueFunction();
-        $this->assertEquals(3, $function->applyFunction("modulo 4", 11, []));
-        $this->assertEquals(2, $function->applyFunction("modulo 5", 12, []));
-        $this->assertEquals(2, $function->applyFunction("modulo hello", 12, ["hello" => 10]));
-        $this->assertEquals(0, $function->applyFunction("modulo goodbye", 4, ["goodbye" => 1]));
-
-        $this->assertEquals(11, $function->applyFunction("floor", 11.6, []));
-        $this->assertEquals(-12, $function->applyFunction("floor", -11.6, []));
     }
 
     public function testTernaryExpressionsAreEvaluatedCorrectly() {
@@ -149,6 +110,78 @@ class LogicValueFunctionTest extends TestCase {
 
         $this->assertEquals("24601", $function->applyFunction("ensureNumeric", 24601, null));
         $this->assertEquals(null, $function->applyFunction("ensureNumeric", "number", null));
+    }
+
+    public function testBetweenValuesExpressionsEvaluatedCorrectly() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("between"));
+
+        $this->assertEquals(true, $function->applyFunction("between 1 4", 3, null));
+        $this->assertEquals(false, $function->applyFunction("between 5 9", 11, null));
+        $this->assertEquals(true, $function->applyFunction("between 10 14", 10, null));
+        $this->assertEquals(true, $function->applyFunction("between 15 19", 19, null));
+
+    }
+
+    public function testCanEvaluateAndExpressions() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("and"));
+
+        $this->assertEquals(true, $function->applyFunction("and true", true, null));
+        $this->assertEquals(false, $function->applyFunction("and false", true, null));
+        $this->assertEquals(false, $function->applyFunction("and true", false, null));
+        $this->assertEquals(false, $function->applyFunction("and false", false, null));
+
+    }
+
+    public function testCanEvaluateOrExpressions() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("and"));
+
+        $this->assertEquals(true, $function->applyFunction("or true", true, null));
+        $this->assertEquals(true, $function->applyFunction("or false", true, null));
+        $this->assertEquals(true, $function->applyFunction("or true", false, null));
+        $this->assertEquals(false, $function->applyFunction("or false", false, null));
+
+    }
+
+    public function testCanEvaluateAndNotExpressions() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("and"));
+
+        $this->assertEquals(false, $function->applyFunction("andNot true", true, null));
+        $this->assertEquals(true, $function->applyFunction("andNot false", true, null));
+        $this->assertEquals(false, $function->applyFunction("andNot true", false, null));
+        $this->assertEquals(false, $function->applyFunction("andNot false", false, null));
+
+    }
+
+    public function testCanEvaluateOrNotExpressions() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("and"));
+
+        $this->assertEquals(true, $function->applyFunction("orNot true", true, null));
+        $this->assertEquals(true, $function->applyFunction("orNot false", true, null));
+        $this->assertEquals(false, $function->applyFunction("orNot true", false, null));
+        $this->assertEquals(true, $function->applyFunction("orNot false", false, null));
+
+    }
+
+    public function testCanEvaluateCaseExpression() {
+
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("case"));
+
+        $this->assertEquals("first", $function->applyFunction("case 'one' 'first' 'two' 'second'", "one", null));
+        $this->assertEquals("second", $function->applyFunction("case 'one' 'first' 'two' 'second'", "two", null));
+        $this->assertEquals("default", $function->applyFunction("case 'one' 'first' 'two' 'second' 'default", "three", null));
+        $this->assertEquals("default", $function->applyFunction("case 'default'", "someValue", null));
+
     }
 
 }

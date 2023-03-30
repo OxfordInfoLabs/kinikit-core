@@ -2,6 +2,8 @@
 
 namespace Kinikit\Core\Template\ValueFunction;
 
+use Kinikit\Core\Util\DateTimeUtils;
+
 class DateFormatValueFunction extends ValueFunctionWithArguments {
 
     const supportedFunctions = [
@@ -12,8 +14,35 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
         "dayName",
         "monthName",
         "month",
-        "year"
+        "year",
+        "date",
+        "dateAdd",
+        "dateSub",
+        "formattedDuration"
     ];
+
+    const DURATIONS = [
+        [
+            "key" => "milliseconds",
+            "label" => "Millisecond",
+            "multiplier" => 1
+        ], [
+            "key" => "seconds",
+            "label" => "Second",
+            "multiplier" => 1000
+        ], [
+            "key" => "minutes",
+            "label" => "Minute",
+            "multiplier" => 60000
+        ], [
+            "key" => "hours",
+            "label" => "Hour",
+            "multiplier" => 3600000
+        ], [
+            "key" => "days",
+            "label" => "Day",
+            "multiplier" => 86400000
+        ]];
 
 
     /**
@@ -60,7 +89,72 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
                     return $standardDate ? $standardDate->format("F") : null;
             case "year":
                 return $standardDate ? $standardDate->format("Y") : null;
+            case "date":
+                $date = date_create($value);
+                $format = DateTimeUtils::convertJSDateFormatToPHP($functionArgs[0] ?? "");
+                return $date->format($format);
+            case  "dateAdd":
+                $date = date_create($value);
+                $dateInterval = $this->createDateInterval($functionArgs[0], $functionArgs[1] ?? 0);
+                return $date->add($dateInterval);
+            case  "dateSub":
+                $date = date_create($value);
+                $dateInterval = $this->createDateInterval($functionArgs[0], $functionArgs[1] ?? 0);
+                return $date->sub($dateInterval);
 
+            case "formattedDuration":
+                if (!is_numeric($value)) {
+                    return $value;
+                }
+
+                $unitDivisor = null;
+                foreach (self::DURATIONS as $duration) {
+                    if ($duration["key"] == ($functionArgs[0] ?? "milliseconds")) {
+                        $unitDivisor = $duration["multiplier"];
+                    }
+                }
+
+                $expressions = [];
+                if ($unitDivisor) {
+                    for ($i = sizeof(self::DURATIONS) - 1; $i >= 0; $i--) {
+                        $durationValue = $value / self::DURATIONS[$i]["multiplier"] * $unitDivisor;
+                        if ($durationValue >= 1) {
+                            $duration = floor($durationValue);
+                            $expressions[] = $duration . " " . self::DURATIONS[$i]["label"] . ($duration > 1 ? "s" : "");
+                            $value -= $duration * self::DURATIONS[$i]["multiplier"]; // This line not in ts version but not sure why
+                        }
+                        if (sizeof($expressions) >= ($functionArgs[1] ?? 10)) {
+                            break;
+                        }
+                    }
+                }
+
+                return join(" ", $expressions);
+
+            default:
+                return $value;
+        }
+    }
+
+    private function createDateInterval($period, $quantity) {
+
+        switch ($period) {
+            case "seconds":
+                return new \DateInterval("PT" . $quantity . "S");
+            case "minutes":
+                return new \DateInterval("PT" . $quantity . "M");
+            case "hours":
+                return new \DateInterval("PT" . $quantity . "H");
+            case "days":
+                return new \DateInterval("P" . $quantity . "D");
+            case "weeks":
+                return new \DateInterval("P" . $quantity . "W");
+            case "months":
+                return new \DateInterval("P" . $quantity . "M");
+            case "years":
+                return new \DateInterval("P" . $quantity . "Y");
+            default:
+                return null;
         }
     }
 }
