@@ -83,13 +83,13 @@ class ValueFunctionEvaluatorTest extends TestCase {
 
     public function testCanResolveExpressionWhereValueIsNumeric() {
 
-        $this->assertEquals(true, $this->evaluator->evaluateString("[[2 | gt 1]]"));
+        $this->assertEquals(3, $this->evaluator->evaluateString("[[2 | add 1]]"));
 
     }
 
     public function testCanResolveExpressionWhereValueIsString() {
 
-        $this->assertEquals(true, $this->evaluator->evaluateString("[['Bobby' | contains 'Bob']]"));
+        $this->assertEquals('Bob', $this->evaluator->evaluateString("[['Bobby' | substring 0 3]]"));
 
     }
 }

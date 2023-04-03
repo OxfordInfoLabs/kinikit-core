@@ -59,11 +59,17 @@ class ValueFunctionEvaluator {
             $expression = trim($exploded[0]);
             // Handle special built in expressions
             $specialExpression = $this->evaluateSpecialExpressions($expression);
-
             if ($specialExpression == $expression) {
 
-                // assume field expression
-                $value = $this->expandMemberExpression($expression, $model);
+                if (is_numeric($expression)) {
+                    $value  = $expression;
+                } elseif (trim($expression, "'\"") != $expression) {
+                    $value = trim($expression, "'\"");
+                } else {
+                    // assume field expression
+                    $value = $this->expandMemberExpression($expression, $model);
+                }
+
             } else {
 
                 // Set as special expression
@@ -78,22 +84,6 @@ class ValueFunctionEvaluator {
 
             if (!is_scalar($value)) {
                 $value = "OBJECT||" . json_encode($value);
-            }
-
-            if (trim($expression, "'\"") != $expression) {
-                $value = trim($expression, "'\"");
-            }
-
-            if (is_numeric($expression)) {
-                $value = $expression;
-            }
-
-            if ($expression == "true") {
-                $value = true;
-            }
-
-            if ($expression == "false") {
-                $value = false;
             }
 
             return $value;
@@ -159,6 +149,14 @@ class ValueFunctionEvaluator {
                 return (new \DateTime())->sub(new \DateInterval("PT" . $matches[1] . "S"))->format("Y-m-d H:i:s");
             }, $expression);
 
+        }
+
+        if ($expression == "true") {
+            return true;
+        }
+
+        if ($expression == "false") {
+            return false;
         }
 
         return $expression;
