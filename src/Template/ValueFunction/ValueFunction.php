@@ -20,6 +20,6 @@ interface ValueFunction {
      * @param string $value
      * @return string
      */
-    public function applyFunction($functionString, $value, $dataItem);
+    public function applyFunction($functionString, $value, $model);
 
 }

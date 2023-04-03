@@ -17,7 +17,7 @@ class RegExValueFunction implements ValueFunction {
      * @param string $value
      * @return string
      */
-    public function applyFunction($functionString, $value, $dataItem) {
+    public function applyFunction($functionString, $value, $model) {
         preg_match($functionString, $value, $fieldMatches);
         return isset($fieldMatches[1]) ? join("", array_slice($fieldMatches, 1)) : ($fieldMatches[0] ?? null);
     }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Site</title>
+</head>
+<body>
+<div class="h1">
+    This is an example.
+</div>
+<div k-set-item="'pineapple'">
+<span k-if="list | length | gt 10">This should be omitted.</span>
+<span k-if="hello | contains 'or'">This should be here</span>
+A repeated block:
+<div k-each-row="list">Hi. My name is {{row.name}}. I am {{row.age}} years old.<span k-if="row.age | gt 50">I am over 50.</span>
+</div>
+<p>Oh look, it's a {{item}}!</p>
+<p k-html="someHTML"></p>
+</div>
+</body>
+</html>

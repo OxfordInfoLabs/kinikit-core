@@ -16,6 +16,7 @@ use Kinikit\Core\Template\Parser\TwigTemplateParser;
  * @implementation mustache Kinikit\Core\Template\MustacheTemplateParser
  * @implementation twig Kinikit\Core\Template\TwigTemplateParser
  * @implementation php Kinikit\Core\Template\PHPTemplateParser
+ * @implementation kinibind Kinikit\Core\Template\KinibindTemplateParser
  *
  *
  * Interface TemplateParser

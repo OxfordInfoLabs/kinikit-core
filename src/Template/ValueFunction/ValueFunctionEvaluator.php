@@ -48,11 +48,11 @@ class ValueFunctionEvaluator {
      *
      * @param $string
      * @param string[] $delimiters
-     * @param array $data
+     * @param array $model
      */
-    public function evaluateString($string, $data = [], $delimiters = ["[[", "]]"]) {
+    public function evaluateString($string, $model = [], $delimiters = ["[[", "]]"]) {
 
-        $evaluated = preg_replace_callback("/" . preg_quote($delimiters[0]) . "(.*?)" . preg_quote($delimiters[1]) . "/", function ($matches) use ($data, $delimiters) {
+        $evaluated = preg_replace_callback("/" . preg_quote($delimiters[0]) . "(.*?)" . preg_quote($delimiters[1]) . "/", function ($matches) use ($model, $delimiters) {
 
             $exploded = explode(" | ", $matches[1]);
 
@@ -63,7 +63,7 @@ class ValueFunctionEvaluator {
             if ($specialExpression == $expression) {
 
                 // assume field expression
-                $value = $this->expandMemberExpression($expression, $data);
+                $value = $this->expandMemberExpression($expression, $model);
             } else {
 
                 // Set as special expression
@@ -72,12 +72,28 @@ class ValueFunctionEvaluator {
 
             if (sizeof($exploded) > 1) {
                 for ($i = 1; $i < sizeof($exploded); $i++) {
-                    $value = $this->evaluateValueFunction(trim($exploded[$i]), $value, $data);
+                    $value = $this->evaluateValueFunction(trim($exploded[$i]), $value, $model);
                 }
             }
 
             if (!is_scalar($value)) {
                 $value = "OBJECT||" . json_encode($value);
+            }
+
+            if (trim($expression, "'\"") != $expression) {
+                $value = trim($expression, "'\"");
+            }
+
+            if (is_numeric($expression)) {
+                $value = $expression;
+            }
+
+            if ($expression == "true") {
+                $value = true;
+            }
+
+            if ($expression == "false") {
+                $value = false;
             }
 
             return $value;
@@ -100,10 +116,10 @@ class ValueFunctionEvaluator {
      * @param $functionString
      * @param $fieldValue
      */
-    public function evaluateValueFunction($functionString, $fieldValue, $itemData) {
+    public function evaluateValueFunction($functionString, $fieldValue, $model) {
         foreach ($this->functions as $function) {
             if ($function->doesFunctionApply($functionString)) {
-                return $function->applyFunction($functionString, $fieldValue, $itemData);
+                return $function->applyFunction($functionString, $fieldValue, $model);
             }
         }
         return $fieldValue;
@@ -150,13 +166,13 @@ class ValueFunctionEvaluator {
 
 
     // Expand member expression
-    private function expandMemberExpression($expression, $dataItem) {
+    private function expandMemberExpression($expression, $model) {
 
         $explodedExpression = explode(".", $expression);
         foreach ($explodedExpression as $expression) {
-            $dataItem = $dataItem[$expression] ?? null;
+            $model = $model[$expression] ?? null;
         }
-        return $dataItem;
+        return $model;
     }
 
 

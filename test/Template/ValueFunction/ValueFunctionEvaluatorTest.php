@@ -81,5 +81,15 @@ class ValueFunctionEvaluatorTest extends TestCase {
 
     }
 
+    public function testCanResolveExpressionWhereValueIsNumeric() {
 
+        $this->assertEquals(true, $this->evaluator->evaluateString("[[2 | gt 1]]"));
+
+    }
+
+    public function testCanResolveExpressionWhereValueIsString() {
+
+        $this->assertEquals(true, $this->evaluator->evaluateString("[['Bobby' | contains 'Bob']]"));
+
+    }
 }

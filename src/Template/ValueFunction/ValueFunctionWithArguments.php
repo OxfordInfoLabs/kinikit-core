@@ -34,7 +34,7 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
      * @param mixed $value
      * @return string|void
      */
-    public function applyFunction($functionString, $value, $dataItem) {
+    public function applyFunction($functionString, $value, $model) {
 
         $paramsRaw = explode(" ", $functionString, 2);
         $functionName = array_shift($paramsRaw);
@@ -49,16 +49,16 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
         }
 
         foreach ($params as &$param) {
-            $param = $this->processParams($param, $dataItem);
+            $param = $this->processParams($param, $model);
         }
 
 
-        return $this->applyFunctionWithArgs($functionName, $params ?? [], $value, $dataItem);
+        return $this->applyFunctionWithArgs($functionName, $params ?? [], $value, $model);
 
     }
 
 
-    private function processParams($expression, $dataItem) {
+    private function processParams($expression, $model) {
 
         if (is_numeric($expression))
             return $expression;
@@ -78,13 +78,13 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
 
         $explodedExpression = explode(".", $expression);
         foreach ($explodedExpression as $expression) {
-            if (is_array($dataItem))
-                $dataItem = $dataItem[$expression] ?? $expression;
+            if (is_array($model))
+                $model = $model[$expression] ?? $expression;
             else
-                $dataItem = $expression;
+                $model = $expression;
         }
 
-        return $dataItem;
+        return $model;
 
     }
 
@@ -104,7 +104,7 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
      * @param $value
      * @return mixed
      */
-    protected abstract function applyFunctionWithArgs($functionName, $functionArgs, $value, $dataItem);
+    protected abstract function applyFunctionWithArgs($functionName, $functionArgs, $value, $model);
 
 
 }

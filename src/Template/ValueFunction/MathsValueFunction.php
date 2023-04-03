@@ -32,11 +32,11 @@ class MathsValueFunction extends ValueFunctionWithArguments {
      * @param $functionName
      * @param $functionArgs
      * @param $value
-     * @param $dataItem
+     * @param $model
      *
      * @return mixed|void
      */
-    protected function applyFunctionWithArgs($functionName, $functionArgs, $value, $dataItem) {
+    protected function applyFunctionWithArgs($functionName, $functionArgs, $value, $model) {
 
         if (is_numeric($value)) {
 
