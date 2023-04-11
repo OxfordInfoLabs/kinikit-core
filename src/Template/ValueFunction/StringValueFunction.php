@@ -67,7 +67,7 @@ class StringValueFunction extends ValueFunctionWithArguments {
                     return $string;
 
                 case "toUTF8":
-                    return preg_replace('/(\xF0\x9F[\x00-\xFF][\x00-\xFF])/', "", $value) == $value ? $value : null;
+                    return preg_replace('/(\xF0\x9F[\x00-\xFF][\x00-\xFF])|(\xF0\x93[\x80-\x89][\x00-\xFF])|(\xF0\x93\x90[\x00-\xAF])/', "", $value) == $value ? $value : null;
 
                 case "trim":
                     return trim($value, $functionArgs[0]);

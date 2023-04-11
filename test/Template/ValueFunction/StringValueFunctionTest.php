@@ -39,10 +39,12 @@ class StringValueFunctionTest extends TestCase {
         $string1 = "hello world";
         $string2 = "🖤.eth";
         $string3 = "Hello\xF0\x9F\x92\xB8\xF0\x9F.eth";
+        $string4 = "I'm\xF0\x93\x81\x80\xF0\x93.eth";
 
         $this->assertEquals($string1, $function->applyFunction("toUTF8", $string1, null));
         $this->assertNull($function->applyFunction("toUTF8", $string2, null));
         $this->assertNull($function->applyFunction("toUTF8", $string3, null));
+        $this->assertNull($function->applyFunction("toUTF8", $string4, null));
 
     }
 
