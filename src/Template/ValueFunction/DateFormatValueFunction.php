@@ -64,6 +64,7 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
      */
     protected function applyFunctionWithArgs($functionName, $functionArgs, $value, $model) {
 
+        $value = $value ?? "";
         $standardDate = date_create_from_format("Y-m-d", substr($value, 0, 10));
 
         switch ($functionName) {
