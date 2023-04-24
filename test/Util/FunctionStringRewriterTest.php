@@ -38,7 +38,7 @@ class FunctionStringRewriterTest extends TestCase {
 
         $sql = "INSTR(GROUP_CONCAT(CONCAT('A','B','C'), ';'),CONCAT('D','E','F'))";
         $result = FunctionStringRewriter::rewrite($sql, "INSTR", "POSITION($1 IN $2)", [null, null]);
-        $this->assertEquals("POSITION(GROUP_CONCAT(CONCAT('A','B','C'), ';') IN CONCAT('D','E','F'))", $result);
+        $this->assertEquals("POSITION(GROUP_CONCAT(CONCAT('A','B','C'),';') IN CONCAT('D','E','F'))", $result);
     }
 
     public function testCanReorderArguments() {
@@ -75,7 +75,7 @@ class FunctionStringRewriterTest extends TestCase {
 
         $sql = "POW(COUNT(X), COUNT(Y))";
         $result = FunctionStringRewriter::rewrite($sql, "COUNT", "SUM($1)", [null]);
-        $this->assertEquals("POW(SUM(X), SUM(Y))", $result);
+        $this->assertEquals("POW(SUM(X),SUM(Y))", $result);
 
         $sql = "DO INSTR(X,CONCAT(Z,Y)) WHERE CONCAT(A,B,C) IS NULL";
         $result = FunctionStringRewriter::rewrite($sql, "CONCAT", "MIN($1,$2)", [5, 6]);
@@ -87,7 +87,7 @@ class FunctionStringRewriterTest extends TestCase {
 
         $sql = "SELECT ?, COUNT(*) FROM test WHERE ? IS NOT NULL";
         $result = FunctionStringRewriter::rewrite($sql, "COUNT", "SUM($1)", [null]);
-        $this->assertEquals("SELECT ?, SUM(*) FROM test WHERE ? IS NOT NULL", $result);
+        $this->assertEquals("SELECT ?,SUM(*) FROM test WHERE ? IS NOT NULL", $result);
 
     }
 
@@ -136,5 +136,50 @@ class FunctionStringRewriterTest extends TestCase {
         }
     }
 
+    public function testSpacesAreNotAnIssueWhenRewritingFunctions() {
+
+        $sql1 = "function(this, that)";
+        $sql2 = "function(one,two)";
+
+        $result1 = FunctionStringRewriter::rewrite($sql1, "function", "function($2, $1)", [null, null]);
+        $result2 = FunctionStringRewriter::rewrite($sql2, "function", "function($2, $1)", [null, null]);
+
+        $this->assertEquals("function(that, this)", $result1);
+        $this->assertEquals("function(two, one)", $result2);
+    }
+
+    public function testCanInsertParameterValuesWhenMultipleInstancesOfParamter() {
+
+        $sql = "function(?)";
+        $params = ["bing"];
+        $result = FunctionStringRewriter::rewrite($sql, "function", "function($1, $1)", [null, null], $params);
+
+        $this->assertEquals("function(?, ?)", $result);
+        $this->assertEquals(["bing", "bing"], $params);
+    }
+
+    public function testCanReorderParameters() {
+
+        $sql = "CONCAT(?, ?, ?)";
+        $params = [1, 2, 3];
+        $result = FunctionStringRewriter::rewrite($sql, "CONCAT", "CONCAT($3, $1, $2)", [null, null, null], $params);
+
+        $this->assertEquals("CONCAT(?, ?, ?)", $result);
+        $this->assertEquals([3, 1, 2], $params);
+
+        $sql = "MAX(?, MIN(?, ?))";
+        $params = ["one", "two", "three"];
+        $result = FunctionStringRewriter::rewrite($sql, "MIN", "AVG($2, $1)", [null, null], $params);
+
+        $this->assertEquals("MAX(?,AVG(?, ?))", $result);
+        $this->assertEquals(["one", "three", "two"], $params);
+
+        $sql = "MAX(?,MIN(?,?))";
+        $params = ["one", "two", "three"];
+        $result = FunctionStringRewriter::rewrite($sql, "MAX", "AVG($2, $1)", [null, null], $params);
+
+        $this->assertEquals("AVG(MIN(?,?), ?)", $result);
+        $this->assertEquals(["two", "three", "one"], $params);
+    }
 
 }
