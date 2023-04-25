@@ -2,147 +2,81 @@
 
 namespace Kinikit\Core\Util;
 
+use Kinikit\Core\Exception\InsufficientParametersException;
+
 class FunctionStringRewriter {
 
+    /**
+     * New rewrite logic.
+     *
+     * @param $string
+     * @param $search
+     * @param $replace
+     * @param array $defaultValues
+     * @param array $parameterValues
+     */
     public static function rewrite($string, $search, $replace, $defaultValues = [], &$parameterValues = []) {
-        if (substr_count($replace, "$") != sizeof($defaultValues)) {
-            throw new \Exception("Number of default values doesn't match.");
+
+        preg_match_all("/(.*?)($search\()/i", $string, $matches, PREG_OFFSET_CAPTURE);
+
+        $functionMatches = array_reverse($matches[2]);
+        $prefixCharacterMatches = array_reverse($matches[1]);
+
+
+        foreach ($functionMatches as $index => $functionMatch) {
+
+            // Work out the match offset
+            $matchOffset = $functionMatch[1];
+
+            // Eliminate any matches which are contained in other functions.
+            if ($prefixCharacterMatches[$index][0]) {
+                preg_match("/[a-zA-Z_]+/", substr($prefixCharacterMatches[$index][0], -1), $prefixCharacterItems);
+                if (sizeof($prefixCharacterItems)) continue;
+            }
+
+            // Grab any preceding parameters
+            $paramsBeforeMatch = substr_count($string, "?", 0, $matchOffset);
+
+            // Now grab the forward arguments including nested ones
+            $functionArgs = self::extractArgs(substr($string, $matchOffset), $search, true, $functionStringLength);
+
+            // Now process the function args to grab params
+            $totalFunctionParams = 0;
+            $argParams = [];
+            foreach ($functionArgs as $functionArg) {
+                $numberOfFunctionParams = substr_count($functionArg, "?");
+                $argParams[] = array_slice($parameterValues, $paramsBeforeMatch + $totalFunctionParams, $numberOfFunctionParams);
+                $totalFunctionParams += $numberOfFunctionParams;
+            }
+
+            // Collect new function params
+            $newFunctionParams = [];
+
+            // Substitute values
+            $newFunctionString = preg_replace_callback("/\\$([0-9])/", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
+                $placeholderIndex = $replacePlaceholders[1] - 1;
+                if (isset($functionArgs[$placeholderIndex])) {
+                    $newFunctionParams = array_merge($newFunctionParams, $argParams[$placeholderIndex]);
+                    return $functionArgs[$placeholderIndex];
+                } else if (isset($defaultValues[$placeholderIndex])) {
+                    return $defaultValues[$placeholderIndex];
+                } else {
+                    throw new InsufficientParametersException("Number of default values doesn't match.");
+                }
+            }, $replace);
+
+            // Replace the string
+            $string = substr($string, 0, $matchOffset) . $newFunctionString . substr($string, $matchOffset + $functionStringLength);
+
+            // Modify parameter values to reference new set
+            array_splice($parameterValues, $paramsBeforeMatch, $totalFunctionParams, $newFunctionParams);
+
         }
 
-        if (!$replace || !$search) {
-            return $string;
-        }
-
-        $string = str_replace(", ", ",", $string);
-
-        $result = "";
-        $cursor = 0;
-
-        do {
-            if ($cursor > strlen($string)) {
-                $result .= substr($string, $cursor) ?? "";
-                break;
-            }
-
-
-            $bracketCount = 0;
-            $remainingString = substr($string, $cursor);
-
-            preg_match("/[\s,(]$search\(|^$search\(/i", $remainingString, $matches, PREG_OFFSET_CAPTURE);
-
-            $relativeInstanceStartPos = $matches[0][1] ?? null;
-
-
-            if (is_null($relativeInstanceStartPos)) {
-                $result .= substr($string, $cursor) ?? "";
-                break;
-            }
-
-            if ($relativeInstanceStartPos > 0) {
-                $relativeInstanceStartPos += 1;
-                $result .= substr($remainingString, 0, $relativeInstanceStartPos);
-                $cursor += $relativeInstanceStartPos;
-            }
-
-            $trueInstanceStartPos = $relativeInstanceStartPos + (strlen($string) - strlen($remainingString));
-
-            $argStart = $cursor + strlen($search);
-
-            $found = false;
-
-            for ($i = $argStart; $i < strlen($string); $i++) {
-                $char = $string[$i];
-
-                switch ($char) {
-                    case "(":
-                        $bracketCount++;
-                        break;
-                    case  ")":
-                        $bracketCount--;
-                        break;
-                }
-
-                if ($bracketCount == 0) {
-                    $found = true;
-                    $instanceEndPos = $i + 1;
-                    $length = $instanceEndPos - $trueInstanceStartPos + 1;
-                    $functionInstance = substr($string, $trueInstanceStartPos, $length);
-                    $cursor += strlen($functionInstance);
-                    break;
-                }
-
-            }
-
-            $paramCount = substr_count($result, "?");
-            $nestedParameterValues = array_slice($parameterValues, $paramCount);
-
-            if ($found) {
-                $resultInstance = self::rewriteInstance($functionInstance, $search, $replace, $defaultValues, $nestedParameterValues);
-                array_splice($parameterValues, $paramCount, null, $nestedParameterValues);
-                $result .= $resultInstance;
-            } else { 
-                $result .= $remainingString;
-                break;
-            }
-
-            if ($result == "") {
-                break;
-            }
-
-        } while (true);
-
-        return $result;
+        return $string;
 
     }
 
-    private static function rewriteInstance($string, $search, $replace, $defaultValues = [], &$parameterValues = []) {
-        $args = self::extractArgs($string, $search);
-
-        if ($args == []) {
-            return $string;
-        }
-
-        $newArgs = [];
-        $paramOffset = 0;
-        foreach ($args as $arg) {
-            $argParamCount = substr_count($arg ?? "", "?");
-            $argumentParamValues = array_slice($parameterValues, $paramOffset, $argParamCount);
-
-            $newArg = self::rewriteInstance($arg, $search, $replace, $defaultValues, $argumentParamValues);
-            $newArgs[] = $newArg;
-            array_splice($parameterValues, $paramOffset, substr_count($newArg ?? "", "?"), $argumentParamValues);
-            $paramOffset += $argParamCount;
-
-        }
-
-        preg_match_all("/\\\$([0-9]+)/", $replace, $matches);
-        $matches = $matches[1];
-        $count = 0;
-
-        $function = $search . "(" . implode(",", $args) . ")";
-        for ($i = 1; $i < sizeof($defaultValues) + 1; $i++) {
-            $arg = $newArgs[$i - 1] ?? $defaultValues[$i - 1];
-            $replace = str_replace("$" . $i, $arg ?? "", $replace);
-            if ($arg == "?")
-                $count++;
-        }
-
-
-        if ($string == $function) {
-            $newParams = [];
-            foreach ($matches as $match) {
-                if (($newArgs[$match - 1] ?? $defaultValues[$match - 1]) == '?') {
-                    $newParams[] = $parameterValues[$match - 1];
-                }
-            }
-
-            $parameterValues = array_splice($parameterValues, 0, $count, $newParams);
-        }
-
-        $result = str_ireplace($function, $replace, $string);
-
-        return $result;
-    }
 
     /**
      * Iterate through the string, using commas to identify the end of arguments
@@ -153,7 +87,7 @@ class FunctionStringRewriter {
      *
      * @return string[]
      */
-    public static function extractArgs($functionString, $functionName, $atStart = true) {
+    public static function extractArgs($functionString, $functionName, $atStart = true, &$functionStringLength = 0) {
 
         $functionString = $functionString ?? "";
         $args = [];
@@ -189,6 +123,7 @@ class FunctionStringRewriter {
                             $currentArg = null;
                         }
                         $args[] = $currentArg;
+                        $functionStringLength = $i + 1;
                         return $args;
                     }
                     $currentArg .= $char;

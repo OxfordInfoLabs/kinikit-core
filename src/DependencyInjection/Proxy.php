@@ -94,7 +94,6 @@ trait Proxy {
         // Grab the class interceptors
         $classInterceptors = $this->interceptors->getInterceptorsForClass($this->classInspector->getClassName());
 
-
         // Evaluate before method interceptors - return input parameters
         foreach ($classInterceptors as $interceptor) {
             $params = $interceptor->beforeMethod($this, $name, $params, $methodInspector);

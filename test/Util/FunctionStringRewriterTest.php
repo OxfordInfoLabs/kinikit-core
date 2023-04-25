@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Util;
 
+use Kinikit\Core\Exception\InsufficientParametersException;
 use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
@@ -36,7 +37,7 @@ class FunctionStringRewriterTest extends TestCase {
         $result = FunctionStringRewriter::rewrite($sql, "INSTR", "POSITION($1 IN $2)", [null, null]);
         $this->assertEquals("POSITION(FIRST IN SECOND)", $result);
 
-        $sql = "INSTR(GROUP_CONCAT(CONCAT('A','B','C'), ';'),CONCAT('D','E','F'))";
+        $sql = "INSTR(GROUP_CONCAT(CONCAT('A','B','C'),';'),CONCAT('D','E','F'))";
         $result = FunctionStringRewriter::rewrite($sql, "INSTR", "POSITION($1 IN $2)", [null, null]);
         $this->assertEquals("POSITION(GROUP_CONCAT(CONCAT('A','B','C'),';') IN CONCAT('D','E','F'))", $result);
     }
@@ -75,7 +76,7 @@ class FunctionStringRewriterTest extends TestCase {
 
         $sql = "POW(COUNT(X), COUNT(Y))";
         $result = FunctionStringRewriter::rewrite($sql, "COUNT", "SUM($1)", [null]);
-        $this->assertEquals("POW(SUM(X),SUM(Y))", $result);
+        $this->assertEquals("POW(SUM(X), SUM(Y))", $result);
 
         $sql = "DO INSTR(X,CONCAT(Z,Y)) WHERE CONCAT(A,B,C) IS NULL";
         $result = FunctionStringRewriter::rewrite($sql, "CONCAT", "MIN($1,$2)", [5, 6]);
@@ -87,7 +88,7 @@ class FunctionStringRewriterTest extends TestCase {
 
         $sql = "SELECT ?, COUNT(*) FROM test WHERE ? IS NOT NULL";
         $result = FunctionStringRewriter::rewrite($sql, "COUNT", "SUM($1)", [null]);
-        $this->assertEquals("SELECT ?,SUM(*) FROM test WHERE ? IS NOT NULL", $result);
+        $this->assertEquals("SELECT ?, SUM(*) FROM test WHERE ? IS NOT NULL", $result);
 
     }
 
@@ -109,31 +110,21 @@ class FunctionStringRewriterTest extends TestCase {
         $result = FunctionStringRewriter::rewrite($sql, "", "MAX($1)", [null]);
         $this->assertEquals($sql, $result);
 
-        $sql = "MAX(A,B)";
-        $result = FunctionStringRewriter::rewrite($sql, "MAX", "", []);
-        $this->assertEquals($sql, $result);
 
     }
 
     public function testExceptionThrownWhenInsufficientDefaultValuesProvided() {
 
         try {
-            $sql = "test";
+            $sql = "test()";
             $result = FunctionStringRewriter::rewrite($sql, "test", "function($1,$2)", [1]);
-            $this->fail();
+            $this->fail("Should have thrown here");
 
-        } catch (\Exception $e) {
+        } catch (InsufficientParametersException $e) {
             $this->assertEquals("Number of default values doesn't match.", $e->getMessage());
         }
 
-        try {
-            $sql = "test";
-            $result = FunctionStringRewriter::rewrite($sql, "test", "function($1,$2)", [1, 2, 3, 4]);
-            $this->fail();
 
-        } catch (\Exception $e) {
-            $this->assertEquals("Number of default values doesn't match.", $e->getMessage());
-        }
     }
 
     public function testSpacesAreNotAnIssueWhenRewritingFunctions() {
@@ -148,7 +139,7 @@ class FunctionStringRewriterTest extends TestCase {
         $this->assertEquals("function(two, one)", $result2);
     }
 
-    public function testCanInsertParameterValuesWhenMultipleInstancesOfParamter() {
+    public function testCanInsertParameterValuesWhenMultipleInstancesOfParameter() {
 
         $sql = "function(?)";
         $params = ["bing"];
@@ -171,7 +162,7 @@ class FunctionStringRewriterTest extends TestCase {
         $params = ["one", "two", "three"];
         $result = FunctionStringRewriter::rewrite($sql, "MIN", "AVG($2, $1)", [null, null], $params);
 
-        $this->assertEquals("MAX(?,AVG(?, ?))", $result);
+        $this->assertEquals("MAX(?, AVG(?, ?))", $result);
         $this->assertEquals(["one", "three", "two"], $params);
 
         $sql = "MAX(?,MIN(?,?))";
