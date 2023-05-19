@@ -114,7 +114,7 @@ class Method {
      *
      * @return bool
      */
-    public function isFinal(){
+    public function isFinal() {
         return $this->reflectionMethod->isFinal();
     }
 
@@ -183,7 +183,6 @@ class Method {
      */
     public function __processMethodArguments($arguments, $allowMissingArgs = false) {
 
-
         // Loop through each parameter
         $orderedArgs = [];
         $missingRequired = [];
@@ -201,17 +200,22 @@ class Method {
                             || is_subclass_of($parameterValue, trim($parameter->getType(), "\\")))))
                     $wrongParams[] = $parameter->getName();
 
-
-                $orderedArgs[] = $parameterValue;
+                // If Variadic, explode arguments out as separate items
+                if ($parameter->isVariadic() && is_array($arguments[$parameter->getName()])) {
+                    $orderedArgs = array_merge($orderedArgs, $arguments[$parameter->getName()]);
+                } else {
+                    $orderedArgs[] = $parameterValue;
+                }
             } else {
 
                 if ($parameter->isRequired()) {
+
                     if ($parameter->isExplicitlyTyped() || !$allowMissingArgs)
                         $missingRequired[] = $parameter->getName();
                     else
                         $orderedArgs[] = $parameter->getDefaultValue();
 
-                } else if (!$parameter->isExplicitlyTyped()) {
+                } else if (!$parameter->isVariadic() && !$parameter->isExplicitlyTyped()) {
                     $orderedArgs[] = $parameter->getDefaultValue();
                 }
 

@@ -116,7 +116,7 @@ class ProxyGenerator {
                 $param .= " $" . $parameter->getName();
             }
 
-            if (!$parameter->isRequired()) {
+            if (!$parameter->isRequired() && !$parameter->isVariadic()) {
 
                 $defaultValueString = $parameter->getDefaultValue();
                 if (is_string($defaultValueString)) {

@@ -75,9 +75,12 @@ class Parameter {
             $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
 
             foreach ($methodAnnotations as $annotation) {
-                if (preg_match("/.+?\\$" . $reflectionParameter->getName()."($|\\[| )/", $annotation->getValue())) {
+                if (preg_match("/.+?\\$" . $reflectionParameter->getName() . "($|\\[| )/", $annotation->getValue())) {
 
+                    // Knock off the parameter name and use the first word to derive the type
                     $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
+                    $type = explode(" ", $type)[0];
+
                     list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
                     if (!in_array($type, Primitive::TYPES)) {
@@ -116,7 +119,7 @@ class Parameter {
     /**
      * Is this parameter an array type
      */
-    public function isArray(){
+    public function isArray() {
         return $this->type != $this->stripArrayTypeSuffix($this->type);
     }
 
@@ -124,7 +127,7 @@ class Parameter {
      * @return mixed
      */
     public function isRequired() {
-        return (!$this->reflectionParameter->isOptional()) || (!$this->reflectionParameter->isDefaultValueAvailable());
+        return (!$this->reflectionParameter->isVariadic()) && ((!$this->reflectionParameter->isOptional()) || (!$this->reflectionParameter->isDefaultValueAvailable()));
     }
 
     /**

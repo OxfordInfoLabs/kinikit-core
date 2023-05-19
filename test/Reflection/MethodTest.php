@@ -264,4 +264,20 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+
+    public function testIfSpreadOperatorSuppliedForMethodArgumentItIsFilledUpCorrectlyWithRemainingParams(){
+
+        $classInspector = new ClassInspector(TestPOPOWithSpread::class);
+        $methodInspector = $classInspector->getPublicMethod("example");
+
+        $testPOPO = new TestPOPOWithSpread();
+
+        // Check simple case
+        $this->assertEquals(["mark", null, []], $methodInspector->call($testPOPO, ["test1" => "mark"]));
+
+        // Check variadic items
+        $this->assertEquals(["mark", null, ["pete", "nathan", "katie"]], $methodInspector->call($testPOPO, ["test1" => "mark", "test3" => ["pete", "nathan", "katie"]]));
+
+    }
+
 }
