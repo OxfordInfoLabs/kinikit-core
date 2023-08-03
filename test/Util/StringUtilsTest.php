@@ -133,6 +133,9 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
         // Check for hyphenated formats
         $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happy_happy_joy_joy"));
 
+        // Check numbers are retained
+        $this->assertEquals("happy_happy_joy_joy_123", StringUtils::convertToSnakeCase("happyHappyJoyJoy123"));
+
     }
 
 }

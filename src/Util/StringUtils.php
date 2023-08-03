@@ -99,14 +99,11 @@ class StringUtils {
         $string = self::convertFromCamelCase($string);
 
         // Grab all words first of all in a unicode supporting manner
-        preg_match_all('/\pL+/u', $string, $allWords);
+        preg_match_all('/[0-9\pL]+/u', $string, $allWords);
 
-        $newString = "";
-        foreach ($allWords[0] as $index => $word) {
-            $newString .= strtolower($word) . "_";
-        }
+        $newString = implode("_", $allWords[0]);
 
-        return trim($newString, "_");
+        return strtolower($newString);
 
     }
 
