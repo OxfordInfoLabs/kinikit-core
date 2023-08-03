@@ -116,6 +116,24 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanConvertStringToSnakeCase() {
+
+        // Check already in camel case
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happyHappyJoyJoy"));
+
+        // Check one with initial caps
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("HappyHappyJoyJoy"));
+
+        // Check ordinary spaced capitalised one
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("Happy Happy Joy Joy"));
+
+        // Check lower cased spaced one
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happy happy joy joy"));
+
+        // Check for hyphenated formats
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happy_happy_joy_joy"));
+
+    }
 
 }
 

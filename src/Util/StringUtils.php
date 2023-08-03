@@ -88,6 +88,27 @@ class StringUtils {
 
     }
 
+    /**
+     * Convert a string with spaces to snake_case
+     *
+     * @param $string
+     */
+    public static function convertToSnakeCase($string) {
+
+        // Undo any camel case
+        $string = self::convertFromCamelCase($string);
+
+        // Grab all words first of all in a unicode supporting manner
+        preg_match_all('/\pL+/u', $string, $allWords);
+
+        $newString = "";
+        foreach ($allWords[0] as $index => $word) {
+            $newString .= strtolower($word) . "_";
+        }
+
+        return trim($newString, "_");
+
+    }
 
 }
 
