@@ -3,6 +3,15 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
+enum ExampleEnum : string {
+    case GREAT = "great";
+    case FANTASTIC = "fantastic";
+}
+
+enum SimpleEnum {
+    case CASE_1;
+    case CASE_2;
+}
 
 class ServiceWithExplicitType {
 
@@ -43,6 +52,17 @@ class ServiceWithExplicitType {
      */
     public function getSecondaryService(): SecondaryService {
         return $this->secondaryService;
+    }
+    public function enumParameterMethod(SimpleEnum $simple, ExampleEnum $state = ExampleEnum::GREAT) : int {
+        return strlen( $state->value);
+    }
+
+    public function enumReturnMethod(int $x) : ExampleEnum {
+        if ($x == 100) {
+            return ExampleEnum::FANTASTIC;
+        }else{
+            return ExampleEnum::GREAT;
+        }
     }
 
 

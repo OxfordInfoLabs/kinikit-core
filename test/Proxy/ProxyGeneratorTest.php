@@ -4,8 +4,11 @@
 namespace Kinikit\Core\Proxy;
 
 use Kinikit\Core\DependencyInjection\ContainerInterceptors;
+use Kinikit\Core\DependencyInjection\ExampleEnum;
 use Kinikit\Core\DependencyInjection\Proxy;
+use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\DependencyInjection\ServiceWithExplicitType;
+use Kinikit\Core\DependencyInjection\SimpleEnum;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Reflection\ClassInspector;
 
@@ -89,6 +92,17 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($proxy->getSimpleService() instanceof \Kinikit\Core\DependencyInjection\SimpleService);
 
 
+    }
+
+    public function testCanCreateProxyMethodWithEnumParam(){
+        $proxyGenerator = new ProxyGenerator();
+
+        $className = $proxyGenerator->generateProxy(ServiceWithExplicitType::class, "Extended", [Proxy::class]);
+        $proxy = new ServiceWithExplicitType(new SimpleService(), new SecondaryService(new SimpleService()));
+
+        $this->assertEquals(5, $proxy->enumParameterMethod(SimpleEnum::CASE_1));
+
+        $this->assertEquals(ExampleEnum::FANTASTIC, $proxy->enumReturnMethod(100));
     }
 
 }

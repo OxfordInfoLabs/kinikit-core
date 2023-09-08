@@ -127,8 +127,9 @@ class ProxyGenerator {
                     $defaultValueString = "null";
                 } else if (is_array($defaultValueString)) {
                     $defaultValueString = "[]";
+                } else if ($defaultValueString instanceof \UnitEnum){
+                    $defaultValueString = get_class($defaultValueString) . "::" . $defaultValueString->name;
                 }
-
 
                 $param .= ' = ' . $defaultValueString;
             }
