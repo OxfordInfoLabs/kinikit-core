@@ -18,7 +18,7 @@ class ReadOnlyFileStream extends ReadOnlyFilePointerResourceStream {
      * Construct with a filename and optional context options
      *
      * @param $filename
-     * @param null $contextOptions
+     * @param ?array $contextOptions
      */
     public function __construct($filename, $contextOptions = null) {
 

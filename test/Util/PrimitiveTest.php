@@ -16,4 +16,11 @@ class PrimitiveTest extends \PHPUnit\Framework\TestCase {
         $converted = Primitive::convertToPrimitive(Primitive::TYPE_STRING, $a);
         $this->assertEquals("string", gettype($converted));
     }
+
+    public function testResourceIsPrimitive(){
+        $resource = fopen(__DIR__ . "/test.txt", "r");
+        $this->assertTrue(Primitive::isPrimitive($resource));
+        $this->assertTrue(Primitive::isStringPrimitiveType(gettype($resource)));
+        $this->assertTrue(Primitive::isOfPrimitiveType(Primitive::TYPE_RESOURCE, $resource));
+    }
 }

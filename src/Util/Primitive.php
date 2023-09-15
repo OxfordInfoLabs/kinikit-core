@@ -12,7 +12,7 @@ namespace Kinikit\Core\Util;
 class Primitive {
 
     // Built in primitive types
-    const TYPES = ["bool", "boolean", "int", "integer", "float", "string", "mixed", "void", "array", "callable"];
+    const TYPES = ["bool", "boolean", "int", "integer", "float", "string", "mixed", "void", "array", "callable", "resource"];
 
     const TYPE_BOOL = "bool";
     const TYPE_BOOLEAN = "boolean";
@@ -23,6 +23,7 @@ class Primitive {
     const TYPE_MIXED = "mixed";
     const TYPE_ARRAY = "array";
     const TYPE_CALLABLE = "callable";
+    const TYPE_RESOURCE = "resource";
 
 
     /**
@@ -31,7 +32,7 @@ class Primitive {
      * @param $value
      */
     public static function isPrimitive($value) {
-        return is_bool($value) || is_int($value) || is_float($value) || is_string($value);
+        return is_bool($value) || is_int($value) || is_float($value) || is_string($value) || is_resource($value);
     }
 
 
@@ -53,6 +54,8 @@ class Primitive {
                 return is_float($value) || self::isOfPrimitiveType(self::TYPE_INT, $value) || (is_numeric($value) && is_float(+$value));
             case self::TYPE_STRING:
                 return is_string($value) || is_numeric($value) || is_float($value) || is_bool($value);
+            case self::TYPE_RESOURCE:
+                return is_resource($value);
             case self::TYPE_MIXED:
             case self::TYPE_ARRAY:
             case self::TYPE_CALLABLE:
