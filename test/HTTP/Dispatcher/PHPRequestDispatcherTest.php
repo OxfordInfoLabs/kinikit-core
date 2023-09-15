@@ -38,6 +38,9 @@ class PHPRequestDispatcherTest extends \PHPUnit\Framework\TestCase {
         $response = $this->dispatcher->dispatch($request);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue(strpos($response->getBody(), '"postId": 1') > 0);
+        $this->assertTrue(sizeof($response->getHeaders()->getHeaders()) > 5);
+        $this->assertEquals("Express", $response->getHeaders()->get("x-powered-by"));
+
 
     }
 
