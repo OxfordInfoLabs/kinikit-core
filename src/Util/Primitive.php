@@ -32,7 +32,7 @@ class Primitive {
      * @param $value
      */
     public static function isPrimitive($value) {
-        return is_bool($value) || is_int($value) || is_float($value) || is_string($value) || is_resource($value);
+        return is_bool($value) || is_int($value) || is_float($value) || is_string($value);
     }
 
 
