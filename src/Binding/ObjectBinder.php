@@ -46,6 +46,8 @@ class ObjectBinder {
 
         $result = null;
 
+        $targetClass = ltrim($targetClass, "?");
+
         $arrayTrimmed = preg_replace("/\[[a-z]*\]$/", "", $targetClass);
 
         // If an array of objects, process these next.
@@ -63,14 +65,15 @@ class ObjectBinder {
         } else {
 
             // if a primitive, shortcut and return the value intact.
-            if (in_array($targetClass, Primitive::TYPES)) {
+            if (Primitive::isStringPrimitiveType($targetClass)) {
                 return Primitive::convertToPrimitive($targetClass, $data);
             }
 
 
             // if this is not an array we have a malformed data issue.
             if (!is_array($data)) {
-                throw new ObjectBindingException("Bind data for object is not an array");
+                $dt = print_r($data, true);
+                throw new ObjectBindingException("Bind data for object is not an array. \nData: $dt");
             }
 
             try {

@@ -19,6 +19,7 @@ class ClassInspectorProvider {
      * @return ClassInspector
      */
     public function getClassInspector($className) {
+        $className = ltrim($className, "?");
 
         $normalisedClassName = "\\" . ltrim(trim($className), "\\");
 

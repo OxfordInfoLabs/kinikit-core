@@ -3,6 +3,9 @@
 
 namespace Kinikit\Core\Reflection;
 
+use Kinikit\Core\Binding\SimpleNullableObject;
+
+include_once "autoloader.php";
 
 class ReturnTypeTest extends \PHPUnit\Framework\TestCase {
 
@@ -38,6 +41,28 @@ class ReturnTypeTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($returnType->isExplicitlyTyped());
 
 
+    }
+
+
+    public function testReturnTypeMappedCorrectlyForNullableTypedMethods(){
+        $classInspector = new ClassInspector(SimpleNullableObject::class);
+
+        $methodInspector = $classInspector->getPublicMethod("__construct");
+
+        $returnType = new ReturnType($methodInspector);
+        $this->assertEquals("void", $returnType->getType());
+
+        $methodInspector = $classInspector->getPublicMethod("getYear");
+
+        $returnType = new ReturnType($methodInspector);
+        $this->assertTrue($returnType->isExplicitlyTyped());
+        $this->assertEquals("?int", $returnType->getType());
+
+        $methodInspector = $classInspector->getPublicMethod("getTestPOPO");
+
+        $returnType = new ReturnType($methodInspector);
+        $this->assertTrue($returnType->isExplicitlyTyped());
+        $this->assertEquals("?\\" . TestTypedPOPO::class, $returnType->getType());
     }
 
 

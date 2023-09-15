@@ -81,7 +81,6 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
 
 
-
         $property->set($testPOPO, "My Little Pony");
         $this->assertEquals("My Little Pony", $reflectionProperty->getValue($testPOPO));
 
@@ -106,6 +105,30 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
         $property->set($testPOPO, new TestAnnotatedPOPO(1, "Bingo"));
         $this->assertEquals(new TestAnnotatedPOPO(1, "Bingo"), $reflectionProperty->getValue($testPOPO));
+
+
+        //Nullability
+
+        $testNullablePOPO = new TestNullableTypedPOPO(null, []);
+
+        $classInspector = new ClassInspector(TestNullableTypedPOPO::class);
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("hat");
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestNullableTypedPOPO::class)->getFieldAnnotations()["hat"];
+
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+
+        $property->set($testNullablePOPO, "Sunhat");
+        $this->assertEquals($property->get($testNullablePOPO), "Sunhat");
+
+        $property->set($testNullablePOPO, 65);
+        $this->assertEquals($property->get($testNullablePOPO), "65");
+
+        try {
+            $property->set($testNullablePOPO, [1,2,3]);
+            $this->fail("Setting property to array should throw a type error");
+        } catch (WrongPropertyTypeException $e){
+            // Success
+        }
 
     }
 

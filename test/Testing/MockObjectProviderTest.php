@@ -2,9 +2,12 @@
 
 namespace Kinikit\Core\Testing;
 
+use Kinikit\Core\Binding\SimpleNullableObject;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\DependencyInjection\SimpleService;
+
+include_once "autoloader.php";
 
 /**
  * Test cases for
@@ -47,6 +50,12 @@ class MockObjectProviderTest extends \PHPUnit\Framework\TestCase {
         $mockSimpleService = $this->mockObjectProvider->getMockInstance(SimpleService::class);
 //        $this->assertEquals(new \Kinikit\Core\DependencyInjection\SecondaryServiceMock($mockSimpleService), $mockSecondaryService);
 
+    }
+
+    public function testCanMockAClassWithNullableProperties(){
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleNullableObject::class);
+        $mockObject->returnValue("getYear", 100);
+        $this->assertEquals(100, $mockObject->getYear());
     }
 
 

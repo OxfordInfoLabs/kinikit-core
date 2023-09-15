@@ -53,7 +53,8 @@ class ServiceWithExplicitType {
     public function getSecondaryService(): SecondaryService {
         return $this->secondaryService;
     }
-    public function enumParameterMethod(SimpleEnum $simple, ExampleEnum $state = ExampleEnum::GREAT) : int {
+    public function enumParameterMethod(SimpleEnum $simple, ExampleEnum $state = ExampleEnum::GREAT,
+                                        \Kinikit\Core\DependencyInjection\ExampleEnum $uselessValue = \Kinikit\Core\DependencyInjection\ExampleEnum::FANTASTIC) : int {
         return strlen( $state->value);
     }
 

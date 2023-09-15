@@ -61,7 +61,7 @@ class Property {
 
             list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
-            if (!in_array($type, Primitive::TYPES)) {
+            if (!Primitive::isStringPrimitiveType($type)) {
                 if (isset($declaredNamespaceClasses[$type]))
                     $type = $declaredNamespaceClasses[$type];
                 else {
@@ -69,9 +69,9 @@ class Property {
                         $type = "\\" . $reflectionProperty->getDeclaringClass()->getNamespaceName() . "\\" . $type;
                     }
                 }
-
             }
-
+        } else if ($reflectionProperty->hasType()){
+            $type = $reflectionProperty->getType()->getName();
         }
 
         $this->type = $type . $arraySuffix;
@@ -162,19 +162,32 @@ class Property {
 
         // If a primitive and not of right type, throw now.
         $wrongType = false;
-        if ($this->isPrimitive()) {
-            if (!Primitive::isOfPrimitiveType($this->getType(), $value) && $value !== null)
+        $type = $this->getType();
+        $nullable = str_starts_with($type, "?");
+        $strippedType = $nullable ? substr($type, 1) : $type;
+
+//        if (!$nullable && $value == null){
+//            //TODO WARNING! Should require nullable properties to be explicitly labelled
+//            //throw new WrongPropertyTypeException("Attempted to set {$this->getPropertyName()} on class {$this->getDeclaringClassInspector()->getClassName()} to null even though it's not nullable");
+//        }
+
+        // Allow nullability for all types
+        if ($value === null){
+            $wrongType = false;
+        } else if (in_array($strippedType, Primitive::TYPES)) {
+            if (!Primitive::isOfPrimitiveType($strippedType, $value)) // Allows bools and ints as strings
                 $wrongType = true;
         } else if (is_object($value)) {
             $wrongType = !(get_class($value) == trim($this->getType(), "\\")
                 || is_subclass_of($value, trim($this->getType(), "\\")));
-        } else if (!is_array($value) && $value !== null) {
+        } else if (!is_array($value)) { // If it's an array or a null we are fine
             $wrongType = true;
         }
 
-        if ($wrongType)
-            throw new WrongPropertyTypeException("An attempt was made to write to the property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type.");
-
+        if ($wrongType) {
+            $valType = gettype($value);
+            throw new WrongPropertyTypeException("An attempt was made to write to the {$type} property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type $valType.");
+        }
         $this->reflectionProperty->setValue($object, $value);
 
     }

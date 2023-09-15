@@ -56,6 +56,7 @@ class Parameter {
 
         // Evaluate the parameter type according to whether or not this is an explicitly typed param or annotated.
         $type = "mixed";
+        $nullablePrefix = "";
         $arraySuffix = "";
 
         $this->explicitlyTyped = false;
@@ -64,7 +65,7 @@ class Parameter {
             if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
 
-                if (!in_array($type, Primitive::TYPES))
+                if (!Primitive::isStringPrimitiveType($type))
                     $type = "\\" . ltrim(trim($type), "\\");
             } else {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType());
@@ -83,7 +84,7 @@ class Parameter {
 
                     list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
-                    if (!in_array($type, Primitive::TYPES)) {
+                    if (!Primitive::isStringPrimitiveType($type)) {
                         if (isset($declaredNamespaceClasses[$type]))
                             $type = $declaredNamespaceClasses[$type];
                         else {
@@ -98,7 +99,11 @@ class Parameter {
             }
         }
 
-        $this->type = $type . $arraySuffix;
+        if ($this->explicitlyTyped && $reflectionParameter->allowsNull()){
+            $nullablePrefix = "?";
+        }
+
+        $this->type = $nullablePrefix . $type . $arraySuffix;
 
     }
 
@@ -116,11 +121,16 @@ class Parameter {
         return $this->type;
     }
 
+    public function isNullable() {
+        return str_starts_with(trim($this->type), "?");
+    }
+
     /**
      * Is this parameter an array type
      */
     public function isArray() {
-        return $this->type != $this->stripArrayTypeSuffix($this->type);
+        return preg_match("/\[.*\]$/", $this->type) || str_contains($this->type, "array");
+//        return $this->type != $this->stripArrayTypeSuffix($this->type);
     }
 
     /**
@@ -165,11 +175,13 @@ class Parameter {
      * @return bool
      */
     public function isPrimitive() {
-        return in_array($this->getType(), Primitive::TYPES);
+        $type = trim($this->getType(), "?");
+        return in_array($type, Primitive::TYPES);
     }
 
 
     // Strip Array type suffix
+    // If "string[int]" is the input, output is ["string", "[int]"]
     private function stripArrayTypeSuffix($type) {
         $strippedType = trim(preg_replace("/\[.*\]$/", "", $type));
         $arraySuffix = substr($type, strlen($strippedType));

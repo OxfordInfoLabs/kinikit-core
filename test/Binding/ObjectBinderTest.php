@@ -286,6 +286,33 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanBindNullableArguments(){
+        $nullableObj1 = new SimpleNullableObject(2050, ["amazing party"]);
+        $nullableObj2 = new SimpleNullableObject(null, ["cool party"]);
+
+        $objects = [$nullableObj1, $nullableObj2];
+
+
+        $array = $this->objectBinder->bindToArray($objects);
+
+        $this->assertEquals(
+            [
+                ["year" => 2050, "parties" => ["amazing party"], "testPOPO" => null],
+                ["year" => null, "parties" => ["cool party"], "testPOPO" => null]
+            ], $array
+        );
+
+        $fromArrayObject = $this->objectBinder->bindFromArray(["year" => 2050, "parties" => ["amazing party"]], SimpleNullableObject::class);
+        $this->assertEquals($fromArrayObject,$nullableObj1);
+
+        $fromArrayObject = $this->objectBinder->bindFromArray(
+            [
+                "year" => 2050,
+                "parties" => ["amazing party"],
+                "testPOPO" => ["id"=> 4, "name"=> "Sam"]
+        ], SimpleNullableObject::class);
+    }
+
     public function testCanBindComplexObjectToArrayInPublicMode() {
 
         $simpleObject = new SimpleGetterSetterObj();

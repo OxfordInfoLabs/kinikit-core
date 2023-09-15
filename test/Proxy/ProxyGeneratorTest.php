@@ -11,6 +11,7 @@ use Kinikit\Core\DependencyInjection\ServiceWithExplicitType;
 use Kinikit\Core\DependencyInjection\SimpleEnum;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\TestNullableTypedPOPO;
 
 include_once "autoloader.php";
 
@@ -84,6 +85,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         // Check that the constructor has no arguments in this case.
         $this->assertEquals(2, sizeof($reflectionClass->getConstructor()->getParameters()));
 
+        // Manually populate the class with the requirements for the Proxy trait
         $proxy = new \Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended(new SimpleService(), new \Kinikit\Core\DependencyInjection\SecondaryService(null));
         $proxy->__populate(new ContainerInterceptors(), new ClassInspector(ServiceWithExplicitType::class));
 
@@ -98,11 +100,29 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $proxyGenerator = new ProxyGenerator();
 
         $className = $proxyGenerator->generateProxy(ServiceWithExplicitType::class, "Extended", [Proxy::class]);
-        $proxy = new ServiceWithExplicitType(new SimpleService(), new SecondaryService(new SimpleService()));
+
+        // Check the class exists.
+        $this->assertTrue(class_exists("Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended"));
+
+        $proxy = new \Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended(new SimpleService(), new SecondaryService(new SimpleService()));
+
+        // Manually populate the class with the requirements for the Proxy trait
+        $proxy->__populate(new ContainerInterceptors(), new ClassInspector(ServiceWithExplicitType::class));
 
         $this->assertEquals(5, $proxy->enumParameterMethod(SimpleEnum::CASE_1));
-
         $this->assertEquals(ExampleEnum::FANTASTIC, $proxy->enumReturnMethod(100));
+    }
+
+    public function testCanGetMethodParamsForNullableArguments(){
+        $proxyGenerator = new ProxyGenerator();
+
+        $className = $proxyGenerator->generateProxy(TestNullableTypedPOPO::class, "Extended", [Proxy::class]);
+        $proxy = new \Kinikit\Core\Reflection\TestNullableTypedPOPOExtended("Sunhat", ["left sock", "right sock"]);
+
+        // Manually populate the class with the requirements for the Proxy trait
+        $proxy->__populate(new ContainerInterceptors(), new ClassInspector(TestNullableTypedPOPO::class));
+
+        $this->assertEquals("Sunhat", $proxy->getHat());
     }
 
 }

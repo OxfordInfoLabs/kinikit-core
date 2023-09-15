@@ -5,6 +5,7 @@ namespace Kinikit\Core\Testing;
 
 
 use http\Exception\BadMethodCallException;
+use Kinikit\Core\Binding\SimpleNullableObject;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Exception\AccessDeniedException;
@@ -160,6 +161,23 @@ class MockObjectTest extends \PHPUnit\Framework\TestCase {
         $mockObject->myDummyFunction("Hello");
 
         $this->assertTrue(true);
+    }
+
+    public function testAbleToMockObjectWithNullableArguments(){
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleNullableObject::class);
+
+        try{
+            $mockObject->returnValue("getHat", "Sunhat");
+            $this->fail(); // Simple nullable obj has no such method
+        } catch (NoneExistentMethodException $e){
+            //Success
+        }
+
+
+        $mockObject->returnValue("getYear", 1970);
+
+        $this->assertEquals(1970, $mockObject->getYear());
+
     }
 
 

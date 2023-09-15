@@ -139,6 +139,24 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         // Try successful ones
         $this->assertEquals(new TestTypedPOPO(11, "Mark"), $classInspector->createInstance(["id" => 11, "name" => "Mark"]));
 
+        $classInspector = new ClassInspector(TestNullableTypedPOPO::class);
+
+
+        //TODO Nullable params don't need to be passed in
+//        try {
+//            $classInspector->createInstance([]);
+//            $this->fail("Should have thrown here");
+//        } catch (InsufficientParametersException $e){
+//            // Success
+//        }
+
+        //NOTE: Integers are typecast to strings when passed into createInstance
+        $instance1 = $classInspector->createInstance(["hat"=> "Sunhat", ["left sock", "right sock"]]);
+        $instance2 = $classInspector->createInstance(["hat"=> null, ["left sock", "right sock"]]);
+
+        $instance1->setHat(null);
+
+        $this->assertEquals($instance1, $instance2);
 
     }
 

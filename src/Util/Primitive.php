@@ -41,6 +41,7 @@ class Primitive {
      * @param $primitiveType
      */
     public static function isOfPrimitiveType($primitiveType, $value) {
+        $primitiveType = ltrim($primitiveType, "?");
         switch ($primitiveType) {
             case self::TYPE_BOOLEAN:
             case self::TYPE_BOOL:
@@ -61,6 +62,11 @@ class Primitive {
         return false;
     }
 
+    public static function isStringPrimitiveType(string $type): bool {
+        $trimmedType = ltrim($type, "?");
+        return in_array($trimmedType, self::TYPES);
+    }
+
 
     /**
      * Convert a value to the correct primitive type.  Returns the value intact if not possible.
@@ -70,17 +76,20 @@ class Primitive {
      */
     public static function convertToPrimitive($primitiveType, $value) {
         if (self::isOfPrimitiveType($primitiveType, $value)) {
-            switch ($primitiveType) {
+            $trimmedPrimitive = ltrim($primitiveType, "?");
+            switch ($trimmedPrimitive) {
                 case self::TYPE_BOOLEAN:
                 case self::TYPE_BOOL:
                     if ($value === "true") return true;
                     if ($value === "false") return false;
                     return boolval($value);
-                case self::TYPE_INT;
+                case self::TYPE_INT:
                 case self::TYPE_INTEGER:
                     return intval($value);
                 case self::TYPE_FLOAT:
                     return floatval($value);
+                case self::TYPE_STRING:
+                    return strval($value);
             }
         }
 

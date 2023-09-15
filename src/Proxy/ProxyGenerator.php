@@ -5,6 +5,7 @@ namespace Kinikit\Core\Proxy;
 
 use Kinikit\Core\Exception\RecursiveDependencyException;
 use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\Method;
 
 
 /**
@@ -30,7 +31,7 @@ class ProxyGenerator {
      * @return string
      */
     public function generateProxy($className, $proxySuffix, $includedTraits, $blankConstructor = false) {
-
+        $className = ltrim($className, "?");
         $classInspector = new ClassInspector($className);
 
         $shortClass = $classInspector->getShortClassName();
@@ -59,14 +60,16 @@ class ProxyGenerator {
         foreach ($includedTraits as $trait) $classString .= "use \\" . ltrim($trait, "\\") . ";\n";
 
         if ($classInspector->getConstructor()) {
-            $classString .= "
-            public function __construct($constructorParams){";
-            if (!$blankConstructor)
+            if (!$blankConstructor) {
+                $classString .= "
+                public function __construct($constructorParams){";
                 $classString .= "(new \ReflectionClass(\$this))->getParentClass()->getMethod('__construct')->invokeArgs(\$this, func_get_args());";
-            $classString .= "
+                $classString .= "
+            }";
+            } else {
+                $classString .= "
+                public function __construct(){}";
             }
-          
-        ";
         }
 
         // Loop through all public methods and reimplement.
@@ -102,6 +105,11 @@ class ProxyGenerator {
 
 
     // Get method params for a method object
+
+    /**
+     * @param Method $method
+     * @return string
+     */
     private function getMethodParamsString($method) {
 
         $params = [];
@@ -127,8 +135,8 @@ class ProxyGenerator {
                     $defaultValueString = "null";
                 } else if (is_array($defaultValueString)) {
                     $defaultValueString = "[]";
-                } else if ($defaultValueString instanceof \UnitEnum){
-                    $defaultValueString = get_class($defaultValueString) . "::" . $defaultValueString->name;
+                } else if ($defaultValueString instanceof \UnitEnum) {
+                    $defaultValueString = "\\" . get_class($defaultValueString) . "::" . $defaultValueString->name;
                 }
 
                 $param .= ' = ' . $defaultValueString;

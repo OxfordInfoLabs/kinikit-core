@@ -191,14 +191,17 @@ class Method {
             if (array_key_exists($parameter->getName(), $arguments)) {
                 $parameterValue = $arguments[$parameter->getName()];
 
+                $strippedType = ltrim($parameter->getType(), "?");
+
                 // If a primitive and not of right type, throw now.
                 if ($parameter->isPrimitive()) {
-                    if ($arguments[$parameter->getName()] && !Primitive::isOfPrimitiveType($parameter->getType(), $parameterValue))
+                    if ($arguments[$parameter->getName()] && !Primitive::isOfPrimitiveType($strippedType, $parameterValue))
                         $wrongParams[] = $parameter->getName();
                 } else if ($arguments[$parameter->getName()] && !is_array($parameterValue) && (!is_object($parameterValue)
-                        || !(get_class($parameterValue) == trim($parameter->getType(), "\\")
-                            || is_subclass_of($parameterValue, trim($parameter->getType(), "\\")))))
+                        || !(get_class($parameterValue) == trim($strippedType, "\\")
+                            || is_subclass_of($parameterValue, trim($strippedType, "\\"))))){
                     $wrongParams[] = $parameter->getName();
+                }
 
                 // If Variadic, explode arguments out as separate items
                 if ($parameter->isVariadic() && is_array($arguments[$parameter->getName()])) {
@@ -210,7 +213,8 @@ class Method {
 
                 if ($parameter->isRequired()) {
 
-                    if ($parameter->isExplicitlyTyped() || !$allowMissingArgs)
+                    // If type is explicit, we are angry if it's null, so catch this here
+                    if (($parameter->isExplicitlyTyped() && !$parameter->isNullable()) || !$allowMissingArgs)
                         $missingRequired[] = $parameter->getName();
                     else
                         $orderedArgs[] = $parameter->getDefaultValue();
@@ -230,7 +234,8 @@ class Method {
 
         if (sizeof($wrongParams)) {
             $joinedWrong = join(", ", $wrongParams);
-            throw new WrongParametersException("The values for the fields $joinedWrong supplied to the method {$this->getMethodName()} on the class {$this->getDeclaringClassInspector()->getClassName()} are of the wrong type");
+            $paramType = gettype($arguments[$wrongParams[0]]);
+            throw new WrongParametersException("The values for the fields $joinedWrong supplied to the method {$this->getMethodName()} on the class {$this->getDeclaringClassInspector()->getClassName()} are of the wrong type. Attempted param type: $paramType");
         }
 
         return $orderedArgs;

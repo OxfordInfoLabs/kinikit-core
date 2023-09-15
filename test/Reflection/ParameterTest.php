@@ -3,6 +3,8 @@
 
 namespace Kinikit\Core\Reflection;
 
+include_once 'autoloader.php';
+
 /**
  * Class ParameterTest
  * @package Kinikit\Core\Reflection
@@ -94,6 +96,19 @@ class ParameterTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($parameter->isRequired());
         $this->assertFalse($parameter->isPrimitive());
 
+    }
+
+    public function testCheckIfParameterIsArrayType(){
+        $classInspector = new ClassInspector(TestNullableTypedPOPO::class);
+
+        $methodInspector = $classInspector->getPublicMethod("__construct");
+        $constructorParams = $methodInspector->getReflectionMethod()->getParameters();
+
+        $parameter = new Parameter($constructorParams[0], $methodInspector);
+        $this->assertEquals(false, $parameter->isArray());
+
+        $parameter = new Parameter($constructorParams[1], $methodInspector);
+        $this->assertEquals(true, $parameter->isArray());
     }
 
 
