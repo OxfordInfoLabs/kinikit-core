@@ -24,7 +24,7 @@ class ValidationException extends \Exception {
         // Create a message appropriately.
         $validationErrorMessages = $this->generateValidationMessages($this->validationErrors);
 
-        parent::__construct("The following validation errors occurred: " . join("<br>", $validationErrorMessages));
+        parent::__construct("The following validation errors occurred: \n" . $validationErrorMessages);
     }
 
     /**
@@ -36,29 +36,19 @@ class ValidationException extends \Exception {
 
 
     // Generate validation messages from a message array
-    private function generateValidationMessages($messageArray, $parentKey = "") {
-        $messages = [];
-        if (is_array($messageArray)) {
-            foreach ($messageArray as $key => $items) {
-
-                // Check for submessages at this level
-                $subMessages = [];
-                if (is_array($items)) {
-                    foreach ($items as $subItemKey => $subItem) {
-                        if ($subItem instanceof FieldValidationError) {
-                            $subMessages[] = $subItem->getErrorMessage();
-                        }
-                    }
-                }
-                if (sizeof($subMessages) > 0) {
-                    $messages[] = $parentKey . $key . ": " . join(", ", $subMessages);
-                } else {
-                    $messages = array_merge($messages, $this->generateValidationMessages($items, $key . "->"));
-                }
+    private function generateValidationMessages($messageArray, $parentKey = "Errors") {
+        $out = "";
+        if (is_array($messageArray)){
+            foreach ($messageArray as $key => $value){ // Expand out children
+                $out .= $this->generateValidationMessages($value, $parentKey ."->". $key) . "\n";
+            }
+        } else {
+            if ($messageArray instanceof FieldValidationError){
+                return $parentKey . ": " . $messageArray->getErrorMessage();
             }
         }
+        return $out;
 
-        return $messages;
     }
 
 }

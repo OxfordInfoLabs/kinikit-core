@@ -107,6 +107,9 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new TestAnnotatedPOPO(1, "Bingo"), $reflectionProperty->getValue($testPOPO));
 
 
+    }
+
+    public function testCanSetNullableProperties(){
         //Nullability
 
         $testNullablePOPO = new TestNullableTypedPOPO(null, []);
@@ -129,7 +132,6 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         } catch (WrongPropertyTypeException $e){
             // Success
         }
-
     }
 
 

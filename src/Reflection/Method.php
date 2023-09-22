@@ -214,12 +214,12 @@ class Method {
                 if ($parameter->isRequired()) {
 
                     // If type is explicit, we are angry if it's null, so catch this here
-                    if (($parameter->isExplicitlyTyped() && !$parameter->isNullable()) || !$allowMissingArgs)
+                    if (($parameter->isExplicitlyTyped() && !$parameter->isNullable()) || !$allowMissingArgs) {
                         $missingRequired[] = $parameter->getName();
-                    else
+                    } else {
                         $orderedArgs[] = $parameter->getDefaultValue();
-
-                } else if (!$parameter->isVariadic() && !$parameter->isExplicitlyTyped()) {
+                    }
+                } else if (!$parameter->isVariadic()) {
                     $orderedArgs[] = $parameter->getDefaultValue();
                 }
 

@@ -60,7 +60,7 @@ class Parameter {
         $arraySuffix = "";
 
         $this->explicitlyTyped = false;
-        if ($reflectionParameter->getType()) {
+        if ($reflectionParameter->getType() && !str_contains($reflectionParameter->getType()->getName(), "array")){
 
             if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());

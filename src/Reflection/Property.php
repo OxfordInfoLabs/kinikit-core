@@ -54,10 +54,15 @@ class Property {
 
         $type = "mixed";
         $arraySuffix = "";
+        $nullablePrefix = "";
         if (sizeof($propertyAnnotations) > 0) {
             $annotation = $propertyAnnotations[0];
 
             $type = trim($annotation->getValue());
+            if (str_contains($type, "?")){
+                $nullablePrefix = "?";
+                $type = str_replace("?", "", $type);
+            }
 
             list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
@@ -74,7 +79,7 @@ class Property {
             $type = $reflectionProperty->getType()->getName();
         }
 
-        $this->type = $type . $arraySuffix;
+        $this->type = $nullablePrefix .  $type . $arraySuffix;
 
     }
 
@@ -116,12 +121,12 @@ class Property {
     }
 
     /**
-     * Get the type for this property
+     * Get the raw type (ignoring nullability) for this property
      *
      * @return string
      */
     public function getType() {
-        return $this->type;
+        return str_replace("?", "", $this->type);
     }
 
 
@@ -132,6 +137,9 @@ class Property {
         return in_array($this->type, Primitive::TYPES);
     }
 
+    public function isNullable(){
+        return str_starts_with($this->type, "?");
+    }
 
     /**
      * Return a static indicator
@@ -162,9 +170,7 @@ class Property {
 
         // If a primitive and not of right type, throw now.
         $wrongType = false;
-        $type = $this->getType();
-        $nullable = str_starts_with($type, "?");
-        $strippedType = $nullable ? substr($type, 1) : $type;
+        $rawType = $this->getType();
 
 //        if (!$nullable && $value == null){
 //            //TODO WARNING! Should require nullable properties to be explicitly labelled
@@ -174,9 +180,10 @@ class Property {
         // Allow nullability for all types
         if ($value === null){
             $wrongType = false;
-        } else if (in_array($strippedType, Primitive::TYPES)) {
-            if (!Primitive::isOfPrimitiveType($strippedType, $value)) // Allows bools and ints as strings
+        } else if (Primitive::isStringPrimitiveType($rawType)) {
+            if (!Primitive::isOfPrimitiveType($rawType, $value)){
                 $wrongType = true;
+            } // Allows bools and ints as strings
         } else if (is_object($value)) {
             $wrongType = !(get_class($value) == trim($this->getType(), "\\")
                 || is_subclass_of($value, trim($this->getType(), "\\")));
@@ -186,7 +193,7 @@ class Property {
 
         if ($wrongType) {
             $valType = gettype($value);
-            throw new WrongPropertyTypeException("An attempt was made to write to the {$type} property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type $valType.");
+            throw new WrongPropertyTypeException("An attempt was made to write to the {$this->type} property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type $valType.");
         }
         $this->reflectionProperty->setValue($object, $value);
 
@@ -210,6 +217,5 @@ class Property {
         $arraySuffix = substr($type, strlen($strippedType));
         return array($strippedType, $arraySuffix);
     }
-
 
 }

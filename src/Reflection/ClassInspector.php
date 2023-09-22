@@ -36,6 +36,8 @@ class ClassInspector {
             $class = $this->getClassNameFromFile($class);
         }
 
+        $class = str_replace("?", "", $class);
+
         $this->reflectionClass = new \ReflectionClass($class);
         $this->classAnnotations = Container::instance()->get(ClassAnnotationParser::class)->parse($class);
 

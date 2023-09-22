@@ -160,6 +160,19 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanCreateClassInspectorFromNullableClass(){
+        $classInspector = new ClassInspector(TestTypedPOPO::class);
+
+        $classInspectorNullable = new ClassInspector("?" . TestTypedPOPO::class);
+        $splitClass = explode("\\", TestTypedPOPO::class);
+        $unqualifiedClass = array_pop($splitClass);
+        $namespace = join("\\", $splitClass);
+        $classInspectorNullable2 = new ClassInspector($namespace . "\\?" . $unqualifiedClass);
+
+        $this->assertEquals($classInspector, $classInspectorNullable);
+        $this->assertEquals($classInspector, $classInspectorNullable2);
+    }
+
 
     public function testCanSetPropertyDataOneAtATimePublicOnly() {
 
