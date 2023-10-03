@@ -69,6 +69,27 @@ abstract class Asynchronous {
         return $this->exceptionData;
     }
 
+    /**
+     * @param string $status
+     */
+    public function setStatus($status) {
+        $this->status = $status;
+    }
+
+    /**
+     * @param mixed $returnValue
+     */
+    public function setReturnValue($returnValue) {
+        $this->returnValue = $returnValue;
+    }
+
+    /**
+     * @param array $exceptionData
+     */
+    public function setExceptionData($exceptionData) {
+        $this->exceptionData = $exceptionData;
+    }
+
 
     /**
      * Run method, should be implemented to execute this asynchronous task
