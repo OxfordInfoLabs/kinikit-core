@@ -39,6 +39,12 @@ class SynchronousProcessor implements AsynchronousProcessor {
     }
 
 
+    /**
+     * Execute and wait
+     *
+     * @param Asynchronous[] $asynchronousInstances
+     * @return Asynchronous[]
+     */
     public function executeAndWait($asynchronousInstances) {
 
         foreach ($asynchronousInstances as $instance) {
@@ -73,5 +79,7 @@ class SynchronousProcessor implements AsynchronousProcessor {
 
             }
         }
+
+        return $asynchronousInstances;
     }
 }

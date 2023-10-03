@@ -43,6 +43,7 @@ class PCNTLAsynchronousProcessor implements AsynchronousProcessor {
      * Execute multiple asynchronous instances in the background and wait for them to complete.
      *
      * @param $asynchronousInstances Asynchronous[]
+     * @return Asynchronous[]
      */
     public function executeAndWait($asynchronousInstances) {
 
@@ -130,6 +131,8 @@ class PCNTLAsynchronousProcessor implements AsynchronousProcessor {
             // Wait quarter of a second before trying again
             usleep(250000);
         }
+
+        return $asynchronousInstances;
 
 
     }

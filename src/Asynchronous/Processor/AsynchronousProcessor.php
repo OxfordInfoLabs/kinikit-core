@@ -22,6 +22,7 @@ interface AsynchronousProcessor {
      * Execute multiple asynchronous instances in the background and wait for them to complete.
      *
      * @param $asynchronousInstances Asynchronous[]
+     * @return Asynchronous[]
      */
     public function executeAndWait($asynchronousInstances);
 

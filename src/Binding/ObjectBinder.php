@@ -64,11 +64,11 @@ class ObjectBinder {
 
         } else {
 
+
             // if a primitive, shortcut and return the value intact.
             if (Primitive::isStringPrimitiveType($targetClass)) {
                 return Primitive::convertToPrimitive($targetClass, $data);
             }
-
 
             // if this is not an array we have a malformed data issue.
             if (!is_array($data)) {
