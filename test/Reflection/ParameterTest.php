@@ -3,6 +3,8 @@
 
 namespace Kinikit\Core\Reflection;
 
+use Kinikit\Core\Binding\SimpleNullableObject;
+
 include_once 'autoloader.php';
 
 /**
@@ -109,6 +111,22 @@ class ParameterTest extends \PHPUnit\Framework\TestCase {
 
         $parameter = new Parameter($constructorParams[1], $methodInspector);
         $this->assertEquals(true, $parameter->isArray());
+    }
+
+    public function testCheckAnnotationsOverrideStrongTypeForArray(){
+        $classInspector = new ClassInspector(SimpleNullableObject::class);
+        $methodInspector = $classInspector->getPublicMethod("__construct");
+        $params = $methodInspector->getParameters();
+
+        foreach ($params as $param){
+            if ($param->getName() == "testTypedPopos"){
+                $arrayParam = $param;
+            }
+        }
+
+        $this->assertEquals("\\".TestTypedPOPO::class."[]", $arrayParam->getType());
+
+
     }
 
 

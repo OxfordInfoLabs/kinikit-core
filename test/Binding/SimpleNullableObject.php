@@ -8,16 +8,19 @@ class SimpleNullableObject {
     private ?int $year;
     private ?array $parties;
     private ?TestTypedPOPO $testPOPO;
+    private array $testTypedPopos;
 
     /**
      * @param ?int $year
      * @param ?array $parties
      * @param ?TestTypedPOPO $testPOPO
+     * @param TestTypedPOPO[] $testTypedPopos
      */
-    public function __construct(?int $year, ?array $parties, ?TestTypedPOPO $testPOPO = null) {
+    public function __construct(?int $year, ?array $parties, ?TestTypedPOPO $testPOPO = null, array $testTypedPopos = []) {
         $this->year = $year;
         $this->parties = $parties;
         $this->testPOPO = $testPOPO;
+        $this->testTypedPopos = $testTypedPopos;
     }
 
 
@@ -45,7 +48,13 @@ class SimpleNullableObject {
         $this->testPOPO = $testPOPO;
     }
 
+    public function getTestTypedPopos(): array {
+        return $this->testTypedPopos;
+    }
 
+    public function setTestTypedPopos(array $testTypedPopos): void {
+        $this->testTypedPopos = $testTypedPopos;
+    }
 
 
 }

@@ -2,17 +2,28 @@
 
 namespace Kinikit\Core\Reflection;
 
+enum TestEnum {
+    case ON;
+    case OFF;
+}
+
 class TestNullableTypedPOPO {
     private ?string $hat;
     private ?array $socks;
+    /**
+     * @var ?TestTypedPOPO
+     */
+    private ?TestTypedPOPO $testTypedPOPO;
 
     /**
      * @param ?string $hat
      * @param ?array $socks
+     * @param ?TestTypedPOPO $testTypedPOPO
      */
-    public function __construct(?string $hat, ?array $socks = []) {
+    public function __construct(?string $hat, ?array $socks = [], ?TestTypedPOPO $testTypedPOPO = null) {
         $this->hat = $hat;
         $this->socks = $socks;
+        $this->testTypedPOPO = $testTypedPOPO;
     }
 
     public function getHat(): ?string {
@@ -31,6 +42,12 @@ class TestNullableTypedPOPO {
         $this->socks = $socks;
     }
 
+    public function getTestTypedPOPO(): ?TestTypedPOPO {
+        return $this->testTypedPOPO;
+    }
 
+    public function setTestTypedPOPO(?TestTypedPOPO $testTypedPOPO): void {
+        $this->testTypedPOPO = $testTypedPOPO;
+    }
 
 }

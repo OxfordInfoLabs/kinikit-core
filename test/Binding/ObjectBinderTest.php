@@ -3,8 +3,10 @@
 namespace Kinikit\Core\Binding;
 
 use Kinikit\Core\Binding\ObjectBindingException;
+use Kinikit\Core\Exception\StatusException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Reflection\TestAnnotatedPOPO;
+use Kinikit\Core\Reflection\TestEnum;
 use Kinikit\Core\Reflection\TestPropertyPOPO;
 use Kinikit\Core\Reflection\TestTypedPOPO;
 
@@ -297,20 +299,69 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
         $this->assertEquals(
             [
-                ["year" => 2050, "parties" => ["amazing party"], "testPOPO" => null],
-                ["year" => null, "parties" => ["cool party"], "testPOPO" => null]
+                ["year" => 2050, "parties" => ["amazing party"], "testPOPO" => null, "testTypedPopos"=>[]],
+                ["year" => null, "parties" => ["cool party"], "testPOPO" => null, "testTypedPopos"=>[]]
             ], $array
         );
 
-        $fromArrayObject = $this->objectBinder->bindFromArray(["year" => 2050, "parties" => ["amazing party"]], SimpleNullableObject::class);
-        $this->assertEquals($fromArrayObject,$nullableObj1);
+        $fromArrayObject = $this->objectBinder->bindFromArray(
+            [
+                "year" => 2050,
+                "parties" => ["amazing party"]
+            ], SimpleNullableObject::class);
+
+        $this->assertEquals($fromArrayObject, $nullableObj1);
 
         $fromArrayObject = $this->objectBinder->bindFromArray(
             [
                 "year" => 2050,
                 "parties" => ["amazing party"],
-                "testPOPO" => ["id"=> 4, "name"=> "Sam"]
+                "testPOPO" => ["id"=> 4, "name"=> "Sam"],
+                "testTypedPopos" => [["id"=>5, "name"=>"Sam"], ["id"=>6, "name"=>"Sam"]]
         ], SimpleNullableObject::class);
+
+        $expectedFromArrayObject = new SimpleNullableObject(
+            2050,
+            ["amazing party"],
+            new TestTypedPOPO(4, "Sam"),
+            [
+                new TestTypedPOPO(5, "Sam"),
+                new TestTypedPOPO(6, "Sam")
+            ]
+        );
+        $this->assertEquals($expectedFromArrayObject, $fromArrayObject);
+
+        $bound = $this->objectBinder->bindFromArray(
+            [
+                [
+                    "year" => 2050,
+                    "parties" => ["amazing party"],
+                    "testPOPO" => ["id"=> 4, "name"=> "Sam"]
+                ],
+                [
+                    "year" => 2051,
+                    "parties" => ["amazing party"],
+                    "testPOPO" => ["id"=> 5, "name"=> "Sam"]
+                ],
+
+            ],
+            SimpleNullableObject::class . "[]"
+        );
+
+        $expected = [
+            new SimpleNullableObject(2050, ["amazing party"], new TestTypedPOPO(4, "Sam")),
+            new SimpleNullableObject(2051, ["amazing party"], new TestTypedPOPO(5, "Sam")),
+        ];
+        $this->assertEquals($expected, $bound);
+    }
+
+    public function testCanBindEnums(){
+        $off = TestEnum::OFF;
+        $boundOff = $this->objectBinder->bindFromArray("OFF", TestEnum::class);
+        $this->assertEquals($off, $boundOff);
+
+        $offString = $this->objectBinder->bindToArray($off);
+        $this->assertEquals("OFF", $offString);
     }
 
     public function testCanBindComplexObjectToArrayInPublicMode() {

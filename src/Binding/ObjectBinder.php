@@ -46,17 +46,16 @@ class ObjectBinder {
 
         $result = null;
 
-        $targetClass = ltrim($targetClass, "?");
+        $targetClass = str_replace("?", "", $targetClass);
 
+        //Remove array suffix
         $arrayTrimmed = preg_replace("/\[[a-z]*\]$/", "", $targetClass);
 
         // If an array of objects, process these next.
         if ($arrayTrimmed != $targetClass) {
-
             $result = [];
 
             if (is_array($data)) {
-
                 foreach ($data as $key => $dataItem) {
                     $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly);
                 }
@@ -64,11 +63,25 @@ class ObjectBinder {
 
         } else {
 
-
             // if a primitive, shortcut and return the value intact.
             if (Primitive::isStringPrimitiveType($targetClass)) {
                 return Primitive::convertToPrimitive($targetClass, $data);
             }
+
+            if (enum_exists($targetClass)){
+                //Check enum is a string
+                if (!Primitive::isOfPrimitiveType(Primitive::TYPE_STRING, $data)){
+                    throw new ObjectBindingException("Enum requires string of the specific case to bind. E.g. 'ACTIVE' for DomainStatus::ACTIVE");
+                }
+
+                $cases = $targetClass::cases();
+                foreach ($cases as $case){
+                    if ($case->name == $data){
+                        return $case;
+                    }
+                }
+            }
+
 
             // if this is not an array we have a malformed data issue.
             if (!is_array($data)) {
@@ -97,7 +110,7 @@ class ObjectBinder {
                 }
 
 
-                // Inject each setter first of all.
+                // Inject each setter for params which were passed in and weren't included in constructor
                 foreach ($classInspector->getSetters() as $key => $setter) {
                     if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
                         $parameter = $setter->getParameters()[0];
@@ -157,6 +170,10 @@ class ObjectBinder {
         // if primitive, return intact straight away.
         if (Primitive::isPrimitive($object)) {
             return $object;
+        }
+
+        if ($object instanceof \UnitEnum){
+            return $object->name;
         }
 
         // Handle array case
