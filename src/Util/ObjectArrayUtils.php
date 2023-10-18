@@ -14,6 +14,7 @@ use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Object\AssociativeArray;
 use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 
 
@@ -177,6 +178,30 @@ class ObjectArrayUtils {
         return $groupedObjects;
 
 
+    }
+
+
+    /**
+     * Get a member value for an object based upon a passed path.
+     *
+     * @param $object
+     * @param $memberPath
+     * @return mixed|null
+     */
+    public static function getObjectMemberValue($object, $memberPath) {
+
+        $explodedExpression = explode(".", $memberPath);
+        foreach ($explodedExpression as $expression) {
+
+            // Must be either an object or array
+            if (is_object($object)) {
+                $classInspector = new ClassInspector(get_class($object));
+                $object = $classInspector->getPropertyData($object, $expression);
+            } else if (is_array($object)) {
+                $object = $object[$expression];
+            }
+        }
+        return $object;
     }
 
 

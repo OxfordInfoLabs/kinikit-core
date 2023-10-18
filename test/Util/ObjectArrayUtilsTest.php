@@ -177,4 +177,17 @@ class ObjectArrayUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testCanGetMemberValueForObjectPath() {
+
+        $object = new WrapperClass(23, "Mark", new NestedClass(12, "Hello", [new NestedClass(13, "Bingo")]));
+
+        $this->assertEquals(23, ObjectArrayUtils::getObjectMemberValue($object, "id" ));
+        $this->assertEquals("Mark", ObjectArrayUtils::getObjectMemberValue($object, "name"));
+        $this->assertEquals(12, ObjectArrayUtils::getObjectMemberValue($object, "address.id"));
+        $this->assertEquals("Hello", ObjectArrayUtils::getObjectMemberValue($object, "address.description"));
+
+
+
+    }
+
 }

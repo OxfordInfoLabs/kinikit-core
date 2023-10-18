@@ -9,9 +9,7 @@
 namespace Kinikit\Core\Util;
 
 
-use Kinikit\Core\Object\SerialisableObject;
-
-class NestedClass extends SerialisableObject {
+class NestedClass  {
 
     private $id;
     private $description;
