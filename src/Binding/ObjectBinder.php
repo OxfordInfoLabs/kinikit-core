@@ -68,15 +68,15 @@ class ObjectBinder {
                 return Primitive::convertToPrimitive($targetClass, $data);
             }
 
-            if (enum_exists($targetClass)){
+            if (enum_exists($targetClass)) {
                 //Check enum is a string
-                if (!Primitive::isOfPrimitiveType(Primitive::TYPE_STRING, $data)){
+                if (!Primitive::isOfPrimitiveType(Primitive::TYPE_STRING, $data)) {
                     throw new ObjectBindingException("Enum requires string of the specific case to bind. E.g. 'ACTIVE' for DomainStatus::ACTIVE");
                 }
 
                 $cases = $targetClass::cases();
-                foreach ($cases as $case){
-                    if ($case->name == $data){
+                foreach ($cases as $case) {
+                    if ($case->name == $data) {
                         return $case;
                     }
                 }
@@ -88,6 +88,12 @@ class ObjectBinder {
                 $dt = print_r($data, true);
                 throw new ObjectBindingException("Bind data for object is not an array. \nData: $dt");
             }
+
+            // Handle date time specifically
+            if (trim($targetClass, "\\") == \DateTime::class && $data["timestamp"] ?? null) {
+                return date_create_from_format("U", $data["timestamp"], new \DateTimeZone($data["timezone"]["name"] ?? "UTC"));
+            }
+
 
             try {
 
@@ -172,7 +178,7 @@ class ObjectBinder {
             return $object;
         }
 
-        if ($object instanceof \UnitEnum){
+        if ($object instanceof \UnitEnum) {
             return $object->name;
         }
 

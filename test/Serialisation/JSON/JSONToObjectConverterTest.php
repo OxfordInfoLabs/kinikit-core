@@ -53,7 +53,22 @@ class JSONToObjectConverterTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-  
+
+    public function testDateObjectsSurviveSerialisationCorrectly() {
+
+        $objectToJson = Container::instance()->get(ObjectToJSONConverter::class);
+        $json = $objectToJson->convert(date_create_from_format("Y-m-d H:i:s", "2020-01-01 10:00:02", new \DateTimeZone("UTC")));
+
+
+        $converter = Container::instance()->get(JSONToObjectConverter::class);
+        $converted = $converter->convert($json, \DateTime::class);
+
+        $this->assertInstanceOf(\DateTime::class, $converted);
+        $this->assertEquals("2020-01-01 10:00:02", $converted->format("Y-m-d H:i:s"));
+
+    }
+
+
 }
 
 ?>
