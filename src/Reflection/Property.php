@@ -16,7 +16,7 @@ class Property {
     private $reflectionProperty;
 
     /**
-     * @var Annotation[]
+     * @var Annotation[][]
      */
     private $propertyAnnotations;
 
@@ -39,7 +39,7 @@ class Property {
     /**
      * Property constructor.
      * @param \ReflectionProperty $reflectionProperty
-     * @param Annotation[] $propertyAnnotations
+     * @param Annotation[][] $propertyAnnotations
      * @param ClassInspector $declaringClassInspector
      */
     public function __construct($reflectionProperty, $propertyAnnotations, $declaringClassInspector) {
@@ -105,7 +105,7 @@ class Property {
     /**
      * Get the property annotations
      *
-     * @return Annotation[]
+     * @return Annotation[][]
      */
     public function getPropertyAnnotations() {
         return $this->propertyAnnotations;

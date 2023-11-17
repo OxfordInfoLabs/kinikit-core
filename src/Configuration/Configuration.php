@@ -36,7 +36,7 @@ class Configuration extends ConfigFile {
     /**
      * Static get parameter function.  Convenience quicky for calling internal getParameter
      *
-     * @param unknown_type $key
+     * @param string $key
      */
     public static function readParameter($key) {
         return Configuration::instance()->getParameter($key);
