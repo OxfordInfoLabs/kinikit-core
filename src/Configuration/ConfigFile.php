@@ -2,6 +2,8 @@
 
 namespace Kinikit\Core\Configuration;
 
+use Exception;
+
 /**
  * A generic configuration file handling class.  This handles the reading of parameters
  * defined within a standard properties type file format.

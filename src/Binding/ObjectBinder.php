@@ -80,6 +80,7 @@ class ObjectBinder {
                         return $case;
                     }
                 }
+                throw new ObjectBindingException("Enum $targetClass failed to bind from string $data. \nUse the string of the case E.g. 'ACTIVE' for DomainStatus::ACTIVE");
             }
 
 
@@ -164,7 +165,7 @@ class ObjectBinder {
      * Bind an object / array of objects to an array
      *
      * @param $object
-     * @return array
+     * @return array|string
      */
     public function bindToArray($object, $publicOnly = true, $seenObjects = []) {
 
