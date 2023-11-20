@@ -44,9 +44,12 @@ class FunctionStringRewriter {
             $totalFunctionParams = 0;
             $argParams = [];
             foreach ($functionArgs as $functionArg) {
-                $numberOfFunctionParams = substr_count($functionArg, "?");
-                $argParams[] = array_slice($parameterValues, $paramsBeforeMatch + $totalFunctionParams, $numberOfFunctionParams);
-                $totalFunctionParams += $numberOfFunctionParams;
+
+                if ($functionArg !== null) {
+                    $numberOfFunctionParams = substr_count($functionArg, "?");
+                    $argParams[] = array_slice($parameterValues, $paramsBeforeMatch + $totalFunctionParams, $numberOfFunctionParams);
+                    $totalFunctionParams += $numberOfFunctionParams;
+                }
             }
 
             // Collect new function params
