@@ -4,7 +4,7 @@ body='{
 "message":"Triggered by kinikit-core"
 }}'
 
-curl -s -X POST \
+curl -X POST \
    -H "Content-Type: application/json" \
    -H "Travis-API-Version: 3" \
    -H "Authorization: token $TRAVIS_API_TOKEN" \
