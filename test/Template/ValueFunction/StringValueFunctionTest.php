@@ -16,6 +16,7 @@ class StringValueFunctionTest extends TestCase {
         $this->assertEquals("test string!", $function->applyFunction("substring 10", $string, null));
         $this->assertEquals(" is a", $function->applyFunction("substring 4 5", $string, null));
         $this->assertEquals("Thi", $function->applyFunction("substring 0 3", $string, null));
+        $this->assertEquals("string!", $function->applyFunction("substring -7", $string, null));
     }
 
     public function testCanConcatenateStrings() {

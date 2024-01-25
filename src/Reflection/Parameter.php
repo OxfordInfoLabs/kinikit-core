@@ -5,6 +5,7 @@ namespace Kinikit\Core\Reflection;
 
 
 use Kinikit\Core\Util\Primitive;
+use ReflectionParameter;
 
 class Parameter {
 
@@ -12,7 +13,7 @@ class Parameter {
     /**
      * The reflection parameter object
      *
-     * @var \ReflectionParameter
+     * @var ReflectionParameter
      */
     private $reflectionParameter;
 
@@ -45,7 +46,7 @@ class Parameter {
      * Construct with the reflection parameter and the ownning method inspector.
      *
      * Parameter constructor.
-     * @param \ReflectionParameter $reflectionParameter
+     * @param ReflectionParameter $reflectionParameter
      * @param Method $method
      */
     public function __construct($reflectionParameter, $method) {

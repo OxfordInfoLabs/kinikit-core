@@ -18,6 +18,7 @@ class ClassAnnotationParser {
 
     /**
      * Parse annotations for a class
+     * @return ClassAnnotations
      */
     public function parse($className) {
 
@@ -78,6 +79,10 @@ class ClassAnnotationParser {
     }
 
 
+    /**
+     * @param string $comment
+     * @return Annotation[][]
+     */
     private function getCommentAnnotations($comment) {
 
         $cleaned = str_replace(array("*/", "/*", "\n/"), array("", "", "", ""), $comment);
@@ -94,7 +99,10 @@ class ClassAnnotationParser {
     }
 
 
-    // Clean a comment
+    /**
+     * @param string $comment
+     * @return string
+     */
     private function cleanComment($comment) {
         $commentLines = explode(PHP_EOL, $comment);
         for ($i = sizeof($commentLines) - 1; $i >= 0; $i--) {

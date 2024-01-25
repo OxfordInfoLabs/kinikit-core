@@ -28,7 +28,7 @@ class ReadOnlyFTPStream extends ReadOnlyFilePointerResourceStream {
      * @param bool $secure
      * @param string $username
      * @param string $password
-     * @param string $privateKey
+     * @param string $privateKey An ssh key as text
      */
     public function __construct($hostname, $filePath, $secure = true, $username = null, $password = null, $privateKey = null) {
 

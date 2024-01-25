@@ -4,7 +4,11 @@ namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Annotation\ClassAnnotationParser;
+use Kinikit\Core\Annotation\ClassAnnotations;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\WrongParametersException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Generic class inspector for inspecting class information using a mixture of reflection
@@ -14,7 +18,13 @@ use Kinikit\Core\DependencyInjection\Container;
  */
 class ClassInspector {
 
+    /**
+     * @var ReflectionClass $reflectionClass
+     */
     private $reflectionClass;
+    /**
+     * @var ClassAnnotations
+     */
     private $classAnnotations;
     private $declaredNamespaces;
 
@@ -29,6 +39,7 @@ class ClassInspector {
      *
      * ClassInspector constructor.
      * @param mixed $class
+     * @throws ReflectionException
      */
     public function __construct($class) {
 
@@ -38,7 +49,7 @@ class ClassInspector {
 
         $class = str_replace("?", "", $class);
 
-        $this->reflectionClass = new \ReflectionClass($class);
+        $this->reflectionClass = new ReflectionClass($class);
         $this->classAnnotations = Container::instance()->get(ClassAnnotationParser::class)->parse($class);
 
     }
@@ -53,6 +64,7 @@ class ClassInspector {
 
     /**
      * Get the last portion of the full class name.
+     * @return string
      */
     public function getShortClassName() {
         $exploded = explode("\\", $this->getClassName());
@@ -62,7 +74,7 @@ class ClassInspector {
     /**
      * Get the reflection class instance
      *
-     * @return \ReflectionClass
+     * @return ReflectionClass
      */
     public function getReflectionClass() {
         return $this->reflectionClass;
@@ -315,6 +327,9 @@ class ClassInspector {
                 if (isset($properties[$propertyName])) {
                     if (!$publicOnly || $properties[$propertyName]->getVisibility() == Property::VISIBILITY_PUBLIC)
                         $properties[$propertyName]->set($object, $data);
+//                } else {
+//                    print("No property $propertyName exists on class ". $this->getClassName() . "\n");
+////                    throw new WrongParametersException("No property $propertyName exists on class ". $this->getClassName());
                 }
             }
 
