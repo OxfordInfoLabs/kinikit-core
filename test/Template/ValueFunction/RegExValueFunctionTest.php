@@ -22,5 +22,18 @@ class RegExValueFunctionTest extends TestCase {
         $this->assertEquals("01", $function->applyFunction("/^.{3}(.{2})/", "03/01/2022", []));
     }
 
+    public function testNullValuesAreHandledCorrectly() {
+
+        $function = new RegExValueFunction();
+
+        $functionString = "/^.{3}(.{2})/";
+        $value = "03/01/2022";
+
+        $this->assertEquals("", $function->applyFunction($functionString, null, []));
+        $this->assertEquals($value, $function->applyFunction(null, $value, []));
+        $this->assertNull($function->applyFunction(null, null, []));
+
+    }
+
 
 }
