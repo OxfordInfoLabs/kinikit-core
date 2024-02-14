@@ -2,8 +2,9 @@
 
 namespace Kinikit\Core\Asynchronous\Processor;
 
-use Amp\Parallel\Worker\Execution;
+use Amp\Future;
 use Kinikit\Core\Asynchronous\AMPParallel\AMPParallelTask;
+use Kinikit\Core\Asynchronous\Asynchronous;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use function Amp\Future\await;
 use function Amp\Parallel\Worker\submit;
@@ -25,17 +26,13 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
 
     public function executeAndWait($asynchronousInstances) {
 
-        // Queue each of our async instances using an AMPParallelTask wrapper.
-        $executions = [];
-        foreach ($asynchronousInstances as $asynchronousInstance) {
-            $executions[] = submit(new AMPParallelTask($asynchronousInstance));
-        }
+        // Turn an async instance to a future using an AMPParallelTask wrapper.
+        $toFuture = fn(Asynchronous $instance) => submit(new AMPParallelTask($instance))->getFuture();
 
         // Await execution of all queued tasks.
-        $responses = await(array_map(
-            fn(Execution $e) => $e->getFuture(),
-            $executions,
-        ));
+        $responses = await(
+            array_map($toFuture, $asynchronousInstances)
+        );
 
         // Grab response instances and resync original instances for reference integrity.
         foreach ($responses as $index => $response) {
