@@ -9,7 +9,6 @@
 namespace Kinikit\Core\Template;
 
 use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\Util\ObjectArrayUtils;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 

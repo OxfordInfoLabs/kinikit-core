@@ -4,10 +4,9 @@ namespace Kinikit\Core\Serialisation\JSON;
 
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Exception\PropertyNotWritableException;
+use Kinikit\Core\Serialisation\FormatToObjectConverter;
 use Kinikit\Core\Util\ClassUtils;
 use Kinikit\Core\Util\Logging\Logger;
-use Kinikit\Core\Util\ObjectArrayUtils;
-use Kinikit\Core\Serialisation\FormatToObjectConverter;
 
 /**
  * @noProxy

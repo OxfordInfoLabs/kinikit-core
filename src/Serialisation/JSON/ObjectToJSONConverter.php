@@ -3,7 +3,6 @@
 namespace Kinikit\Core\Serialisation\JSON;
 
 use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Serialisation\ObjectToFormatConverter;
 
 /**

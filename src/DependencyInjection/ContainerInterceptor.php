@@ -3,8 +3,8 @@
 namespace Kinikit\Core\DependencyInjection;
 
 
-use Kinikit\Core\Reflection\Method;
 use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\Method;
 
 /**
  * Object Interceptor base class for intercepting object creations and method calls on the proxy object.

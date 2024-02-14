@@ -3,9 +3,6 @@
 
 namespace Kinikit\Core\Template\ValueFunction;
 
-use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Util\ObjectArrayUtils;
-
 class ArrayValueFunction extends ValueFunctionWithArguments {
 
     const supportedFunctions = [

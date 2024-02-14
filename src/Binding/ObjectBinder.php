@@ -6,11 +6,9 @@ namespace Kinikit\Core\Binding;
 use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
-use Kinikit\Core\Logging\Logger;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Reflection\Property;
 use Kinikit\Core\Util\Primitive;
-use Kinikit\Core\Reflection\ClassInspectorProvider;
-use Kinikit\Core\Reflection\Parameter;
 
 /**
  * Binder object used for converting an object (or an array of objects) recursively to associative array data

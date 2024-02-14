@@ -4,8 +4,6 @@
 namespace Kinikit\Core\Exception;
 
 
-use Throwable;
-
 class MethodNotImplementedException extends \Exception {
 
     public function __construct($message = "") {

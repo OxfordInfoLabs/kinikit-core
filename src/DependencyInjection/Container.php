@@ -3,10 +3,9 @@
 namespace Kinikit\Core\DependencyInjection;
 
 use Kinikit\Core\Annotation\ClassAnnotationParser;
-use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Proxy\ProxyGenerator;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\Primitive;
-use Kinikit\Core\Proxy\ProxyGenerator;
 
 
 /**

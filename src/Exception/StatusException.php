@@ -4,8 +4,6 @@
 namespace Kinikit\Core\Exception;
 
 
-use Throwable;
-
 /**
  * Generic base exception class which encodes a status code (in addition to the exception code) as part of the Exception params.
  * This is useful downstream where status codes are required for e.g. responses etc.

@@ -9,8 +9,8 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Validation\MisconfiguredValidatorException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\Core\Validation\MisconfiguredValidatorException;
 
 class EqualsFieldValidator extends ObjectFieldValidator {
 

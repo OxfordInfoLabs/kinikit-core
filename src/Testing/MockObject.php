@@ -3,7 +3,6 @@
 namespace Kinikit\Core\Testing;
 
 use Kinikit\Core\Exception\NoneExistentMethodException;
-use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Util\Primitive;
 
 trait MockObject {

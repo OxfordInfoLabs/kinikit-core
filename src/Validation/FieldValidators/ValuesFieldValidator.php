@@ -4,7 +4,6 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Validation\MisconfiguredValidatorException;
 
 class ValuesFieldValidator extends ObjectFieldValidator {
