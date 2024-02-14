@@ -25,23 +25,23 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
 
     public function executeAndWait($asynchronousInstances) {
 
+        // Queue each of our async instances using an AMPParallelTask wrapper.
         $executions = [];
         foreach ($asynchronousInstances as $asynchronousInstance) {
-            // FetchTask is just an example, you'll have to implement
-            // the Task interface for your task.
             $executions[] = submit(new AMPParallelTask($asynchronousInstance));
         }
 
+        // Await execution of all queued tasks.
         $responses = await(array_map(
             fn(Execution $e) => $e->getFuture(),
             $executions,
         ));
 
-        // Grab class for response and resync
+        // Grab response instances and resync original instances for reference integrity.
         foreach ($responses as $index => $response) {
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($response));
-            $properties = $classInspector->getPropertyData($response,null, false);
-            $classInspector->setPropertyData($asynchronousInstances[$index], $properties,null,false);
+            $properties = $classInspector->getPropertyData($response, null, false);
+            $classInspector->setPropertyData($asynchronousInstances[$index], $properties, null, false);
         }
 
 
