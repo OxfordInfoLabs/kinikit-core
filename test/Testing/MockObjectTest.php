@@ -110,6 +110,40 @@ class MockObjectTest extends \PHPUnit\Framework\TestCase {
     }
 
 
+    public function testCanProgramAndReprogramMethodReturnValuesAndExceptions(){
+
+
+        $mockObject = $this->mockObjectProvider->getMockInstance(SimpleService::class);
+
+        // Set to an exception
+        $mockObject->throwException("echoParams", new AccessDeniedException());
+
+        try {
+            $mockObject->echoParams(1, 2, 3, 4);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+
+        // Set to a return value
+        $mockObject->returnValue("echoParams", "BOSHER");
+        $this->assertEquals("BOSHER", $mockObject->echoParams(1, 2, 3, 4));
+
+
+        // Set back to an exception
+        $mockObject->throwException("echoParams", new AccessDeniedException());
+
+        try {
+            $mockObject->echoParams(1, 2, 3, 4);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+    }
+
+
     public function testCanGetMethodCallHistory() {
 
         $mockObject = $this->mockObjectProvider->getMockInstance(SimpleService::class);

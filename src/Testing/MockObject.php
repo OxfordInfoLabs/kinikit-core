@@ -59,7 +59,7 @@ trait MockObject {
 
         $this->ensureMethodExists($methodName);
 
-        $this->setArrayMethodValue($methodName, $returnValue, $matchingArgs, $this->returnValues);
+        $this->setArrayMethodValue($methodName, $returnValue, $matchingArgs, $this->returnValues, $this->exceptions);
         return $this;
 
     }
@@ -81,7 +81,7 @@ trait MockObject {
 
         $this->ensureMethodExists($methodName);
 
-        $this->setArrayMethodValue($methodName, $exception, $matchingArgs, $this->exceptions);
+        $this->setArrayMethodValue($methodName, $exception, $matchingArgs, $this->exceptions, $this->returnValues);
 
         return $this;
     }
@@ -167,7 +167,7 @@ trait MockObject {
 
 
     // Set an array method value.
-    private function setArrayMethodValue($methodName, $returnValue, $matchingArgs, &$array) {
+    private function setArrayMethodValue($methodName, $returnValue, $matchingArgs, &$array, &$unsetArray) {
 
         if ($matchingArgs === null) {
             $matchingArgs = ["!!!!!"];
@@ -198,6 +198,24 @@ trait MockObject {
                 return;
             }
         }
+
+        foreach ($unsetArray[$methodName] ?? [] as $index => list($args, $currentReturnValue)){
+            $matches = sizeof($args) == sizeof($matchingArgs);
+
+
+            if ($matches) {
+                foreach ($args as $argIndex => $arg) {
+                    $matches = $matches && Primitive::isPrimitive($arg) == Primitive::isPrimitive($matchingArgs[$argIndex]);
+                    $matches = $matches && $arg == $matchingArgs[$argIndex];
+                }
+            }
+
+
+            if ($matches) {
+              unset($unsetArray[$methodName][$index]);
+            }
+        }
+
 
         $array[$methodName][] = [$matchingArgs, $returnValue];
 
