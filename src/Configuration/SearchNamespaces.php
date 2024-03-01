@@ -52,7 +52,7 @@ class SearchNamespaces {
 
         // Gather search namespaces
         if (!$this->namespaces) {
-            $this->namespaces = [Configuration::readParameter("application.namespace")];
+            $this->namespaces = [];
             foreach ($this->fileResolver->getSearchPaths() as $searchPath) {
                 if ($searchPath == ".")
                     continue;
@@ -63,6 +63,7 @@ class SearchNamespaces {
                 }
 
             }
+            $this->namespaces[] = Configuration::readParameter("application.namespace");
         }
 
         return $this->namespaces;

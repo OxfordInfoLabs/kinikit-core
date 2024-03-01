@@ -3,7 +3,9 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
+use Kinikit\Core\Asynchronous\Processor\AsynchronousProcessor;
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 
 /**
@@ -58,6 +60,7 @@ class InterfaceResolver {
             $configValue = Configuration::readParameter($configParam);
 
         }
+
         return $this->getImplementationClassForKey($interfaceClass, $configValue);
 
     }
@@ -70,17 +73,18 @@ class InterfaceResolver {
      * Throws a missing interface implementation exception if none exists for the
      * passed key.
      *
-     * @parm string $interfaceClass
+     * @param string $interfaceClass
      * @param string $implementationKey
+     * @return string
      * @throws MissingInterfaceImplementationException
      */
     public function getImplementationClassForKey($interfaceClass, $implementationKey = null) {
 
+        $interfaceClass = ltrim($interfaceClass, "\\");
         $classInspector = $this->classInspectorProvider->getClassInspector($interfaceClass);
         $classAnnotations = $classInspector->getClassAnnotations();
 
         if ($implementationKey) {
-
 
             // if an explicit implementation set, return it straight away
             if (isset($this->explicitImplementations[$interfaceClass][$implementationKey])) {
@@ -122,6 +126,7 @@ class InterfaceResolver {
      * @param $implementationClass
      */
     public function addImplementationClassForKey($interfaceClass, $implementationKey, $implementationClass) {
+        $interfaceClass = ltrim($interfaceClass, "\\");
         if (!isset($this->explicitImplementations[$interfaceClass])) {
             $this->explicitImplementations[$interfaceClass] = [];
         }
