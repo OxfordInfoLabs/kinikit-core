@@ -14,7 +14,8 @@ use Kinikit\Core\Asynchronous\Asynchronous;
  *
  * @implementationConfigParam asynchronous.processor
  * @implementation pcntl \Kinikit\Core\Asynchronous\Processor\PCNTLAsynchronousProcessor
- * @defaultImplementation \Kinikit\Core\Asynchronous\Processor\PCNTLAsynchronousProcessor
+ * @implementation sync \Kinikit\Core\Asynchronous\Processor\SynchronousProcessor
+ * @defaultImplementation \Kinikit\Core\Asynchronous\Processor\SynchronousProcessor
  */
 interface AsynchronousProcessor {
 

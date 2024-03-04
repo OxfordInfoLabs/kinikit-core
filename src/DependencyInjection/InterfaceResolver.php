@@ -3,9 +3,7 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Asynchronous\Processor\AsynchronousProcessor;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 
 /**
@@ -101,11 +99,14 @@ class InterfaceResolver {
 
             // if no mapping found, simply return the value as explicit class mapping.
             $className = ltrim(trim($implementationKey), "\\");
-            if (class_exists($className))
-                return $className;
-            else
-                throw new MissingInterfaceImplementationException("No interface implementation exists of type $interfaceClass for key $implementationKey");
 
+            if (class_exists($className)){
+                return $className;
+            } elseif (class_exists("\\$className")) {
+                return "\\$className";
+            } else {
+                throw new MissingInterfaceImplementationException("No interface implementation exists of type $interfaceClass for key $implementationKey. Classname: $className");
+            }
         } else {
             // Otherwise, check for default implementation
             if (isset($classAnnotations["defaultImplementation"])) {
