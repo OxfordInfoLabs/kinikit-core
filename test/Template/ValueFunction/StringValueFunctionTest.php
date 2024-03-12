@@ -184,7 +184,7 @@ class StringValueFunctionTest extends TestCase {
 
     }
 
-    public function testCanHasStringWithMD5Correctly() {
+    public function testCanHashStringWithMD5Correctly() {
         $function = new StringValueFunction();
         $this->assertTrue($function->doesFunctionApply("md5"));
 
@@ -206,4 +206,13 @@ class StringValueFunctionTest extends TestCase {
         $this->assertEquals("g", $function->applyFunction("endsWith", "Long string", null));
 
     }
+
+    public function testCanConvertHTMLToTextCorrectly() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("htmlToText"));
+
+        $this->assertEquals("hello", $function->applyFunction("htmlToText", "<p>hello</p>", null));
+        $this->assertEquals("there", $function->applyFunction("htmlToText", "<a href='https://google.com'>there</a>", null));
+    }
+
 }
