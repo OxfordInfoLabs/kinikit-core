@@ -21,7 +21,8 @@ class StringValueFunction extends ValueFunctionWithArguments {
         "hash",
         "md5",
         "startsWith",
-        "endsWith"
+        "endsWith",
+        "htmlToText"
     ];
 
     /**
@@ -128,6 +129,9 @@ class StringValueFunction extends ValueFunctionWithArguments {
 
             case "endsWith":
                 return substr($value, -1);
+
+            case "htmlToText":
+                return strip_tags($value);
         }
 
         return $value;
