@@ -61,8 +61,15 @@ class Parameter {
         $arraySuffix = "";
 
         $this->explicitlyTyped = false;
-        if ($reflectionParameter->getType() && !str_contains($reflectionParameter->getType()->getName(), "array")){
-
+        $reflectionType = $reflectionParameter->getType();
+        if ($reflectionType instanceof \ReflectionUnionType) {
+            $type = join("|", $reflectionType->getTypes());
+            if ($reflectionType->allowsNull()){
+                $nullablePrefix = "?";
+            }
+        } else if ($reflectionParameter->getType() &&
+            !str_contains($reflectionType->getName() ?? "", "array")
+        ){
             if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
 
@@ -72,7 +79,7 @@ class Parameter {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType());
             }
             $this->explicitlyTyped = true;
-        } else {
+        } else { // Untyped or array - refer to annotations
 
             $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
 

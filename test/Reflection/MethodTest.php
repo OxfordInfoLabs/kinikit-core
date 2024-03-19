@@ -280,4 +280,19 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanCallMethodWithUnionArgs(){
+        $classInspector = new ClassInspector(TestUnionTypedPropertyPOPO::class);
+        $methodInspector = $classInspector->getPublicMethod("getNully");
+
+        $testPOPO = new TestUnionTypedPropertyPOPO(1, "null", TestEnum::ON);
+        $this->assertEquals("null", $methodInspector->call($testPOPO, []));
+
+        $methodInspector = $classInspector->getPublicMethod("setNully");
+        $methodInspector->call($testPOPO, ["nully" => null]);
+        $this->assertEquals(null, $testPOPO->getNully());
+
+        $methodInspector->call($testPOPO, ["nully" => new TestNullableTypedPOPO("cap")]);
+        $this->assertEquals(new TestNullableTypedPOPO("cap"), $testPOPO->getNully());
+    }
+
 }

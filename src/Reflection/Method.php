@@ -8,6 +8,7 @@ use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
+use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Primitive;
 
 /**
@@ -190,22 +191,19 @@ class Method {
         foreach ($this->getParameters() as $parameter) {
             if (array_key_exists($parameter->getName(), $arguments)) {
                 $parameterValue = $arguments[$parameter->getName()];
-
                 $strippedType = ltrim($parameter->getType(), "?");
-
-                // If a primitive and not of right type, throw now.
-                if ($parameter->isPrimitive()) {
-                    if ($arguments[$parameter->getName()] && !Primitive::isOfPrimitiveType($strippedType, $parameterValue))
-                        $wrongParams[] = $parameter->getName();
-                } else if ($arguments[$parameter->getName()] && !is_array($parameterValue) && (!is_object($parameterValue)
-                        || !(get_class($parameterValue) == trim($strippedType, "\\")
-                            || is_subclass_of($parameterValue, trim($strippedType, "\\"))))){
+                if (!ArrayUtils::any( // If none of the union types match
+                    array_map(
+                        fn($t) => $this->paramIsRightType($t, $parameterValue),
+                        explode("|", $strippedType)
+                    )
+                )) {
                     $wrongParams[] = $parameter->getName();
                 }
 
                 // If Variadic, explode arguments out as separate items
-                if ($parameter->isVariadic() && is_array($arguments[$parameter->getName()])) {
-                    $orderedArgs = array_merge($orderedArgs, $arguments[$parameter->getName()]);
+                if ($parameter->isVariadic() && is_array($parameterValue)) {
+                    $orderedArgs = array_merge($orderedArgs, $parameterValue);
                 } else {
                     $orderedArgs[] = $parameterValue;
                 }
@@ -239,8 +237,31 @@ class Method {
         }
 
         return $orderedArgs;
+    }
 
+    private function paramIsRightType(string $type, mixed $parameterValue){
+        $rightParams = true;
 
+        // If a primitive and not of right type, throw now.
+        if (Primitive::isStringPrimitiveType($type)) {
+            if ($parameterValue && !Primitive::isOfPrimitiveType($type, $parameterValue)) {
+                $rightParams = false;
+            }
+        } else if (
+            $parameterValue &&
+            !is_array($parameterValue) &&
+            !ArrayUtils::any( // Not an instance of any of the unions in $strippedType
+                array_map(fn($t) =>
+                    is_object($parameterValue) &&
+                    get_class($parameterValue) == trim($t, "\\") ||
+                    is_subclass_of($parameterValue, trim($t, "\\")),
+                    explode("|", $type)
+                )
+            )
+        ) {
+            $rightParams = false;
+        }
+        return $rightParams;
     }
 
 

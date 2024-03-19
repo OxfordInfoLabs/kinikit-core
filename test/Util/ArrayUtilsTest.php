@@ -39,4 +39,30 @@ class ArrayUtilsTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testAny() {
+        $this->assertEquals(false, ArrayUtils::any([false, false, false]));
+        $this->assertEquals(true, ArrayUtils::any([false, true, false]));
+        $this->assertEquals(true, ArrayUtils::any([false, false, true]));
+        $this->assertEquals(false, ArrayUtils::any([]));
+        try {
+            $wrongTyped = ArrayUtils::any([false, 0, 1]);
+            $this->fail();
+        } catch (\Exception $exception){
+            //Succeed
+        }
+    }
+
+    public function testAll() {
+        $this->assertEquals(false, ArrayUtils::all([false, false, false]));
+        $this->assertEquals(false, ArrayUtils::all([true, true, false]));
+        $this->assertEquals(true, ArrayUtils::all([true, true, true]));
+        $this->assertEquals(true, ArrayUtils::all([]));
+        try {
+            $wrongTyped = ArrayUtils::all([false, 0, 1]);
+            $this->fail();
+        } catch (\Exception $exception){
+            //Succeed
+        }
+    }
+
 }

@@ -26,4 +26,34 @@ class ArrayUtils {
         return $returnArray;
     }
 
+    /**
+     * @param bool[] $array
+     * @return bool
+     */
+    public static function all (array $array): bool {
+        $trueSoFar = true;
+        foreach ($array as $bool) {
+            if (!is_bool($bool)) {
+                throw new \Exception("All only takes in booleans");
+            }
+            $trueSoFar = $bool && $trueSoFar;
+        }
+        return $trueSoFar;
+    }
+
+    /**
+     * @param bool[] $array
+     * @return bool
+     */
+    public static function any (array $array): bool {
+        $anyTrueSoFar = false;
+        foreach ($array as $bool) {
+            if (!is_bool($bool)) {
+                throw new \Exception("Any only takes in booleans, ". gettype($bool) . " passed in");
+            }
+            $anyTrueSoFar = $bool || $anyTrueSoFar;
+        }
+        return $anyTrueSoFar;
+    }
+
 }

@@ -59,101 +59,110 @@ class ObjectBinder {
                 }
             }
 
-        } else {
-
-            // if a primitive, shortcut and return the value intact.
-            if (Primitive::isStringPrimitiveType($targetClass)) {
-                return Primitive::convertToPrimitive($targetClass, $data);
-            }
-
-            if (enum_exists($targetClass)) {
-                //Check enum is a string
-                if (!Primitive::isOfPrimitiveType(Primitive::TYPE_STRING, $data)) {
-                    throw new ObjectBindingException("Enum requires string of the specific case to bind. E.g. 'ACTIVE' for DomainStatus::ACTIVE");
-                }
-
-                $cases = $targetClass::cases();
-                foreach ($cases as $case) {
-                    if ($case->name == $data) {
-                        return $case;
-                    }
-                }
-                throw new ObjectBindingException("Enum $targetClass failed to bind from string $data. \nUse the string of the case E.g. 'ACTIVE' for DomainStatus::ACTIVE");
-            }
-
-
-            // if this is not an array we have a malformed data issue.
-            if (!is_array($data)) {
-                $dt = print_r($data, true);
-                throw new ObjectBindingException("Bind data for object is not an array. \nData: $dt");
-            }
-
-            // Handle date time specifically
-            if (trim($targetClass, "\\") == \DateTime::class && $data["timestamp"] ?? null) {
-                return date_create_from_format("U", $data["timestamp"], new \DateTimeZone($data["timezone"]["name"] ?? "UTC"));
-            }
-
-
-            try {
-
-                $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
-
-                $processedKeys = array();
-
-
-                // Process constructor first.
-                if ($classInspector->getConstructor()) {
-                    foreach ($classInspector->getConstructor()->getParameters() as $parameter) {
-
-                        $key = $parameter->getName();
-                        if (isset($data[$key])) {
-                            $data[$key] = $this->bindFromArray($data[$key], $parameter->getType(), $publicOnly);
-                            $processedKeys[] = $key;
-                        }
-
-                    }
-                }
-
-
-                // Inject each setter for params which were passed in and weren't included in constructor
-                foreach ($classInspector->getSetters() as $key => $setter) {
-                    if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
-                        $parameter = $setter->getParameters()[0];
-                        $parameterType = $parameter->getType();
-                        $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly);
-                        $processedKeys[] = $key;
-                    }
-                }
-
-
-                // Loop through each property as fall back provided public included.
-                foreach ($classInspector->getProperties() as $key => $property) {
-                    if (!in_array($key, $processedKeys) && isset($data[$key])) {
-                        $propertyType = $property->getType();
-                        $data[$key] = $this->bindFromArray($data[$key], $propertyType, $publicOnly);
-                        $processedKeys[] = $key;
-                    }
-                }
-
-
-                // Construct the class first and then call setters
-                $instance = $classInspector->createInstance($data);
-                $classInspector->setPropertyData($instance, $data, null, $publicOnly);
-
-
-            } catch (WrongParametersException $e) {
-                throw new ObjectBindingException($e);
-            } catch (InsufficientParametersException $e) {
-                throw new ObjectBindingException($e);
-            }
-
-
-            $result = $instance;
+            return $result;
 
         }
 
+        $targetClasses = explode("|", $targetClass);
 
-        return $result;
+        if (count($targetClasses) > 1) {
+            foreach ($targetClasses as $possibleClass) {
+                try {
+                    $bound = $this->bindFromArray($data, $possibleClass);
+                    return $bound;
+                } catch (\Exception $exception){
+                    // Not this type
+                }
+            }
+            throw new ObjectBindingException("Couldn't bind union type $targetClass to any of ".join(", ", $targetClasses));
+        }
+
+        if (enum_exists($targetClass)) {
+            //Check enum is a string
+            if (!Primitive::isOfPrimitiveType(Primitive::TYPE_STRING, $data)) {
+                throw new ObjectBindingException("Enum requires string of the specific case to bind. E.g. 'ACTIVE' for DomainStatus::ACTIVE");
+            }
+
+            $cases = $targetClass::cases();
+            foreach ($cases as $case) {
+                if ($case->name == $data) {
+                    return $case;
+                }
+            }
+            throw new ObjectBindingException("Enum $targetClass failed to bind from string $data. \nUse the string of the case E.g. 'ACTIVE' for DomainStatus::ACTIVE");
+        }
+
+        // if a primitive, shortcut and return the value intact.
+        if (Primitive::isStringPrimitiveType($targetClass)) {
+            return Primitive::convertToPrimitive($targetClass, $data);
+        }
+
+        // if this is not an array we have a malformed data issue.
+        if (!is_array($data)) {
+            $dt = print_r($data, true);
+            throw new ObjectBindingException("Bind data for object is not an array. \nData: $dt");
+        }
+
+        // Handle date time specifically
+        if (trim($targetClass, "\\") == \DateTime::class && $data["timestamp"] ?? null) {
+            return date_create_from_format("U", $data["timestamp"], new \DateTimeZone($data["timezone"]["name"] ?? "UTC"));
+        }
+
+
+        try {
+
+            $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
+
+            $processedKeys = array();
+
+
+            // Process constructor first.
+            if ($classInspector->getConstructor()) {
+                foreach ($classInspector->getConstructor()->getParameters() as $parameter) {
+
+                    $key = $parameter->getName();
+                    if (isset($data[$key])) {
+                        $data[$key] = $this->bindFromArray($data[$key], $parameter->getType(), $publicOnly);
+                        $processedKeys[] = $key;
+                    }
+
+                }
+            }
+
+
+            // Inject each setter for params which were passed in and weren't included in constructor
+            foreach ($classInspector->getSetters() as $key => $setter) {
+                if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
+                    $parameter = $setter->getParameters()[0];
+                    $parameterType = $parameter->getType();
+                    $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly);
+                    $processedKeys[] = $key;
+                }
+            }
+
+
+            // Loop through each property as fall back provided public included.
+            foreach ($classInspector->getProperties() as $key => $property) {
+                if (!in_array($key, $processedKeys) && isset($data[$key])) {
+                    $propertyType = $property->getType();
+                    $data[$key] = $this->bindFromArray($data[$key], $propertyType, $publicOnly);
+                    $processedKeys[] = $key;
+                }
+            }
+
+
+            // Construct the class first and then call setters
+            $instance = $classInspector->createInstance($data);
+            $classInspector->setPropertyData($instance, $data, null, $publicOnly);
+
+
+        } catch (WrongParametersException $e) {
+            throw new ObjectBindingException($e);
+        } catch (InsufficientParametersException $e) {
+            throw new ObjectBindingException($e);
+        }
+
+        return $instance;
 
 
     }
