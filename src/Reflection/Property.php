@@ -200,18 +200,17 @@ class Property {
 
     private function wrongType(string $type, mixed $value){
         $type = trim($type);
-        // Allow nullability for all types
 
         $wrongType = true;
-        if ($value === null){
+        if ($value === null){ // Allow nullability for all types
             $wrongType = false;
         } else if (Primitive::isStringPrimitiveType($type) && Primitive::isOfPrimitiveType($type, $value)) {
             $wrongType = false; // Allows bools and ints as strings
         } else if (is_object($value)) { // If it's not an instance/subclass of the class
             $wrongType = !(get_class($value) == trim($type, "\\")
                 || is_subclass_of($value, trim($type, "\\")));
-        } else if (!is_array($value)) { // If it's an array we are fine
-            $wrongType = true;
+        } else if (is_array($value) && ((strpos($type, "[") && strpos($type, "]")) || $type == "array")) { // If it's an array we are fine
+            $wrongType = false;
         }
         return $wrongType;
     }
