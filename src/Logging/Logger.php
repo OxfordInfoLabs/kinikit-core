@@ -11,11 +11,14 @@ use Kinikit\Core\Configuration\Configuration;
  * Class Logger
  */
 class Logger {
+    const GENERAL = "GENERAL";
+    const PROFILING = "PROFILING";
+    const ERROR = "ERROR";
 
-    public static function log($message, $category = "GENERAL") {
+    public static function log($message, $category = self::GENERAL) {
 
         if ($message instanceof \Exception) {
-            $category = "ERROR";
+            $category = self::ERROR;
             $message = get_class($message) . "\n" . $message->getMessage();
         } else if (is_object($message)) {
             $message = get_class($message) . "\n" . var_export($message, true);

@@ -370,7 +370,8 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
         $popoArray = [
             "unpredictableType" => "wowee",
             "nully" => null,
-            "typedOrEnum" => "ON"
+            "typedOrEnum" => "ON",
+            "annoProp" => false
         ];
 
         $actualPopo = $this->objectBinder->bindFromArray($popoArray, TestUnionTypedPropertyPOPO::class);

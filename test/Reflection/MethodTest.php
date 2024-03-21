@@ -293,6 +293,19 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         $methodInspector->call($testPOPO, ["nully" => new TestNullableTypedPOPO("cap")]);
         $this->assertEquals(new TestNullableTypedPOPO("cap"), $testPOPO->getNully());
+
+        $methodInspector = $classInspector->getPublicMethod("setAnnoProp");
+        $methodInspector->call($testPOPO, ["annoProp" => true]);
+        try {
+            $methodInspector->call($testPOPO, ["annoProp" => new TestNullableTypedPOPO("wrong type")]);
+            $this->fail();
+        } catch (\Exception $e){
+            //Success
+        }
+        $methodInspector->call($testPOPO, ["annoProp" => [0,1] ]); // The inner type of an array is not checked!!
+
+        $methodInspector = $classInspector->getPublicMethod("getAnnoProp");
+        $this->assertEquals([0,1], $methodInspector->call($testPOPO, []));
     }
 
 }

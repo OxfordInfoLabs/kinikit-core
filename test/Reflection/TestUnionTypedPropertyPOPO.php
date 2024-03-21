@@ -3,11 +3,18 @@
 namespace Kinikit\Core\Reflection;
 
 class TestUnionTypedPropertyPOPO {
+    /**
+     * @var int[]|bool|array<string,string>
+     */
+    private $annoProp;
+
     public function __construct(
         public int|string $unpredictableType,
         private TestNullableTypedPOPO|string|null $nully,
-        private TestTypedPOPO|TestEnum $typedOrEnum
+        private TestTypedPOPO|TestEnum $typedOrEnum,
+        $annoProp = false
     ) {
+        $this->annoProp = $annoProp;
     }
 
     public function getNully(): TestNullableTypedPOPO|string|null {
@@ -24,5 +31,20 @@ class TestUnionTypedPropertyPOPO {
 
     public function setTypedOrEnum(TestTypedPOPO|TestEnum $typedOrEnum): void {
         $this->typedOrEnum = $typedOrEnum;
+    }
+
+    /**
+     * @return int[]|bool|array<string,string>
+     */
+    public function getAnnoProp() {
+        return $this->annoProp;
+    }
+
+    /**
+     * @param int[]|bool|array<string,string> $annoProp
+     * @return void
+     */
+    public function setAnnoProp($annoProp) {
+        $this->annoProp = $annoProp;
     }
 }

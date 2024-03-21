@@ -25,7 +25,7 @@ class Request {
      * GET request the params will be appended to the URL.  Otherwise
      * the params will be passed in the body unless a payload is supplied.
      *
-     * @var string[string] $parameters
+     * @var array<string, string> $parameters
      */
     private $parameters;
 
@@ -72,7 +72,7 @@ class Request {
         $this->method = $method;
         $this->parameters = $parameters;
         $this->payload = $payload;
-        $this->headers = $headers ? $headers : new Headers();
+        $this->headers = $headers ?: new Headers();
         $this->timeout = $timeout;
     }
 
@@ -105,7 +105,7 @@ class Request {
     }
 
     /**
-     * @return string
+     * @return array<string, string>
      */
     public function getParameters() {
         return $this->parameters;
