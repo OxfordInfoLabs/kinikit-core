@@ -331,6 +331,19 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
         );
         $this->assertEquals($expectedFromArrayObject, $fromArrayObject);
 
+        //TODO look into this
+//        try{
+//            $this->objectBinder->bindFromArray([
+//                "year" => 2050,
+//                "parties" => ["amazing party"],
+//                "testPOPO" => ["id"=> 4, "name"=> "Sam"],
+//                "fake" => "fake"
+//            ], SimpleNullableObject::class);
+//            $this->fail(); //Should throw exception on trying to bind the "fake" field of TestTypedPOPO
+//        } catch (ObjectBindingException $e){
+//            //Success
+//        }
+
         $bound = $this->objectBinder->bindFromArray(
             [
                 [
