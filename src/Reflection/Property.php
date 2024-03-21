@@ -6,6 +6,7 @@ namespace Kinikit\Core\Reflection;
 
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Exception\WrongPropertyTypeException;
+use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Primitive;
 
 class Property {
@@ -58,13 +59,15 @@ class Property {
         if (sizeof($propertyAnnotations) > 0) {
             $annotation = $propertyAnnotations[0];
 
+            //TODO Cover Union type case
+
             $type = trim($annotation->getValue());
             if (str_contains($type, "?")){
                 $nullablePrefix = "?";
                 $type = str_replace("?", "", $type);
             }
 
-            list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
+            [$type, $arraySuffix] = $this->stripArrayTypeSuffix($type);
 
             if (!Primitive::isStringPrimitiveType($type)) {
                 if (isset($declaredNamespaceClasses[$type]))
@@ -76,7 +79,13 @@ class Property {
                 }
             }
         } else if ($reflectionProperty->hasType()){
-            $type = $reflectionProperty->getType()->getName();
+            $reflectionType = $reflectionProperty->getType();
+            if ($reflectionType instanceof \ReflectionUnionType){
+                $type = join("|", $reflectionType->getTypes());
+//                throw new \Error("ReflectionUnionType found: " . print_r($reflectionType->getTypes(), true));
+            } else {
+                $type = $reflectionType->getName();
+            }
         }
 
         $this->type = $nullablePrefix .  $type . $arraySuffix;
@@ -177,21 +186,11 @@ class Property {
 //            //throw new WrongPropertyTypeException("Attempted to set {$this->getPropertyName()} on class {$this->getDeclaringClassInspector()->getClassName()} to null even though it's not nullable");
 //        }
 
-        // Allow nullability for all types
-        if ($value === null){
-            $wrongType = false;
-        } else if (Primitive::isStringPrimitiveType($rawType)) {
-            if (!Primitive::isOfPrimitiveType($rawType, $value)){
-                $wrongType = true;
-            } // Allows bools and ints as strings
-        } else if (is_object($value)) {
-            $wrongType = !(get_class($value) == trim($this->getType(), "\\")
-                || is_subclass_of($value, trim($this->getType(), "\\")));
-        } else if (!is_array($value)) { // If it's an array or a null we are fine
-            $wrongType = true;
-        }
 
-        if ($wrongType) {
+        $possibleTypes = explode("|", $rawType);
+        $wrongTypeArray = array_map(fn($t) => $this->wrongType($t, $value), $possibleTypes);
+
+        if (ArrayUtils::all($wrongTypeArray)) {
             $valType = gettype($value);
             throw new WrongPropertyTypeException("An attempt was made to write to the {$this->type} property {$this->getPropertyName()} on the class {$this->getDeclaringClassInspector()->getClassName()} with a value of the wrong type $valType.");
         }
@@ -199,6 +198,22 @@ class Property {
 
     }
 
+    private function wrongType(string $type, mixed $value){
+        $type = trim($type);
+
+        $wrongType = true;
+        if ($value === null){ // Allow nullability for all types
+            $wrongType = false;
+        } else if (Primitive::isStringPrimitiveType($type) && Primitive::isOfPrimitiveType($type, $value)) {
+            $wrongType = false; // Allows bools and ints as strings
+        } else if (is_object($value)) { // If it's not an instance/subclass of the class
+            $wrongType = !(get_class($value) == trim($type, "\\")
+                || is_subclass_of($value, trim($type, "\\")));
+        } else if (is_array($value) && ((strpos($type, "[") && strpos($type, "]")) || $type == "array")) { // If it's an array we are fine
+            $wrongType = false;
+        }
+        return $wrongType;
+    }
 
     /**
      * Get a property value for an object

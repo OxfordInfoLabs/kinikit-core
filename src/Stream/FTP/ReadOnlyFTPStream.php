@@ -9,7 +9,6 @@ use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SFTP;
-use phpseclib3\Net\SFTP\Stream;
 
 /**
  * Read only FTP stream

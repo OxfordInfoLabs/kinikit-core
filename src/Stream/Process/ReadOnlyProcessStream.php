@@ -4,8 +4,6 @@
 namespace Kinikit\Core\Stream\Process;
 
 
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
-use Kinikit\Core\Stream\ReadableStream;
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 
 /**

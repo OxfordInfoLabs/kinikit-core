@@ -5,6 +5,7 @@ namespace Kinikit\Core;
 
 use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 
 
 /**
@@ -44,9 +45,9 @@ class Bootstrapper {
         $namespaces = $this->searchNamespaces->getNamespaces();
 
         // Process search namespaces in reverse order.
-        for ($i = sizeof($namespaces) - 1; $i >= 0; $i--) {
-            if (class_exists($namespaces[$i] . "\\Bootstrap")) {
-                $bootstrap = Container::instance()->get($namespaces[$i] . "\\Bootstrap");
+        foreach ($namespaces as $namespace) {
+            if (class_exists($namespace . "\\Bootstrap")) {
+                $bootstrap = Container::instance()->get($namespace . "\\Bootstrap");
                 $bootstrap->setup();
             }
         }

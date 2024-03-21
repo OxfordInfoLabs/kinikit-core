@@ -3,8 +3,6 @@
 namespace Kinikit\Core\HTTP;
 
 
-use Twig\Error\Error;
-
 /**
  * Simple CURL-LESS Post request object for dispatching post requests,
  *

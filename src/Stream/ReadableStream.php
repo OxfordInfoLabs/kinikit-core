@@ -4,8 +4,6 @@
 namespace Kinikit\Core\Stream;
 
 
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
-
 interface ReadableStream extends Stream {
 
     /**

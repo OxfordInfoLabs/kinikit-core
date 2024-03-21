@@ -3,8 +3,6 @@
 namespace Kinikit\Core\Configuration;
 
 
-use Kinikit\Core\Configuration\ConfigFile;
-
 /**
  * Main Application configuration file.  This is a singleton instance, and has various application specific
  * bits which are useful such as module enumeration.

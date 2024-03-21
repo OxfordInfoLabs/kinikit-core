@@ -2,8 +2,6 @@
 
 namespace Kinikit\Core\Template\ValueFunction;
 
-use Kinikit\Core\Logging\Logger;
-
 class LogicValueFunction extends ValueFunctionWithArguments {
 
     const supportedFunctions = [

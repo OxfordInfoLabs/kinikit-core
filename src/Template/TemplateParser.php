@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\Template;
 
-use Kinikit\Core\Configuration;
 use Kinikit\Core\Template\Parser\MustacheTemplateParser;
 use Kinikit\Core\Template\Parser\TwigTemplateParser;
 

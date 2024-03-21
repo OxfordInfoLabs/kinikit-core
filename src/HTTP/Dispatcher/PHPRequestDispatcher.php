@@ -9,7 +9,6 @@ use Kinikit\Core\HTTP\Request\Headers as RequestHeaders;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\Http\ReadOnlyHttpStream;
 use Kinikit\Core\Stream\StreamException;
 

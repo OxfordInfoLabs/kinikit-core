@@ -9,6 +9,7 @@ use Kinikit\Core\Reflection\TestAnnotatedPOPO;
 use Kinikit\Core\Reflection\TestEnum;
 use Kinikit\Core\Reflection\TestPropertyPOPO;
 use Kinikit\Core\Reflection\TestTypedPOPO;
+use Kinikit\Core\Reflection\TestUnionTypedPropertyPOPO;
 
 include "autoloader.php";
 
@@ -375,6 +376,23 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
         $offString = $this->objectBinder->bindToArray($off);
         $this->assertEquals("OFF", $offString);
+    }
+
+    public function testCanBindUnionTypes(){
+        $popo = new TestUnionTypedPropertyPOPO("wowee", null, TestEnum::ON);
+        $popoArray = [
+            "unpredictableType" => "wowee",
+            "nully" => null,
+            "typedOrEnum" => "ON",
+            "annoProp" => false
+        ];
+
+        $actualPopo = $this->objectBinder->bindFromArray($popoArray, TestUnionTypedPropertyPOPO::class);
+        $this->assertEquals($popo, $actualPopo);
+
+        $actualPopoArray = $this->objectBinder->bindToArray($popo);
+        $this->assertEquals($popoArray, $actualPopoArray);
+
     }
 
     public function testCanBindComplexObjectToArrayInPublicMode() {

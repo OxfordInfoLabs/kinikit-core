@@ -4,8 +4,6 @@
 namespace Kinikit\Core\Stream\Http;
 
 
-use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
 use Kinikit\Core\Stream\StreamException;
 

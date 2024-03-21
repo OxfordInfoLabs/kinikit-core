@@ -5,7 +5,6 @@ namespace Kinikit\Core\Asynchronous;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\NoneExistentClassException;
 use Kinikit\Core\Exception\NoneExistentMethodException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
 
 class AsynchronousClassMethod extends Asynchronous {

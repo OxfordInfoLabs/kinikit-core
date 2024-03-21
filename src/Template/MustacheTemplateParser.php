@@ -4,7 +4,6 @@ namespace Kinikit\Core\Template;
 
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Template\Mustache\FileResolverMustacheLoader;
 use Mustache_Engine;
 

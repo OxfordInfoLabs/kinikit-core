@@ -280,4 +280,32 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanCallMethodWithUnionArgs(){
+        $classInspector = new ClassInspector(TestUnionTypedPropertyPOPO::class);
+        $methodInspector = $classInspector->getPublicMethod("getNully");
+
+        $testPOPO = new TestUnionTypedPropertyPOPO(1, "null", TestEnum::ON);
+        $this->assertEquals("null", $methodInspector->call($testPOPO, []));
+
+        $methodInspector = $classInspector->getPublicMethod("setNully");
+        $methodInspector->call($testPOPO, ["nully" => null]);
+        $this->assertEquals(null, $testPOPO->getNully());
+
+        $methodInspector->call($testPOPO, ["nully" => new TestNullableTypedPOPO("cap")]);
+        $this->assertEquals(new TestNullableTypedPOPO("cap"), $testPOPO->getNully());
+
+        $methodInspector = $classInspector->getPublicMethod("setAnnoProp");
+        $methodInspector->call($testPOPO, ["annoProp" => true]);
+        try {
+            $methodInspector->call($testPOPO, ["annoProp" => new TestNullableTypedPOPO("wrong type")]);
+            $this->fail();
+        } catch (\Exception $e){
+            //Success
+        }
+        $methodInspector->call($testPOPO, ["annoProp" => [0,1] ]); // The inner type of an array is not checked!!
+
+        $methodInspector = $classInspector->getPublicMethod("getAnnoProp");
+        $this->assertEquals([0,1], $methodInspector->call($testPOPO, []));
+    }
+
 }

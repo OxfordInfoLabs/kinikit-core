@@ -55,7 +55,7 @@ class InterfaceResolverTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(ImplementationMapping1::class, $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class));
         $this->assertEquals(ImplementationMapping1::class, $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class, "first"));
         $this->assertEquals(ImplementationMapping2::class, $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class, "second"));
-        $this->assertEquals(ImplementationMapping2::class, $interfaceResolver->getImplementationClassForKey(InterfaceWithMappings::class, ImplementationMapping2::class));
+        $this->assertEquals(ImplementationMapping2::class, $interfaceResolver->getImplementationClassForKey("\\". InterfaceWithMappings::class, ImplementationMapping2::class));
 
 
         try {
@@ -71,8 +71,15 @@ class InterfaceResolverTest extends \PHPUnit\Framework\TestCase {
         } catch (MissingInterfaceImplementationException $e) {
             // Success
         }
+    }
 
-
+    public function testGetImplementationClassForKeyWorksWithPrecedingSlashes(){
+        /** @var InterfaceResolver $resolver */
+        $resolver = Container::instance()->get(InterfaceResolver::class);
+        $resolver->addImplementationClassForKey("\\" . ImplementationMapping1::class, "goof", ImplementationMapping2::class);
+        $class = $resolver->getImplementationClassForKey("\\". ImplementationMapping1::class, "goof");
+        $class = $resolver->getImplementationClassForKey(ImplementationMapping1::class, "goof");
+        $this->assertEquals(ImplementationMapping2::class, $class);
     }
 
 

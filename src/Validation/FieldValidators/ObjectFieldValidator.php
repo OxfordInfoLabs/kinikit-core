@@ -9,8 +9,6 @@
 namespace Kinikit\Core\Validation\FieldValidators;
 
 
-use Kinikit\Core\Logging\Logger;
-
 abstract class ObjectFieldValidator {
 
     /**

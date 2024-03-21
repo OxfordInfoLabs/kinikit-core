@@ -9,7 +9,6 @@
 namespace Kinikit\Core\Util;
 
 
-use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Object\AssociativeArray;

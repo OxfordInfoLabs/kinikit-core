@@ -70,8 +70,6 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
 
 
     public function testCanSetPropertiesProvidedTypeIsRight() {
-
-
         $classInspector = new ClassInspector(TestPropertyPOPO::class);
 
         $testPOPO = new TestPropertyPOPO(99);
@@ -107,6 +105,30 @@ class PropertyTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new TestAnnotatedPOPO(1, "Bingo"), $reflectionProperty->getValue($testPOPO));
 
 
+    }
+
+    public function testCanSetUnionTypes(){
+        $classInspector = new ClassInspector(TestUnionTypedPropertyPOPO::class);
+
+        $unionPOPO = new TestUnionTypedPropertyPOPO(
+            1,
+            new TestNullableTypedPOPO(null),
+            TestEnum::ON
+        );
+
+        $reflectionProperty = $classInspector->getReflectionClass()->getProperty("nully");
+        $propertyAnnotations = (new ClassAnnotationParser())->parse(TestUnionTypedPropertyPOPO::class)->getFieldAnnotations()["nully"];
+        $property = new Property($reflectionProperty, $propertyAnnotations, $classInspector);
+
+        try {
+            $property->set($unionPOPO, new Exception("Just an object"));
+            $this->fail("Should have thrown here");
+        } catch (WrongPropertyTypeException $e) {
+            // As expected
+        }
+
+        $property->set($unionPOPO, null);
+        $this->assertEquals(null, $unionPOPO->getNully());
     }
 
     public function testCanSetNullableProperties(){

@@ -6,7 +6,6 @@ namespace Kinikit\Core\Communication\Email;
 
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Template\TemplateParser;
 use Kinikit\Core\Validation\ValidationException;
 use Kinikit\Core\Validation\Validator;

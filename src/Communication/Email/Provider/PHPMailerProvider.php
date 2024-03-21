@@ -6,7 +6,6 @@ namespace Kinikit\Core\Communication\Email\Provider;
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Logging\Logger;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
