@@ -383,6 +383,17 @@ class ClassInspector {
     }
 
 
+    /**
+     * Check whether this class has a class attribute
+     *
+     * @param $attributeClass
+     * @return boolean
+     */
+    public function hasClassAttribute($attributeClass) {
+        return sizeof($this->reflectionClass->getAttributes($attributeClass)) ? true : false;
+    }
+
+
     // Get a method inspector - cached as accessed for better performance.
     private function getMethodInspector($methodName) {
         if (!isset($this->methodInspectors[$methodName])) {

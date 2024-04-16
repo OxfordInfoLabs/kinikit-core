@@ -113,8 +113,6 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-
-
     public function testCanCreateInstanceOfClassProvidedAllRequiredArgumentsAreSupplied() {
 
         $classInspector = new ClassInspector(TestTypedPOPO::class);
@@ -151,8 +149,8 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 //        }
 
         //NOTE: Integers are typecast to strings when passed into createInstance
-        $instance1 = $classInspector->createInstance(["hat"=> "Sunhat", ["left sock", "right sock"]]);
-        $instance2 = $classInspector->createInstance(["hat"=> null, ["left sock", "right sock"]]);
+        $instance1 = $classInspector->createInstance(["hat" => "Sunhat", ["left sock", "right sock"]]);
+        $instance2 = $classInspector->createInstance(["hat" => null, ["left sock", "right sock"]]);
 
         $instance1->setHat(null);
 
@@ -160,7 +158,7 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    public function testCanCreateClassInspectorFromNullableClass(){
+    public function testCanCreateClassInspectorFromNullableClass() {
         $classInspector = new ClassInspector(TestTypedPOPO::class);
 
         $classInspectorNullable = new ClassInspector("?" . TestTypedPOPO::class);
@@ -334,6 +332,16 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("name", $constructorParameters[1]->getName());
         $this->assertEquals("string", $constructorParameters[1]->getType());
 
+
+    }
+
+
+    public function testCanCheckWhetherAttributeExistsOnClass() {
+
+        $classInspector = new ClassInspector(TestAttributePOPO::class);
+
+        $this->assertTrue($classInspector->hasClassAttribute(TestAttribute::class));
+        $this->assertFalse($classInspector->hasClassAttribute(TestOtherAttribute::class));
 
     }
 
