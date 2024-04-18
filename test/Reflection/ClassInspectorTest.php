@@ -7,6 +7,7 @@ use Kinikit\Core\Binding\ComplexObject;
 use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
+use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once "autoloader.php";
 
@@ -344,5 +345,17 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse($classInspector->hasClassAttribute(TestOtherAttribute::class));
 
     }
+
+
+    public function testCanCheckWhetherClassUsesTrait() {
+
+        $classInspector = new ClassInspector(TestTraitedPOPO::class);
+
+        $this->assertTrue($classInspector->usesTrait(TestPOPOTrait::class));
+        $this->assertFalse($classInspector->usesTrait(Proxy::class));
+
+
+    }
+
 
 }

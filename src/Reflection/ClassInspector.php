@@ -393,6 +393,16 @@ class ClassInspector {
         return sizeof($this->reflectionClass->getAttributes($attributeClass)) ? true : false;
     }
 
+    /**
+     * Return boolean indicator as to whether or not the class contains a given trait.
+     *
+     * @param string $class
+     * @return bool
+     */
+    public function usesTrait($traitName) {
+        return in_array($traitName, $this->reflectionClass->getTraitNames());
+    }
+
 
     // Get a method inspector - cached as accessed for better performance.
     private function getMethodInspector($methodName) {
@@ -427,5 +437,6 @@ class ClassInspector {
 
         return $namespace . "\\" . $className;
     }
+
 
 }
