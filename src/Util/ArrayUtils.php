@@ -26,11 +26,35 @@ class ArrayUtils {
         return $returnArray;
     }
 
+
+    /**
+     * Recursive array merge which preserves keys at all levels
+     *
+     * @param $array1
+     * @param ...$arrays
+     * @return mixed|null
+     */
+    public static function mergeArrayRecursive($array1, ...$arrays) {
+
+        foreach ($arrays as $array) {
+            reset($array1); //important
+            foreach ($array as $key => $value) {
+                if (is_array($value) && @is_array($array1[$key] ?? null)) {
+                    $array1[$key] = self::mergeArrayRecursive($array1[$key], $value);
+                } else {
+                    $array1[$key] = $value;
+                }
+            }
+        }
+
+        return $array1;
+    }
+
     /**
      * @param bool[] $array
      * @return bool
      */
-    public static function all (array $array): bool {
+    public static function all(array $array): bool {
         $trueSoFar = true;
         foreach ($array as $bool) {
             if (!is_bool($bool)) {
@@ -45,11 +69,11 @@ class ArrayUtils {
      * @param bool[] $array
      * @return bool
      */
-    public static function any (array $array): bool {
+    public static function any(array $array): bool {
         $anyTrueSoFar = false;
         foreach ($array as $bool) {
             if (!is_bool($bool)) {
-                throw new \Exception("Any only takes in booleans, ". gettype($bool) . " passed in");
+                throw new \Exception("Any only takes in booleans, " . gettype($bool) . " passed in");
             }
             $anyTrueSoFar = $bool || $anyTrueSoFar;
         }
