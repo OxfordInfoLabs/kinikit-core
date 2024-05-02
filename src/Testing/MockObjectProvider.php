@@ -52,7 +52,7 @@ class MockObjectProvider {
      * Constructor params if passed will be used instead of autodetection
      *
      * @param $className
-     * @return MockObject
+     * @return MockObject|mixed
      */
     public function getMockInstance($className, $constructorParams = null) {
 

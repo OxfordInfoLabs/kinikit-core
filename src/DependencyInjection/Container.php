@@ -93,6 +93,7 @@ class Container {
      * Get an instance of a supplied class.
      *
      * @param string $className
+     * @return mixed
      */
     public function get($className) {
         return $this->__doGet($className);
@@ -103,6 +104,8 @@ class Container {
     /**
      * Create a new instance of a class - if allowProxy is set this
      * will create a proxy unless noProxy attribute has been set on the class (defaults to false).
+     *
+     * WARNING: DOESN'T WORK WITH CLASSES WHICH HAVE CONSTRUCTOR ARGUMENTS!
      *
      * @param $className
      * @param bool $allowProxy
