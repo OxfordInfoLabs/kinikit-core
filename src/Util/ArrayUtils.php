@@ -51,6 +51,7 @@ class ArrayUtils {
     }
 
     /**
+     * Check if all of a list of booleans are true
      * @param bool[] $array
      * @return bool
      */
@@ -66,6 +67,7 @@ class ArrayUtils {
     }
 
     /**
+     * Check if any of a list of booleans are true
      * @param bool[] $array
      * @return bool
      */
