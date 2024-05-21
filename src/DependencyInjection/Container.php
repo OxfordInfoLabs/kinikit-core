@@ -92,8 +92,9 @@ class Container {
     /**
      * Get an instance of a supplied class.
      *
-     * @param string $className
-     * @return mixed
+     * @template T
+     * @psalm-param class-string<T> $className
+     * @return T
      */
     public function get($className) {
         return $this->__doGet($className);

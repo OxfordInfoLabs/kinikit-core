@@ -51,8 +51,10 @@ class MockObjectProvider {
      * All injected dependencies will be stubbed out with mock instances for convenience.
      * Constructor params if passed will be used instead of autodetection
      *
-     * @param $className
-     * @return MockObject|mixed
+     * @template T
+     * @psalm-param class-string<T> $className
+     * @param array|null $constructorParams
+     * @return MockObject|T
      */
     public function getMockInstance($className, $constructorParams = null) {
 
