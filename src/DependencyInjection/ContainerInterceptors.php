@@ -3,6 +3,8 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
+use Kinikit\Core\Logging\Logger;
+
 class ContainerInterceptors {
 
     private $interceptors = array();
@@ -23,7 +25,7 @@ class ContainerInterceptors {
         // Add interceptor to all applicable classes
         foreach ($applicableClasses as $applicableClass) {
 
-            $applicableClass = ltrim($applicableClass);
+            $applicableClass = ltrim($applicableClass, "\\");
 
             if (!isset($this->interceptors[$applicableClass])) {
                 $this->interceptors[$applicableClass] = [];
@@ -32,7 +34,6 @@ class ContainerInterceptors {
                 $this->interceptors[$applicableClass][] = $interceptor;
             }
         }
-
 
     }
 

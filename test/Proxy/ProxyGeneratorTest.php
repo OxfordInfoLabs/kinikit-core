@@ -8,6 +8,7 @@ use Kinikit\Core\DependencyInjection\ExampleEnum;
 use Kinikit\Core\DependencyInjection\Proxy;
 use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\DependencyInjection\ServiceWithExplicitType;
+use Kinikit\Core\DependencyInjection\ServiceWithInterceptor;
 use Kinikit\Core\DependencyInjection\SimpleEnum;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Reflection\ClassInspector;
@@ -60,8 +61,6 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(array("A", "B", "C", "D"), $proxy->echoParams("A", "B", "C", "D"));
 
 
-
-
     }
 
 
@@ -96,7 +95,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    public function testCanCreateProxyMethodWithEnumParam(){
+    public function testCanCreateProxyMethodWithEnumParam() {
         $proxyGenerator = new ProxyGenerator();
 
         $className = $proxyGenerator->generateProxy(ServiceWithExplicitType::class, "Extended", [Proxy::class]);
@@ -113,7 +112,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(ExampleEnum::FANTASTIC, $proxy->enumReturnMethod(100));
     }
 
-    public function testCanGetMethodParamsForNullableArguments(){
+    public function testCanGetMethodParamsForNullableArguments() {
         $proxyGenerator = new ProxyGenerator();
 
         $className = $proxyGenerator->generateProxy(TestNullableTypedPOPO::class, "Extended", [Proxy::class]);
@@ -123,6 +122,20 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $proxy->__populate(new ContainerInterceptors(), new ClassInspector(TestNullableTypedPOPO::class));
 
         $this->assertEquals("Sunhat", $proxy->getHat());
+    }
+
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testInterceptorsDefinedExplicitlyAreMergedIntoInterceptorListOnPopulate() {
+        $proxyGenerator = new ProxyGenerator();
+        $className = $proxyGenerator->generateProxy(ServiceWithInterceptor::class, "Extended", [Proxy::class]);
+
+        $proxy = new $className();
+        $proxy->__populate(new ContainerInterceptors(), new ClassInspector(ServiceWithInterceptor::class));
+
+
     }
 
 }

@@ -3,6 +3,7 @@
 namespace Kinikit\Core\DependencyInjection;
 
 use Kinikit\Core\Exception\InsufficientParametersException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
 
 
@@ -48,7 +49,7 @@ trait Proxy {
 
             foreach ($interceptorAnnotations as $interceptor) {
                 $interceptorClass = $interceptor->getValue();
-                $newInterceptor = new $interceptorClass();
+                $newInterceptor = Container::instance()->get($interceptorClass);
                 $this->interceptors->addInterceptor($newInterceptor, [$classInspector->getClassName()]);
             }
         }
@@ -131,7 +132,7 @@ trait Proxy {
 
             // Evaluate after method interceptors.
             foreach ($classInterceptors as $interceptor) {
-                $callable = $interceptor->methodCallable($callable, $name, $params, $methodInspector);
+                $callable = $interceptor->methodCallable($callable, $this, $name, $params, $methodInspector);
             }
 
             // Actually call the callable and get the return value.
