@@ -7,6 +7,7 @@ use Kinikit\Core\Binding\ComplexObject;
 use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
+use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once "autoloader.php";
 
@@ -113,8 +114,6 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-
-
     public function testCanCreateInstanceOfClassProvidedAllRequiredArgumentsAreSupplied() {
 
         $classInspector = new ClassInspector(TestTypedPOPO::class);
@@ -151,8 +150,8 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 //        }
 
         //NOTE: Integers are typecast to strings when passed into createInstance
-        $instance1 = $classInspector->createInstance(["hat"=> "Sunhat", ["left sock", "right sock"]]);
-        $instance2 = $classInspector->createInstance(["hat"=> null, ["left sock", "right sock"]]);
+        $instance1 = $classInspector->createInstance(["hat" => "Sunhat", ["left sock", "right sock"]]);
+        $instance2 = $classInspector->createInstance(["hat" => null, ["left sock", "right sock"]]);
 
         $instance1->setHat(null);
 
@@ -160,7 +159,7 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    public function testCanCreateClassInspectorFromNullableClass(){
+    public function testCanCreateClassInspectorFromNullableClass() {
         $classInspector = new ClassInspector(TestTypedPOPO::class);
 
         $classInspectorNullable = new ClassInspector("?" . TestTypedPOPO::class);
@@ -336,5 +335,27 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
 
 
     }
+
+
+    public function testCanCheckWhetherAttributeExistsOnClass() {
+
+        $classInspector = new ClassInspector(TestAttributePOPO::class);
+
+        $this->assertTrue($classInspector->hasClassAttribute(TestAttribute::class));
+        $this->assertFalse($classInspector->hasClassAttribute(TestOtherAttribute::class));
+
+    }
+
+
+    public function testCanCheckWhetherClassUsesTrait() {
+
+        $classInspector = new ClassInspector(TestTraitedPOPO::class);
+
+        $this->assertTrue($classInspector->usesTrait(TestPOPOTrait::class));
+        $this->assertFalse($classInspector->usesTrait(Proxy::class));
+
+
+    }
+
 
 }

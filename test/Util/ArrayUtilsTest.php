@@ -18,7 +18,7 @@ class ArrayUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testNonMappedKeysAreRemovedByDefault(){
+    public function testNonMappedKeysAreRemovedByDefault() {
         // Source
         $source = ["a" => "Hello", "b" => "World", "c" => "of", "d" => "fun"];
         $mappings = ["a" => "First", "b" => "Second"];
@@ -28,7 +28,7 @@ class ArrayUtilsTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testNonMappedKeysAreLeftIntactIfBooleanPassed(){
+    public function testNonMappedKeysAreLeftIntactIfBooleanPassed() {
 
         // Source
         $source = ["a" => "Hello", "b" => "World", "c" => "of", "d" => "fun"];
@@ -47,7 +47,7 @@ class ArrayUtilsTest extends \PHPUnit\Framework\TestCase {
         try {
             $wrongTyped = ArrayUtils::any([false, 0, 1]);
             $this->fail();
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             //Succeed
         }
     }
@@ -60,9 +60,19 @@ class ArrayUtilsTest extends \PHPUnit\Framework\TestCase {
         try {
             $wrongTyped = ArrayUtils::all([false, 0, 1]);
             $this->fail();
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             //Succeed
         }
+    }
+
+
+    public function testCanMergeArraysRecursivelyPreservingKeys() {
+
+        $array1 = ["Test" => [3 => "Bing", 5 => "Bong"]];
+        $array2 = ["Test" => [4 => "Bang", 1 => "Bung"]];
+        $this->assertEquals(["Test" => [3 => "Bing", 5 => "Bong", 4 => "Bang", 1 => "Bung"]], ArrayUtils::mergeArrayRecursive($array1, $array2));
+
+
     }
 
 }

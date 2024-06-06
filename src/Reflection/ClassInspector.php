@@ -383,6 +383,27 @@ class ClassInspector {
     }
 
 
+    /**
+     * Check whether this class has a class attribute
+     *
+     * @param $attributeClass
+     * @return boolean
+     */
+    public function hasClassAttribute($attributeClass) {
+        return sizeof($this->reflectionClass->getAttributes($attributeClass)) ? true : false;
+    }
+
+    /**
+     * Return boolean indicator as to whether or not the class contains a given trait.
+     *
+     * @param string $traitName
+     * @return bool
+     */
+    public function usesTrait($traitName) {
+        return in_array($traitName, $this->reflectionClass->getTraitNames());
+    }
+
+
     // Get a method inspector - cached as accessed for better performance.
     private function getMethodInspector($methodName) {
         if (!isset($this->methodInspectors[$methodName])) {
@@ -416,5 +437,6 @@ class ClassInspector {
 
         return $namespace . "\\" . $className;
     }
+
 
 }
