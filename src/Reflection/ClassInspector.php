@@ -396,7 +396,7 @@ class ClassInspector {
     /**
      * Return boolean indicator as to whether or not the class contains a given trait.
      *
-     * @param string $class
+     * @param string $traitName
      * @return bool
      */
     public function usesTrait($traitName) {
