@@ -5,7 +5,6 @@ namespace Kinikit\Core;
 
 use Kinikit\Core\Configuration\SearchNamespaces;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 
 
 /**

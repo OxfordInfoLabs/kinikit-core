@@ -6,7 +6,6 @@ use Amp\Http\Client\HttpClientBuilder;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
-use Kinikit\Core\Reflection\Method;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
 class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHED!!

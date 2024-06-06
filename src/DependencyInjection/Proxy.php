@@ -3,7 +3,6 @@
 namespace Kinikit\Core\DependencyInjection;
 
 use Kinikit\Core\Exception\InsufficientParametersException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
 
 

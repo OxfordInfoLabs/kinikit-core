@@ -3,8 +3,6 @@
 
 namespace Kinikit\Core\DependencyInjection;
 
-use Kinikit\Core\Logging\Logger;
-
 class ContainerInterceptors {
 
     private $interceptors = array();
