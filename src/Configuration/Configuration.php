@@ -41,5 +41,3 @@ class Configuration extends ConfigFile {
     }
 
 }
-
-?>

@@ -18,5 +18,3 @@ interface FormatToObjectConverter {
     public function convert($formatString);
 
 }
-
-?>

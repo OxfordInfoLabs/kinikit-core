@@ -18,5 +18,3 @@ interface ObjectToFormatConverter {
 	 */
 	public function convert($object);
 }
-
-?>
