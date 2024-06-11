@@ -11,6 +11,7 @@ use Kinikit\Core\HTTP\Response\Response;
  *
  * @implementationConfigParam http.request.provider
  * @implementation php \Kinikit\Core\HTTP\Dispatcher\PHPRequestDispatcher
+ * @implementation amp \Kinikit\Core\HTTP\Dispatcher\AMPRequestDispatcher
  * @defaultImplementation \Kinikit\Core\HTTP\Dispatcher\PHPRequestDispatcher
  *
  * Interface HttpRequestDispatcher

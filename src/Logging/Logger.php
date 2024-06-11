@@ -13,7 +13,8 @@ use Kinikit\Core\Configuration\Configuration;
 class Logger {
     const GENERAL = "GENERAL";
     const PROFILING = "PROFILING";
-    const ERROR = "ERROR";
+    const ERROR = "\033[31mERROR:\033[0m";
+    const WARNING = "\033[33mWARNING:\033[0m";
 
     public static function log($message, $category = self::GENERAL) {
 

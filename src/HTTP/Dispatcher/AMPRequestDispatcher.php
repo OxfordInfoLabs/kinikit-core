@@ -3,10 +3,12 @@
 namespace Kinikit\Core\HTTP\Dispatcher;
 
 use Amp\Http\Client\HttpClientBuilder;
+use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Configuration\MissingConfigurationParameterException;
+use Kinikit\Core\HTTP\HttpRequestErrorException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
-use Kinikit\Core\Reflection\Method;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
 class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHED!!
@@ -21,21 +23,23 @@ class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHE
      */
     public function dispatch($request): Response {
         $client = HttpClientBuilder::buildDefault();
-        $url = $request->getUrl();
+        $url = $request->getEvaluatedUrl();
+        $ampRequest = new \Amp\Http\Client\Request(
+            $url,
+            $request->getMethod(),
+            $request->getPayload() ?? '',
+        );
+        $ampRequest->setHeaders($request->getHeaders()->getHeaders());
 
-        $toQueryParams = function(array $params) : string {
-            if (!$params) {return "";}
-            foreach ($params as $paramName => $paramValue){
-                $equations[] = "$paramName=$paramValue";
-            }
-            return "?".join("&", $equations);
-        };
+        $maxResponseBytes = Configuration::readParameter("amp.http.max.response.bytes");
+        if (!$maxResponseBytes){
+            $e = new MissingConfigurationParameterException("amp.http.max.response.bytes.");
+            Logger::log($e->getMessage(), Logger::WARNING);
+            $maxResponseBytes = 10_000_000;
+        }
 
-        $ampRequest = match ($request->getMethod()) {
-            Request::METHOD_GET => new \Amp\Http\Client\Request(
-                $url . $toQueryParams($request->getParameters()), $request->getMethod() ?? Request::METHOD_GET, $request->getBody() ?? ""),
-                //TODO Deal with POST requests
-        };
+        $ampRequest->setBodySizeLimit($maxResponseBytes);
+
         $ampResponse = $client->request($ampRequest);
         $ampHeaders = $ampResponse->getHeaders();
         $headers = [];
