@@ -45,13 +45,14 @@ class ContainerInterceptor {
      * Intercept the method callable just before it is executed and return another callable if required.
      *
      * @param callable $callable - The callable function being called
+     * @param object $objectInstance - The object instance being called
      * @param string $methodName - The method namne
      * @param mixed[string] $params - The parameters passed to the method as name => value pairs.
      * @param Method $methodInspector - The reflection method object for this method.
      *
      * @return callable
      */
-    public function methodCallable($callable, $methodName, $params, $methodInspector) {
+    public function methodCallable($callable, $objectInstance, $methodName, $params, $methodInspector) {
         return $callable;
     }
 

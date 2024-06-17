@@ -35,7 +35,7 @@ class ObjectArrayUtils {
         $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
 
         $currentInspector = null;
-        foreach ($objects as $key => $value) {
+        foreach ($objects ?? [] as $key => $value) {
 
             if (is_object($value)) {
 

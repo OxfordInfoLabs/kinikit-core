@@ -182,6 +182,9 @@ class LogicValueFunctionTest extends TestCase {
         $this->assertEquals("default", $function->applyFunction("case 'one' 'first' 'two' 'second' 'default", "three", null));
         $this->assertEquals("default", $function->applyFunction("case 'default'", "someValue", null));
 
+        $model = ["created_date"=>new \DateTime("2024-04-04")];
+        $this->assertEquals(null, $function->applyFunction("case 'N/A' null created_date", "N/A", $model));
+        $this->assertEquals(new \DateTime("2024-04-04"), $function->applyFunction("case 'N/A' null created_date", $model['created_date'], $model));
     }
 
 }

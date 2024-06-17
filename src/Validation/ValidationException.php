@@ -52,5 +52,3 @@ class ValidationException extends \Exception {
     }
 
 }
-
-?>

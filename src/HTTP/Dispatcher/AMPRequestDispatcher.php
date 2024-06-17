@@ -9,7 +9,7 @@ use Kinikit\Core\HTTP\HttpRequestErrorException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
-use Kinikit\Core\Logging\Logger;
+
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
 class AMPRequestDispatcher implements HttpRequestDispatcher {
