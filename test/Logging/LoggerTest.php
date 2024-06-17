@@ -40,15 +40,13 @@ class LoggerTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanLogExceptionsDirectlyAndTheseGetLoggedAsErrors() {
         Logger::log(new \Exception("Test exception"));
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tERROR\tException\nTest exception", trim(file_get_contents("/tmp/ooacorelog.log")));
+        $this->assertEquals(date("d/m/Y H:i:s") . "\t\033[31mERROR:\033[0m\tException\nTest exception", trim(file_get_contents("/tmp/ooacorelog.log")));
     }
 
     public function testArraysAreLoggedUsingVarExportOnNewLine() {
         Logger::log(array(1, 2, 3, 4, 5));
         $this->assertEquals(date("d/m/Y H:i:s") . "\tGENERAL\tArray\n" . var_export(array(1, 2, 3, 4,
                 5), true), trim(file_get_contents("/tmp/ooacorelog.log")));
-
-
     }
 
 

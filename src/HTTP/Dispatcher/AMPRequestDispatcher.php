@@ -9,9 +9,10 @@ use Kinikit\Core\HTTP\HttpRequestErrorException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
-class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHED!!
+class AMPRequestDispatcher implements HttpRequestDispatcher {
 
     /**
      * @param Request $request
@@ -19,7 +20,6 @@ class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHE
      * @throws \Amp\ByteStream\BufferException
      * @throws \Amp\ByteStream\StreamException
      * @throws \Amp\Http\Client\HttpException
-     * //TODO DO NOT USE WITHOUT WRITING PROPER TESTS!!!!
      */
     public function dispatch($request): Response {
         $client = HttpClientBuilder::buildDefault();
@@ -33,7 +33,7 @@ class AMPRequestDispatcher implements HttpRequestDispatcher { //TODO NOT FINISHE
 
         $maxResponseBytes = Configuration::readParameter("amp.http.max.response.bytes");
         if (!$maxResponseBytes){
-            $e = new MissingConfigurationParameterException("amp.http.max.response.bytes.");
+            $e = new MissingConfigurationParameterException("amp.http.max.response.bytes");
             Logger::log($e->getMessage(), Logger::WARNING);
             $maxResponseBytes = 10_000_000;
         }
