@@ -99,4 +99,11 @@ class AMPRequestDispatcherTest extends TestCase {
         $this->assertEquals(200, $result->getStatusCode());
         $this->assertEquals(json_decode($result->getBody(), true)["data"], "my beautiful letter");
     }
+
+    public function testGzippedResponse() {
+        $request = new Request("https://httpbin.org/gzip", Request::METHOD_GET);
+        $result = $this->dispatcher->dispatch($request);
+        $array = json_decode($result->getBody(), true);
+        $this->assertTrue($array["gzipped"]);
+    }
 }
