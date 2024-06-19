@@ -47,6 +47,10 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
         foreach ($ampHeaders as $key => $headerArray){
             $headers[$key] = join(";", $headerArray);
         }
+        // TODO properly stream result
+        // See the Amp/ByteStream/Payload interface
+        // It should be possible by reading characters until you have at least
+        // enough to draw $limit characters or are at the end of stream.
         $response = new Response(
             new ReadOnlyStringStream($ampResponse->getBody()->buffer()),
             $ampResponse->getStatus(),
