@@ -31,6 +31,8 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
             $request->getPayload() ?? '',
         );
         $ampRequest->setHeaders($request->getHeaders()->getHeaders());
+        $ampRequest->setTransferTimeout(120);
+        $ampRequest->setInactivityTimeout(120);
 
         $maxResponseBytes = Configuration::readParameter("amp.http.max.response.bytes");
         if (!$maxResponseBytes){
