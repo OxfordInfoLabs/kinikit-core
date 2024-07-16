@@ -40,14 +40,14 @@ class StringUtils {
     /**
      * Convert a string with spaces etc to Camel Case
      *
-     * @param $string
+     * @param string|null $string
      */
-    public static function convertToCamelCase($string) {
+    public static function convertToCamelCase(?string $string) : string {
 
         $string = $string ?? "";
 
         // Grab all words first of all in a unicode supporting manner
-        preg_match_all('/\pL+/u', $string, $allWords);
+        preg_match_all('/[\pL0-9]+/u', $string, $allWords);
 
         $newString = "";
         foreach ($allWords[0] as $index => $word) {

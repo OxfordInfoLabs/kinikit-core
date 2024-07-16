@@ -92,7 +92,9 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
         // Check for hyphenated formats
         $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("happy_happy_joy_joy"));
 
+        $this->assertEquals("melancholy123", StringUtils::convertToCamelCase("Melancholy 123"));
 
+        $this->assertEquals("aWHO", StringUtils::convertToCamelCase("A WHO"));
     }
 
     public function testCanConvertStringFromCamelCase() {
