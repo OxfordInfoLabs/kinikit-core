@@ -41,6 +41,7 @@ class StringUtils {
      * Convert a string with spaces etc to Camel Case
      *
      * @param string|null $string
+     * @return string
      */
     public static function convertToCamelCase(?string $string) : string {
 
