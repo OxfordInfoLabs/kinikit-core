@@ -22,7 +22,8 @@ class StringValueFunction extends ValueFunctionWithArguments {
         "md5",
         "startsWith",
         "endsWith",
-        "htmlToText"
+        "htmlToText",
+        "leftPad"
     ];
 
     /**
@@ -132,6 +133,10 @@ class StringValueFunction extends ValueFunctionWithArguments {
 
             case "htmlToText":
                 return strip_tags($value);
+
+            case "leftPad":
+                return str_pad($value, $functionArgs[1], $functionArgs[0], STR_PAD_LEFT);
+
         }
 
         return $value;
