@@ -213,6 +213,17 @@ class StringValueFunctionTest extends TestCase {
 
         $this->assertEquals("hello", $function->applyFunction("htmlToText", "<p>hello</p>", null));
         $this->assertEquals("there", $function->applyFunction("htmlToText", "<a href='https://google.com'>there</a>", null));
+        $this->assertEquals("tests", $function->applyFunction("htmlToText", "<div><p>tests</p></div><button type=\"submit\"></button>", null));
+    }
+
+    public function testCanLeftPad() {
+        $function = new StringValueFunction();
+        $this->assertTrue($function->doesFunctionApply("leftPad"));
+
+        $this->assertEquals("00001", $function->applyFunction("leftPad '0' 5", 1, null));
+        $this->assertEquals("aardvark", $function->applyFunction("leftPad 'a' 8", "rdvark", null));
+        $this->assertEquals(null, $function->applyFunction("leftPad 'a' 2", null, null));
+        $this->assertEquals("\\n", $function->applyFunction("leftPad '\' 2", "n", null));
     }
 
 }
