@@ -44,6 +44,15 @@ class MockObjectProvider {
         return Container::instance()->get(MockObjectProvider::class);
     }
 
+    /**
+     * @template T
+     * @psalm-param class-string<T> $className
+     * @return MockObject|T
+     */
+    public static function mock(string $className) {
+        return MockObjectProvider::instance()->getMockInstance($className);
+    }
+
 
     /**
      * Get a mock instance for a given class name
