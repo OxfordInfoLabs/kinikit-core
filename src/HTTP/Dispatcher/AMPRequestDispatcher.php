@@ -25,12 +25,18 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
     public function dispatch($request): Response {
         $client = HttpClientBuilder::buildDefault();
         $url = $request->getEvaluatedUrl();
+        $unzip = str_contains($url, "compress.zlib://");
+        $url = $unzip ? substr($url, strlen("compress.zlib://")) : $url;
         $ampRequest = new \Amp\Http\Client\Request(
             $url,
             $request->getMethod(),
             $request->getPayload() ?? '',
         );
-        $ampRequest->setHeaders($request->getHeaders()->getHeaders());
+        $headersArray = $request->getHeaders()->getHeaders();
+        if ($unzip) {
+            $headersArray["Accept-Encoding"] = "deflate";
+        }
+        $ampRequest->setHeaders($headersArray);
         $ampRequest->setTransferTimeout(120);
         $ampRequest->setInactivityTimeout(120);
 
@@ -53,8 +59,16 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
         // See the Amp/ByteStream/Payload interface
         // It should be possible by reading characters until you have at least
         // enough to draw $limit characters or are at the end of stream.
+        $body = $ampResponse->getBody()->buffer();
+
+        if ($unzip) {
+            $unzippedBody = zlib_decode($body);
+            if ($unzippedBody !== false){
+                $body = $unzippedBody;
+            }
+        }
         $response = new Response(
-            new ReadOnlyStringStream($ampResponse->getBody()->buffer()),
+            new ReadOnlyStringStream($body),
             $ampResponse->getStatus(),
             new Headers($headers),
             $request
