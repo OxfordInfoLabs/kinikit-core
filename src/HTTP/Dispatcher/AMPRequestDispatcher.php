@@ -59,8 +59,16 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
         // See the Amp/ByteStream/Payload interface
         // It should be possible by reading characters until you have at least
         // enough to draw $limit characters or are at the end of stream.
+        $body = $ampResponse->getBody()->buffer();
+
+        if ($unzip) {
+            $unzippedBody = zlib_decode($body);
+            if ($unzippedBody !== false){
+                $body = $unzippedBody;
+            }
+        }
         $response = new Response(
-            new ReadOnlyStringStream($unzip ? zlib_decode($ampResponse->getBody()->buffer()): $ampResponse->getBody()->buffer()),
+            new ReadOnlyStringStream($body),
             $ampResponse->getStatus(),
             new Headers($headers),
             $request
