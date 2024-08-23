@@ -51,7 +51,7 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
         }
 
 
-        return $this->applyFunctionWithArgs($functionName, $params ?? [], $value, $model);
+        return $this->applyFunctionWithArgs($functionName, $params, $value, $model);
 
     }
 

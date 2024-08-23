@@ -316,9 +316,7 @@ class ClassInspector {
             if (isset($setters[$propertyName])) {
 
                 $parameters = $setters[$propertyName]->getParameters();
-                if (sizeof($parameters) > 0) {
-                    $params = [$parameters[0]->getName() => $data];
-                }
+                $params = [$parameters[0]?->getName() => $data];
 
                 $setters[$propertyName]->call($object, $params);
             } else {
@@ -423,16 +421,11 @@ class ClassInspector {
 
         // Get the class
         preg_match("/class (.*?)\W/", $file, $matches);
-        if (sizeof($matches) == 2) {
-            $className = trim($matches[1]);
-        }
-
+        $className = trim($matches[1] ?? "");
 
         // Get the namespace
         preg_match("/namespace (.*?);/", $file, $matches);
-        if (sizeof($matches) == 2) {
-            $namespace = trim($matches[1]);
-        }
+        $namespace = trim($matches[1] ?? "");
 
 
         return $namespace . "\\" . $className;

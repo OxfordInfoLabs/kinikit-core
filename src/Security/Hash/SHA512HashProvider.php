@@ -16,7 +16,7 @@ class SHA512HashProvider implements HashProvider {
      * @return string mixed
      */
     public function generateHash($value) {
-        return hash("sha512", $value ?? "");
+        return hash("sha512", $value);
     }
 
     /**

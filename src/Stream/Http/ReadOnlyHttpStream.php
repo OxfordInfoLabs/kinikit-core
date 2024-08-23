@@ -44,14 +44,14 @@ class ReadOnlyHttpStream extends ReadOnlyFilePointerResourceStream {
             // If no resource, throw stream exception with message
             if ($resource === false) {
 
-                if (isset($http_response_header) && count($http_response_header) == 0) {
+                if ($http_response_header && count($http_response_header) == 0) {
                     throw new StreamException("Request timed out for stream");
                 }
 
                 $this->throwLastStreamError();
             } else {
                 parent::__construct($resource);
-                if (isset($http_response_header)) {
+                if ($http_response_header) {
 
                     $headers = [];
                     $responseCode = 0;

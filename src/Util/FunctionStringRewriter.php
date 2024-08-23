@@ -92,7 +92,6 @@ class FunctionStringRewriter {
      */
     public static function extractArgs($functionString, $functionName, $atStart = true, &$functionStringLength = 0) {
 
-        $functionString = $functionString ?? "";
         $args = [];
         $currentArg = "";
         $pos = strpos($functionString, $functionName) + strlen($functionName) + 1;

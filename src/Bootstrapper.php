@@ -28,9 +28,8 @@ class Bootstrapper {
      * Init constructor.  Automatically sets things up.
      *
      * @param SearchNamespaces $searchNamespaces
-     * @param Init $init
      */
-    public function __construct($searchNamespaces, $init) {
+    public function __construct($searchNamespaces) {
 
         // Process our bootstrap
         $this->searchNamespaces = $searchNamespaces;

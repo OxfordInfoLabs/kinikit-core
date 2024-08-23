@@ -69,8 +69,7 @@ class HttpRemoteRequest {
             $headers[] = $key . ": " . $header;
         }
 
-        if (is_array($this->parameters))
-            $queryParams = http_build_query($this->parameters);
+        $queryParams = is_array($this->parameters) ? http_build_query($this->parameters) : "";
 
         if ($this->payload) {
             $payload = $this->payload;
@@ -81,7 +80,7 @@ class HttpRemoteRequest {
         $paramsAsGet = $payload || $this->method == "GET";
         $contentData = $payload ? $payload : ($paramsAsGet ? [] : $queryParams);
 
-        $options =['http' =>['header' => $headers, 'method' => $this->method,
+        $options = ['http' => ['header' => $headers, 'method' => $this->method,
             'content' => $contentData, 'ignore_errors' => $ignoreErrors]];
 
         $url = $this->url;

@@ -52,7 +52,7 @@ class ValueFunctionEvaluator {
      */
     public function evaluateString($string, $model = [], $delimiters = ["[[", "]]"]) {
 
-        $evaluated = preg_replace_callback("/" . preg_quote($delimiters[0]) . "(.*?)" . preg_quote($delimiters[1]) . "/", function ($matches) use ($model, $delimiters) {
+        $evaluated = preg_replace_callback("/" . preg_quote($delimiters[0]) . "(.*?)" . preg_quote($delimiters[1]) . "/", function ($matches) use ($model) {
 
             $exploded = explode(" | ", $matches[1]);
 
@@ -62,7 +62,7 @@ class ValueFunctionEvaluator {
             if ($specialExpression == $expression) {
 
                 if (is_numeric($expression)) {
-                    $value  = $expression;
+                    $value = $expression;
                 } elseif (trim($expression, "'\"") != $expression) {
                     $value = trim($expression, "'\"");
                 } else {
@@ -125,27 +125,27 @@ class ValueFunctionEvaluator {
         if (is_string($expression)) {
 
             // Evaluate time offset parameters for days ago and hours ago
-            $expression = preg_replace_callback("/([0-9]+)_YEARS_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_YEARS_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("P" . $matches[1] . "Y"))->format("Y-m-d H:i:s");
             }, $expression);
 
-            $expression = preg_replace_callback("/([0-9]+)_MONTHS_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_MONTHS_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("P" . $matches[1] . "M"))->format("Y-m-d H:i:s");
             }, $expression);
 
-            $expression = preg_replace_callback("/([0-9]+)_DAYS_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_DAYS_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("P" . $matches[1] . "D"))->format("Y-m-d H:i:s");
             }, $expression);
 
-            $expression = preg_replace_callback("/([0-9]+)_HOURS_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_HOURS_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("PT" . $matches[1] . "H"))->format("Y-m-d H:i:s");
             }, $expression);
 
-            $expression = preg_replace_callback("/([0-9]+)_MINUTES_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_MINUTES_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("PT" . $matches[1] . "M"))->format("Y-m-d H:i:s");
             }, $expression);
 
-            $expression = preg_replace_callback("/([0-9]+)_SECONDS_AGO/", function ($matches) use (&$outputParameters) {
+            $expression = preg_replace_callback("/([0-9]+)_SECONDS_AGO/", function ($matches) {
                 return (new \DateTime())->sub(new \DateInterval("PT" . $matches[1] . "S"))->format("Y-m-d H:i:s");
             }, $expression);
 
