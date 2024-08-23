@@ -14,7 +14,7 @@ class HttpRemoteRequest {
     private $parameters;
     private $payload;
     private $method;
-    private $headers = array();
+    private $headers = [];
     private $authUsername;
     private $authPassword;
 
@@ -33,7 +33,7 @@ class HttpRemoteRequest {
      * @param string $authUsername
      * @param string $authPassword
      */
-    public function __construct($url, $method = "POST", $parameters = array(), $payload = null, $headers = array(), $authUsername = null, $authPassword = null) {
+    public function __construct($url, $method = "POST", $parameters = [], $payload = null, $headers = [], $authUsername = null, $authPassword = null) {
         $this->url = $url;
         $this->parameters = $parameters;
         $this->payload = $payload;
@@ -52,7 +52,7 @@ class HttpRemoteRequest {
     public function dispatch($ignoreErrors = true, $timeout = null) {
 
         if (!isset($this->headers)) {
-            $this->headers = array();
+            $this->headers = [];
         }
 
         if ($this->method != "GET" && !isset($this->headers["Content-Type"]))
@@ -64,7 +64,7 @@ class HttpRemoteRequest {
             $this->headers["Authorization"] = "Basic " . base64_encode($this->authUsername . ":" . $this->authPassword);
         }
 
-        $headers = array();
+        $headers = [];
         foreach ($this->headers as $key => $header) {
             $headers[] = $key . ": " . $header;
         }
@@ -79,10 +79,10 @@ class HttpRemoteRequest {
         }
 
         $paramsAsGet = $payload || $this->method == "GET";
-        $contentData = $payload ? $payload : ($paramsAsGet ? array() : $queryParams);
+        $contentData = $payload ? $payload : ($paramsAsGet ? [] : $queryParams);
 
-        $options = array('http' => array('header' => $headers, 'method' => $this->method,
-            'content' => $contentData, 'ignore_errors' => $ignoreErrors));
+        $options =['http' =>['header' => $headers, 'method' => $this->method,
+            'content' => $contentData, 'ignore_errors' => $ignoreErrors]];
 
         $url = $this->url;
         if ($paramsAsGet && sizeof($this->parameters) > 0) {
@@ -121,7 +121,7 @@ class HttpRemoteRequest {
      */
     public function getResponseHeaders() {
 
-        $head = array();
+        $head = [];
         foreach ($this->lastResponseHeaders as $k => $v) {
             $t = explode(':', $v, 2);
             if (isset($t[1]))

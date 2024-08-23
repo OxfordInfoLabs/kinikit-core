@@ -62,7 +62,7 @@ class ClassAnnotations {
      * @return mixed
      */
     public function getFieldAnnotations() {
-        return $this->fieldAnnotations ? $this->fieldAnnotations : array();
+        return $this->fieldAnnotations ? $this->fieldAnnotations : [];
     }
 
     /**
@@ -76,7 +76,7 @@ class ClassAnnotations {
      * @return mixed
      */
     public function getMethodAnnotations() {
-        return $this->methodAnnotations ? $this->methodAnnotations : array();
+        return $this->methodAnnotations ? $this->methodAnnotations : [];
     }
 
     /**
@@ -123,9 +123,9 @@ class ClassAnnotations {
      */
     public function getMethodAnnotationsForMatchingTag($tag, $methodName = null) {
         if ($methodName) {
-            return isset($this->methodAnnotations[$methodName][$tag]) ? $this->methodAnnotations[$methodName][$tag] : array();
+            return isset($this->methodAnnotations[$methodName][$tag]) ? $this->methodAnnotations[$methodName][$tag] : [];
         } else {
-            $matchingAnnotations = array();
+            $matchingAnnotations = [];
             foreach ($this->getMethodAnnotations() as $method => $methodAnnotations) {
                 if (isset($methodAnnotations[$tag])) {
                     $matchingAnnotations[$method] = $methodAnnotations[$tag];
@@ -145,10 +145,10 @@ class ClassAnnotations {
     public function getFieldAnnotationsForMatchingTag($tag, $fieldName = null) {
 
         if ($fieldName) {
-            return isset($this->fieldAnnotations[$fieldName][$tag]) ? $this->fieldAnnotations[$fieldName][$tag] : array();
+            return isset($this->fieldAnnotations[$fieldName][$tag]) ? $this->fieldAnnotations[$fieldName][$tag] : [];
         } else {
 
-            $matchingAnnotations = array();
+            $matchingAnnotations = [];
             foreach ($this->getFieldAnnotations() as $field => $fieldAnnotations) {
                 if (isset($fieldAnnotations[$tag])) {
                     $matchingAnnotations[$field] = $fieldAnnotations[$tag];
@@ -167,7 +167,7 @@ class ClassAnnotations {
      * @param $tag
      */
     public function getFieldAnnotationsContainingMatchingTag($tag) {
-        $matchingAnnotations = array();
+        $matchingAnnotations = [];
         foreach ($this->getFieldAnnotations() as $field => $fieldAnnotations) {
             if (isset($fieldAnnotations[$tag])) {
                 $matchingAnnotations[$field] = $fieldAnnotations;
@@ -185,8 +185,8 @@ class ClassAnnotations {
      * @param array $tags
      * @return array
      */
-    public function getFieldAnnotationsNotContainingTags($tags = array()) {
-        $matchingAnnotations = array();
+    public function getFieldAnnotationsNotContainingTags($tags = []) {
+        $matchingAnnotations = [];
         foreach ($this->getFieldAnnotations() as $field => $fieldAnnotations) {
 
             $fieldAnnotationKeys = array_keys($fieldAnnotations);

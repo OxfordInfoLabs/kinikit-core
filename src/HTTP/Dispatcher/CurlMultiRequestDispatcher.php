@@ -111,7 +111,7 @@ class CurlMultiRequestDispatcher implements HttpMultiRequestDispatcher {
         array_shift($headerLines);
 
         // Define as array before using in loop
-        $indexedHeaders = array();
+        $indexedHeaders = [];
 
         // Create an associative array containing the response headers
         foreach ($headerLines as $value) {

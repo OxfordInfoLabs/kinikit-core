@@ -111,7 +111,7 @@ class Validator {
         $classAnnotations = $classInspector->getClassAnnotationsObject();
         $validationFields = $classAnnotations->getFieldAnnotations();
 
-        $validationErrors = array();
+        $validationErrors = [];
 
 
         foreach ($validationFields as $field => $annotations) {
@@ -128,7 +128,7 @@ class Validator {
                     $valid = $validator->validateObjectFieldValue($value, $field, $object, $validatorArgs);
 
                     if ($valid !== true) {
-                        if (!isset($validationErrors[$field])) $validationErrors[$field] = array();
+                        if (!isset($validationErrors[$field])) $validationErrors[$field] = [];
                         $message = $validator->getEvaluatedValidationMessage($validatorArgs);
                         $validationErrors[$field][$validatorKey] = new FieldValidationError($field, $validatorKey, $message);
                     }
@@ -141,7 +141,7 @@ class Validator {
             if (is_object($value)) {
                 $subValidationErrors = $this->validateObject($value);
                 if ($subValidationErrors) {
-                    if (!isset($validationErrors[$field])) $validationErrors[$field] = array();
+                    if (!isset($validationErrors[$field])) $validationErrors[$field] = [];
                     $validationErrors[$field] = array_merge($validationErrors[$field], $subValidationErrors);
                 }
             }
@@ -160,7 +160,7 @@ class Validator {
 
                 if (sizeof($validationErrorArray)) {
                     if (!isset($validationErrors[$field]))
-                        $validationErrors[$field] = array();
+                        $validationErrors[$field] = [];
 
                     $validationErrors[$field] = array_merge($validationErrors[$field], $validationErrorArray);
                 }
@@ -201,7 +201,7 @@ class Validator {
     private function doValidateArray($validatedArray, $validationDefinition, &$itemTypeRefs = []) {
 
 
-        $validationErrors = array();
+        $validationErrors = [];
 
         /**
          * Loop through each validated field
@@ -278,7 +278,7 @@ class Validator {
                 $valid = $validator->validateObjectFieldValue($value, $valueKey, $values, $validatorArgs);
 
                 if ($valid !== true) {
-                    if (!isset($validationErrors[$valueKey])) $validationErrors[$valueKey] = array();
+                    if (!isset($validationErrors[$valueKey])) $validationErrors[$valueKey] = [];
                     $message = $validator->getEvaluatedValidationMessage($validatorArgs);
                     $validationErrors[$valueKey][$validatorKey] = new FieldValidationError($valueKey, $validatorKey, $message);
                 }

@@ -26,17 +26,17 @@ class ClassAnnotationParser {
         try {
             $class = new \ReflectionClass($className);
         } catch (\ReflectionException $e) {
-            return new ClassAnnotations($className, array(), array(), array());
+            return new ClassAnnotations($className, [], [], []);
         }
 
 
         // get the master annotations
         $classComment = $class->getDocComment();
         $classAnnotations = $this->getCommentAnnotations($classComment);
-        $classAnnotations["comment"] = array(new Annotation("comment", $this->cleanComment($classComment)));
+        $classAnnotations["comment"] = [new Annotation("comment", $this->cleanComment($classComment))];
 
 
-        $fieldAnnotations = array();
+        $fieldAnnotations = [];
         $properties = $class->getProperties();
 
 
@@ -49,12 +49,12 @@ class ClassAnnotationParser {
             $fieldComment = $this->getCommentAnnotations($property->getDocComment());
             $fieldAnnotations[$property->getName()] = $fieldComment;
 
-            $fieldAnnotations[$property->getName()]["comment"] = array(new Annotation("comment", $this->cleanComment($property->getDocComment())));
+            $fieldAnnotations[$property->getName()]["comment"] = [new Annotation("comment", $this->cleanComment($property->getDocComment()))];
 
         }
 
 
-        $methodAnnotations = array();
+        $methodAnnotations = [];
         $methods = $class->getMethods();
 
         foreach ($methods as $method) {
@@ -68,7 +68,7 @@ class ClassAnnotationParser {
                 $methodAnnotations[$method->getName()]["inherited"] = 1;
             }
 
-            $methodAnnotations[$method->getName()]["comment"] = array(new Annotation("comment", $this->cleanComment($method->getDocComment())));
+            $methodAnnotations[$method->getName()]["comment"] = [new Annotation("comment", $this->cleanComment($method->getDocComment()))];
 
 
         }
@@ -85,11 +85,11 @@ class ClassAnnotationParser {
      */
     private function getCommentAnnotations($comment) {
 
-        $cleaned = str_replace(array("*/", "/*", "\n/"), array("", "", "", ""), $comment);
-        $annotations = array();
+        $cleaned = str_replace(array("*/", "/*", "\n/"), ["", "", "", ""], $comment);
+        $annotations = [];
         preg_replace_callback("/@([a-zA-Z-]*)(.*)/", function ($matches) use (&$annotations) {
             if (!isset($annotations[$matches[1]]))
-                $annotations[$matches[1]] = array();
+                $annotations[$matches[1]] = [];
 
             $annotations[$matches[1]][] = new Annotation($matches[1], trim($matches[2]));
             return "";

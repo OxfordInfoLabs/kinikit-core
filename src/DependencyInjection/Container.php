@@ -23,7 +23,7 @@ class Container {
     /**
      * @var mixed[string]
      */
-    private $instances = array();
+    private $instances = [];
 
 
     /**
@@ -40,7 +40,7 @@ class Container {
      *
      * @var string[string]
      */
-    private $classMappings = array();
+    private $classMappings = [];
 
 
     /**
@@ -227,7 +227,7 @@ class Container {
      * @return object
      * @throws \ReflectionException
      */
-    public function __doGet($className, $createNew = false, $allowProxy = true, $dependentClasses = array()) {
+    public function __doGet($className, $createNew = false, $allowProxy = true, $dependentClasses = []) {
 
         // Remove leading \'s.
         $className = "\\" . ltrim(trim($className), "\\");
@@ -258,7 +258,7 @@ class Container {
 
 
         // Sort out parameters
-        $params = array();
+        $params = [];
         if (!$createNew) {
             if ($constructor = $classInspector->getConstructor()) {
                 foreach ($constructor->getParameters() as $param) {

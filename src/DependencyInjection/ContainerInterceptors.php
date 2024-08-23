@@ -5,7 +5,7 @@ namespace Kinikit\Core\DependencyInjection;
 
 class ContainerInterceptors {
 
-    private $interceptors = array();
+    private $interceptors = [];
 
     /**
      * Add an interceptor to this collection.

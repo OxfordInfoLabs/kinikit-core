@@ -39,7 +39,7 @@ class Method {
     /**
      * @var Parameter[]
      */
-    private $parameters = array();
+    private $parameters = [];
 
 
     /**
@@ -150,7 +150,7 @@ class Method {
      */
     public function getIndexedParameters() {
         if (!$this->parameters) {
-            $this->parameters = array();
+            $this->parameters = [];
 
             foreach ($this->reflectionMethod->getParameters() as $parameter) {
                 $this->parameters[$parameter->getName()] = new Parameter($parameter, $this);

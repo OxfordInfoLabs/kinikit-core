@@ -53,7 +53,7 @@ class ReadOnlyHttpStream extends ReadOnlyFilePointerResourceStream {
                 parent::__construct($resource);
                 if (isset($http_response_header)) {
 
-                    $headers = array();
+                    $headers = [];
                     $responseCode = 0;
                     $redirectResponseCode = null;
 

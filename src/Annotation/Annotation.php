@@ -58,7 +58,7 @@ class Annotation {
      */
     public function getValues() {
         $exploded = explode(",", $this->getValue());
-        $values = array();
+        $values = [];
         foreach ($exploded as $entry) {
             $values[] = trim($entry);
         }

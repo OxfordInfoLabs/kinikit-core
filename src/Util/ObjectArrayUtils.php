@@ -30,7 +30,7 @@ class ObjectArrayUtils {
      */
     public static function getMemberValueArrayForObjects($member, $objects) {
 
-        $returnValues = array();
+        $returnValues = [];
 
         $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
 
@@ -96,9 +96,9 @@ class ObjectArrayUtils {
      */
     public static function filterArrayOfObjectsByMember($member, $objects, $filterValue) {
 
-        $filterValues = is_array($filterValue) ? $filterValue : array($filterValue);
+        $filterValues = is_array($filterValue) ? $filterValue :[$filterValue];
 
-        $filteredObjects = array();
+        $filteredObjects = [];
 
         $classInspectorProvider = Container::instance()->get(ClassInspectorProvider::class);
 
@@ -133,7 +133,7 @@ class ObjectArrayUtils {
     public static function groupArrayOfObjectsByMember($member, $objects) {
 
         if (!is_array($member))
-            $member = array($member);
+            $member =[$member];
 
         $leafMember = array_pop($member);
 
@@ -167,7 +167,7 @@ class ObjectArrayUtils {
             if (!$leafValue && !is_numeric($leafValue)) $leafValue = "NULL";
 
             if (!isset($rootNode[$leafValue]))
-                $rootNode[$leafValue] = array();
+                $rootNode[$leafValue] = [];
 
             $leafValues = $rootNode[$leafValue];
             $leafValues[] = $object;

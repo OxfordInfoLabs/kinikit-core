@@ -29,7 +29,7 @@ class PHPTemplateParser implements TemplateParser {
         extract($model);
 
         // Store defined variables before we evaluate
-        $preVariables = get_defined_vars() ? get_defined_vars() : array();
+        $preVariables = get_defined_vars() ? get_defined_vars() : [];
         unset($preVariables["model"]);
 
         // Now use an object buffer to get the result.
@@ -39,7 +39,7 @@ class PHPTemplateParser implements TemplateParser {
         ob_end_clean();
 
         // Add any newly scoped variables
-        $postVariables = get_defined_vars() ? get_defined_vars() : array();
+        $postVariables = get_defined_vars() ? get_defined_vars() : [];
         foreach ($postVariables as $key => $value) {
             if ($key == "model" || $key == "templateText") continue;
             if (!isset($preVariables[$key]) || ($value != $preVariables[$key])) {

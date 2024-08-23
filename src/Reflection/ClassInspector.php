@@ -28,10 +28,10 @@ class ClassInspector {
     private $declaredNamespaces;
 
     private $publicMethods;
-    private $setters = array();
-    private $getters = array();
+    private $setters = [];
+    private $getters = [];
     private $properties;
-    private $methodInspectors = array();
+    private $methodInspectors = [];
 
     /**
      * Construct with a class name or filename.
@@ -192,7 +192,7 @@ class ClassInspector {
      */
     public function getPublicMethods() {
         if (!isset($this->publicMethods)) {
-            $this->publicMethods = array();
+            $this->publicMethods = [];
             foreach ($this->reflectionClass->getMethods() as $method) {
                 if ($method->isPublic() && !$method->isConstructor()) {
                     $methodName = $method->getName();

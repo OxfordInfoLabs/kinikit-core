@@ -13,7 +13,7 @@ use Exception;
 class ConfigFile {
 
     private $configFilePath;
-    private $parameters = array();
+    private $parameters = [];
 
     /**
      * Construct a config file object using the passed file name.

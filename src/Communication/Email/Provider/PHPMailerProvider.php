@@ -178,16 +178,16 @@ class PHPMailerProvider implements EmailProvider {
     private function convertAddressToAddressAndName($address) {
 
         if (!is_array($address)) {
-            $address = array($address);
+            $address = [$address];
         }
 
-        $addressAndNames = array();
+        $addressAndNames = [];
         foreach ($address as $addressComponent) {
             preg_match("/<(.*)>/", $addressComponent, $matches);
             if (sizeof($matches) == 2) {
-                $addressAndNames[] = array($matches[1], trim(str_replace($matches[0], "", $addressComponent)));
+                $addressAndNames[] = [$matches[1], trim(str_replace($matches[0], "", $addressComponent))];
             } else {
-                $addressAndNames[] = array($address[0], null);
+                $addressAndNames[] = [$address[0], null];
             }
         }
 

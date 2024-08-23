@@ -193,7 +193,7 @@ class Parameter {
     private function stripArrayTypeSuffix($type) {
         $strippedType = trim(preg_replace("/\[.*\]$/", "", $type));
         $arraySuffix = substr($type, strlen($strippedType));
-        return array($strippedType, $arraySuffix);
+        return [$strippedType, $arraySuffix];
     }
 
 

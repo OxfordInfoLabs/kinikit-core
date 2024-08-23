@@ -9,7 +9,7 @@ namespace Kinikit\Core\Util\Logging;
 class CodeTimer {
 
 
-    private static $groupTimings = array();
+    private static $groupTimings = [];
 
     /**
      * Time the passed function

@@ -42,7 +42,7 @@ trait Proxy {
 
         // Add explicitly defined interceptors from annotations
         $interceptorAnnotations = isset($classInspector->getClassAnnotations()["interceptor"]) ?
-            $classInspector->getClassAnnotations()["interceptor"] : array();
+            $classInspector->getClassAnnotations()["interceptor"] : [];
 
         if ($interceptorAnnotations) {
 
@@ -76,7 +76,7 @@ trait Proxy {
 
 
         // If we have interceptors, calculate the parameters
-        $params = array();
+        $params = [];
 
         $reflectionClass = new \ReflectionClass($this);
         $method = $reflectionClass->getMethod($name);

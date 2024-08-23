@@ -113,7 +113,7 @@ class ObjectBinder {
 
             $classInspector = $this->classInspectorProvider->getClassInspector($targetClass);
 
-            $processedKeys = array();
+            $processedKeys = [];
 
 
             // Process constructor first.

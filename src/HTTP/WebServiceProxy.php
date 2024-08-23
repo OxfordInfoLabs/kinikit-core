@@ -37,7 +37,7 @@ class WebServiceProxy {
      * @param string $webServiceURL
      * @param array $globalParameters
      */
-    public function __construct($webServiceURL, $globalParameters = array(), $dataFormat = self::DATA_FORMAT_JSON) {
+    public function __construct($webServiceURL, $globalParameters = [], $dataFormat = self::DATA_FORMAT_JSON) {
 
         if (!$webServiceURL) {
             throw new \Exception("No Web Service URL passed to the Web Service Proxy");
@@ -59,14 +59,14 @@ class WebServiceProxy {
      * @param string $returnClass
      * @param array $expectedExceptions an array of expected exceptions.  This can simply be a values array of class names or an associative array defining mappings to client classes.
      */
-    public function callMethod($name, $httpMethod = "POST", $params = array(), $payload = null, $returnClass = null, $expectedExceptions = null) {
+    public function callMethod($name, $httpMethod = "POST", $params = [], $payload = null, $returnClass = null, $expectedExceptions = null) {
 
         $objectToFormatConverter = Container::instance()->get(ObjectToJSONConverter::class);
         $formatToObjectConverter = Container::instance()->get(JSONToObjectConverter::class);
         $objectBinder = Container::instance()->get(ObjectBinder::class);
 
         if (!is_array($expectedExceptions)) {
-            $expectedExceptions = array();
+            $expectedExceptions = [];
         }
 
         if ($expectedExceptions == array_values($expectedExceptions)) {

@@ -24,7 +24,7 @@ class StringUtils {
         // If include caps, add in capital letters
         if ($includeCaps) $possibleChars = array_merge($possibleChars, range(65, 90));
         if ($includeNumbers) $possibleChars = array_merge($possibleChars, range(48, 57));
-        if ($includeSymbols) $possibleChars = array_merge($possibleChars, array(33, 64, 35, 43, 61, 42, 63));
+        if ($includeSymbols) $possibleChars = array_merge($possibleChars,[33, 64, 35, 43, 61, 42, 63]);
 
 
         $string = "";
