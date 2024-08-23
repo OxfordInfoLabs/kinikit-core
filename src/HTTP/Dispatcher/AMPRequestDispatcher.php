@@ -5,11 +5,9 @@ namespace Kinikit\Core\HTTP\Dispatcher;
 use Amp\Http\Client\HttpClientBuilder;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Configuration\MissingConfigurationParameterException;
-use Kinikit\Core\HTTP\HttpRequestErrorException;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use Kinikit\Core\HTTP\Response\Response;
-
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
