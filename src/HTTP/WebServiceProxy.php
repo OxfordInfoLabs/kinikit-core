@@ -11,13 +11,8 @@ namespace Kinikit\Core\HTTP;
 
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Exception\HttpRequestErrorException;
-use Kinikit\Core\Exception\SerialisableException;
 use Kinikit\Core\Serialisation\JSON\JSONToObjectConverter;
 use Kinikit\Core\Serialisation\JSON\ObjectToJSONConverter;
-use Kinikit\Core\Serialisation\XML\ObjectToXMLConverter;
-use Kinikit\Core\Serialisation\XML\XMLToObjectConverter;
-use Kinikit\Core\Util\Logging\Logger;
 
 class WebServiceProxy {
 

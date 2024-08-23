@@ -1,8 +1,8 @@
 <?php
 
-namespace Kinikit\Core\Util\Serialisation\PHP;
+namespace Kinikit\Core\Serialisation\PHP;
 
-use Kinikit\Core\Util\Serialisation\FormatToObjectConverter;
+use Kinikit\Core\Serialisation\FormatToObjectConverter;
 
 class PHPSerialToObjectConverter implements FormatToObjectConverter {
 

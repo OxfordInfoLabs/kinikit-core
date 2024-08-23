@@ -1,6 +1,6 @@
 <?php
 
-namespace Kinikit\Core\Util\Logging;
+namespace Kinikit\Core\Logging;
 
 /**
  * Static timing class which times a block of code passed as an anonymous function and logs the results using OOA Logger.
