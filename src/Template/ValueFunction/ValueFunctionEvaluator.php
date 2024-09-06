@@ -82,11 +82,15 @@ class ValueFunctionEvaluator {
                 }
             }
 
-            if (!is_scalar($value) || is_bool($value)) {
+            if (!is_scalar($value)) {
                 $value = "OBJECT||" . json_encode($value);
             }
 
-            return $value;
+            return match($value) {
+                true => 1,
+                false => 0,
+                default => $value
+            };
 
         }, $string ?? "");
 
