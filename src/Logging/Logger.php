@@ -3,6 +3,7 @@
 namespace Kinikit\Core\Logging;
 
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\DependencyInjection\Container;
 
 
 /**
@@ -11,6 +12,7 @@ use Kinikit\Core\Configuration\Configuration;
  * Class Logger
  */
 class Logger {
+
     const GENERAL = "GENERAL";
     const PROFILING = "PROFILING";
     const ERROR = "\033[31mERROR:\033[0m";
@@ -18,22 +20,9 @@ class Logger {
 
     public static function log($message, $category = self::GENERAL) {
 
-        if ($message instanceof \Exception) {
-            $category = self::ERROR;
-            $message = get_class($message) . "\n" . $message->getMessage();
-        } else if (is_object($message)) {
-            $message = get_class($message) . "\n" . var_export($message, true);
-        } else if (is_array($message)) {
-            $message = "Array\n" . var_export($message, true);
-        }
+        $logger = Container::instance()->get(LoggingProvider::class);
 
-        $message = "\n" . date("d/m/Y H:i:s") . "\t" . $category . "\t" . $message;
-
-        $fileLocation =
-            Configuration::readParameter("log.file") ? Configuration::readParameter("log.file") : "/tmp/application.log";
-
-        // Append a string to the log file.
-        file_put_contents($fileLocation, $message, FILE_APPEND);
+        $logger->log($message, $category);
 
     }
 

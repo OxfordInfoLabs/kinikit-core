@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Logging;
 
+use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
 
@@ -12,7 +13,7 @@ include_once "autoloader.php";
  * Date: 16/07/2014
  * Time: 10:37
  */
-class LoggerTest extends \PHPUnit\Framework\TestCase {
+class LoggerTest extends TestCase {
 
     public function setUp(): void {
         parent::setUp();
