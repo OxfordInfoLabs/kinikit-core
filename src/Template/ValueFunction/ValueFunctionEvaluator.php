@@ -87,8 +87,8 @@ class ValueFunctionEvaluator {
             }
 
             return match($value) {
-                true => 1,
-                false => 0,
+                true => "true",
+                false => "false",
                 default => $value
             };
 
@@ -103,8 +103,12 @@ class ValueFunctionEvaluator {
             $evaluated = json_decode(substr($evaluated, 8), true);
         }
 
-        return $evaluated !== "" ? $evaluated : null;
-
+        return match($evaluated) {
+            "" => null,
+            "true" => true,
+            "false" => false,
+            default => $evaluated
+        };
     }
 
 
