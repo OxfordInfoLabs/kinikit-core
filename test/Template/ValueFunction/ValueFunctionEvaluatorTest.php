@@ -92,4 +92,14 @@ class ValueFunctionEvaluatorTest extends TestCase {
         $this->assertEquals('Bob', $this->evaluator->evaluateString("[['Bobby' | substring 0 3]]"));
 
     }
+
+    public function testCanResolveExpressionWhereValueIsBoolean() {
+        // trust no one!!! Use assertSame where possible
+        $this->assertEquals([false], [null]);
+
+        $true = $this->evaluator->evaluateString("[[dnsSec]]", ["registered" => true, "dnsSec" => true]);
+        $false = $this->evaluator->evaluateString("[[dnsSec]]", ["registered" => true, "dnsSec" => false]);
+        $this->assertSame(false, $false);
+        $this->assertSame(true, $true);
+    }
 }
