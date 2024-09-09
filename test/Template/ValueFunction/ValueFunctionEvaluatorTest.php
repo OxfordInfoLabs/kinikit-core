@@ -96,9 +96,9 @@ class ValueFunctionEvaluatorTest extends TestCase {
 
         $true = $this->evaluator->evaluateString("[[dnsSec]]", ["registered" => true, "dnsSec" => true]);
         $false = $this->evaluator->evaluateString("[[dnsSec]]", ["registered" => true, "dnsSec" => false]);
-        $this->assertSame("0", $false);
-        $this->assertSame("1", $true);
+        $this->assertSame(false, $false);
+        $this->assertSame(true, $true);
         $string = $this->evaluator->evaluateString("[[dnsSec]] and [[registered]]", ["registered" => true, "dnsSec" => false]);
-        $this->assertSame("0 and 1", $string);
+        $this->assertSame("false and true", $string);
     }
 }
