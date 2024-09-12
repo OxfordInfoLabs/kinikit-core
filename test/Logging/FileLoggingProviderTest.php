@@ -40,18 +40,18 @@ class FileLoggingProviderTest extends TestCase {
     }
 
     public function testCanLogExceptionsDirectlyAndTheseGetLoggedAsErrors() {
-        $this->logger->logException(new \Exception("Test exception"));
+        $this->logger->log(new \Exception("Test exception"));
         $this->assertEquals(date("d/m/Y H:i:s") . "\tWARNING\tException\nTest exception", trim(file_get_contents("/tmp/ooacorelog.log")));
     }
 
     public function testArraysAreLoggedUsingVarExportOnNewLine() {
-        $this->logger->logArray([1, 2, 3, 4, 5]);
+        $this->logger->log([1, 2, 3, 4, 5]);
         $this->assertEquals(date("d/m/Y H:i:s") . "\tDEBUG\tArray\n" . var_export([1, 2, 3, 4, 5], true), trim(file_get_contents("/tmp/ooacorelog.log")));
     }
 
     public function testObjectsAreLoggedCorrectly() {
         $obj = new TestAttributePOPO(3, "John");
-        $this->logger->logObject($obj);
+        $this->logger->log($obj);
         $this->assertEquals(date("d/m/Y H:i:s") ."\tDEBUG\tKinikit\Core\Reflection\TestAttributePOPO\n\Kinikit\Core\Reflection\TestAttributePOPO::__set_state(array(\n   'id' => 3,\n   'name' => 'John',\n   'dob' => '01/01/2016',\n   'publicPOPO' => NULL,\n))", trim(file_get_contents("/tmp/ooacorelog.log")));
     }
 

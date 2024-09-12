@@ -39,7 +39,7 @@ class STDOutLoggingProviderTest extends TestCase {
     public function testDoesLogExceptionsCorrectly() {
 
         $e = new TestException("A bad thing happened!");
-        $this->logger->logException($e);
+        $this->logger->log($e);
 
         $this->assertEquals('{"severity":"Warning","message":"TestException: A bad thing happened!"}', StreamIntercept::$cache);
 
@@ -48,7 +48,7 @@ class STDOutLoggingProviderTest extends TestCase {
     public function testDoesLogObjectsCorrectly() {
 
         $obj = new TestAttributePOPO(1, "Jim");
-        $this->logger->logObject($obj);
+        $this->logger->log($obj);
 
         $this->assertEquals('{"severity":"Debug","message":"\\\Kinikit\\\Core\\\Reflection\\\TestAttributePOPO::__set_state(array(\n   \'id\' => 1,\n   \'name\' => \'Jim\',\n   \'dob\' => \'01\/01\/2016\',\n   \'publicPOPO\' => NULL,\n))"}', StreamIntercept::$cache);
 
@@ -57,7 +57,7 @@ class STDOutLoggingProviderTest extends TestCase {
     public function testDoesLogArraysCorrectly() {
 
         $arr = ["apple", "banana", "carrot", 4];
-        $this->logger->logArray($arr);
+        $this->logger->log($arr);
 
         $this->assertEquals('{"severity":"Debug","message":"array (\n  0 => \'apple\',\n  1 => \'banana\',\n  2 => \'carrot\',\n  3 => 4,\n)"}', StreamIntercept::$cache);
 

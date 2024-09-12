@@ -2,39 +2,40 @@
 
 namespace Kinikit\Core\Logging;
 
-use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\DependencyInjection\Container;
 
 /**
  * Logs JSON blocks to STD out – compatible with Google's AppEngine
  */
 class STDOutLoggingProvider implements LoggingProvider {
 
-    public function log(string $message, int $severity): void {
+    public function log(mixed $message, int $severity = 7): void {
 
+        if ($message instanceof \Exception) {
+
+            if ($severity > 4)
+                $severity = 4; // Exceptions have a minimum severity of 4
+
+            $className = $this->getClassName($message);
+            $log = $className . ": " . $message->getMessage();
+            $this->writeLog($log, $severity);
+
+        } else if (is_array($message) || is_object($message)) {
+
+            $log = var_export($message, true);
+            $this->writeLog($log, $severity);
+
+        } else
+            $this->writeLog($message, $severity);
+
+    }
+
+    private function writeLog(string $message, int $severity): void {
         $log = [
             "severity" => Logger::SEVERITY_MAP[$severity],
             "message" => $message
         ];
 
         fwrite(STDOUT, json_encode($log));
-
-    }
-
-    public function logArray(array $array, int $severity): void {
-        $message = var_export($array, true);
-        $this->log($message, $severity);
-    }
-
-    public function logObject($object, int $severity): void {
-        $message = var_export($object, true);
-        $this->log($message, $severity);
-    }
-
-    public function logException(\Exception $exception, int $severity): void {
-        $className = $this->getClassName($exception);
-        $message = $className . ": " . $exception->getMessage();
-        $this->log($message, $severity);
     }
 
     private function getClassName($object): string {

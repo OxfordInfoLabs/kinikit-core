@@ -13,31 +13,10 @@ namespace Kinikit\Core\Logging;
 interface LoggingProvider {
 
     /**
-     * @param string $message
+     * @param mixed $message
      * @param int $severity
      * @return void
      */
-    public function log(string $message, int $severity): void;
-
-    /**
-     * @param array $array
-     * @param int $severity
-     * @return void
-     */
-    public function logArray(array $array, int $severity): void;
-
-    /**
-     * @param $object
-     * @param int $severity
-     * @return void
-     */
-    public function logObject($object, int $severity): void;
-
-    /**
-     * @param \Exception $exception
-     * @param int $severity
-     * @return void
-     */
-    public function logException(\Exception $exception, int $severity): void;
+    public function log($message, int $severity): void;
 
 }

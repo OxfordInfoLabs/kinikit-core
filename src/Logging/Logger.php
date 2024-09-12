@@ -31,16 +31,7 @@ class Logger {
     public static function log(mixed $message, int $severity = 7): void {
 
         $logger = Container::instance()->get(LoggingProvider::class);
-
-        if ($message instanceof \Exception) {
-            if ($severity > 4) $severity = 4; // Exceptions have a minimum severity of 4
-            $logger->logException($message, $severity);
-        } else if (is_array($message))
-            $logger->logArray($message, $severity);
-        else if (is_object($message))
-            $logger->logObject($message, $severity);
-        else
-            $logger->log($message, $severity);
+        $logger->log($message, $severity);
 
     }
 
