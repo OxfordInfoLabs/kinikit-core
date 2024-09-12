@@ -64,12 +64,12 @@ class Parameter {
         $reflectionType = $reflectionParameter->getType();
         if ($reflectionType instanceof \ReflectionUnionType) {
             $type = join("|", $reflectionType->getTypes());
-            if ($reflectionType->allowsNull()){
+            if ($reflectionType->allowsNull()) {
                 $nullablePrefix = "?";
             }
         } else if ($reflectionParameter->getType() &&
             !str_contains($reflectionType->getName() ?? "", "array")
-        ){
+        ) {
             if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
                 list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
 
@@ -107,10 +107,11 @@ class Parameter {
             }
         }
 
-        if ($this->explicitlyTyped && $reflectionParameter->allowsNull()){
+        if ($this->explicitlyTyped && $reflectionParameter->allowsNull()) {
             $nullablePrefix = "?";
         }
 
+        if ($type == "mixed") $nullablePrefix = "";     // Type mixed is nullable but cannot be prefixed with a '?'
         $this->type = $nullablePrefix . $type . $arraySuffix;
 
     }
