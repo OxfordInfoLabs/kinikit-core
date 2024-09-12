@@ -10,35 +10,35 @@ use Kinikit\Core\DependencyInjection\Container;
  */
 class STDOutLoggingProvider implements LoggingProvider {
 
-    private ObjectBinder $objectBinder;
+    public function log(string $message, int $severity): void {
 
-    public function __construct() {
-        $this->objectBinder = Container::instance()->get(ObjectBinder::class);
+        $log = [
+            "severity" => Logger::SEVERITY_MAP[$severity],
+            "message" => $message
+        ];
+
+        fwrite(STDOUT, json_encode($log));
+
     }
 
-    public function log($message, $category = null): void {
+    public function logArray(array $array, int $severity): void {
+        $message = var_export($array, true);
+        $this->log($message, $severity);
+    }
 
-        $log = [];
+    public function logObject($object, int $severity): void {
+        $message = var_export($object, true);
+        $this->log($message, $severity);
+    }
 
-        if ($message instanceof \Exception) {
-            // Do Exception-y things
-            $log["severity"] = "warning";
-            $log["message"] = $message->getMessage();
-            $log["exception_type"] = get_class($message);
-            fwrite(STDOUT, json_encode($log));
-        } else if (is_object($message)) {
-            // Do object-y things
-            $log["type"] = get_class($message);
-            $log["object" ] = $this->objectBinder->bindToArray($message);
-            fwrite(STDOUT, json_encode($log));
-        } else if (is_array($message)) {
-            // Do array-y things
-            $log = var_export($message, true);
-            fwrite(STDOUT, $log);
-        } else {
-            // Assuming text based
-            fwrite(STDOUT, $message);
-        }
+    public function logException(\Exception $exception, int $severity): void {
+        $className = $this->getClassName($exception);
+        $message = $className . ": " . $exception->getMessage();
+        $this->log($message, $severity);
+    }
 
+    private function getClassName($object): string {
+        $classNameSegments = explode("\\", get_class($object));
+        return array_pop($classNameSegments);
     }
 }

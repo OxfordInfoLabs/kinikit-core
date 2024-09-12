@@ -32,34 +32,34 @@ class STDOutLoggingProviderTest extends TestCase {
 
         $this->logger->log("A simple message");
 
-        $this->assertEquals("A simple message", StreamIntercept::$cache);
+        $this->assertEquals('{"severity":"Debug","message":"A simple message"}', StreamIntercept::$cache);
 
     }
 
     public function testDoesLogExceptionsCorrectly() {
 
-        $e = new \Exception("A bad thing happened!");
-        $this->logger->log($e);
+        $e = new TestException("A bad thing happened!");
+        $this->logger->logException($e);
 
-        $this->assertEquals('{"severity":"warning","message":"A bad thing happened!","exception_type":"Exception"}', StreamIntercept::$cache);
+        $this->assertEquals('{"severity":"Warning","message":"TestException: A bad thing happened!"}', StreamIntercept::$cache);
 
     }
 
     public function testDoesLogObjectsCorrectly() {
 
         $obj = new TestAttributePOPO(1, "Jim");
-        $this->logger->log($obj);
+        $this->logger->logObject($obj);
 
-        $this->assertEquals('{"type":"Kinikit\\\Core\\\Reflection\\\TestAttributePOPO","object":{"id":1,"name":"Jim","special":true,"publicPOPO":null}}', StreamIntercept::$cache);
+        $this->assertEquals('{"severity":"Debug","message":"\\\Kinikit\\\Core\\\Reflection\\\TestAttributePOPO::__set_state(array(\n   \'id\' => 1,\n   \'name\' => \'Jim\',\n   \'dob\' => \'01\/01\/2016\',\n   \'publicPOPO\' => NULL,\n))"}', StreamIntercept::$cache);
 
     }
 
     public function testDoesLogArraysCorrectly() {
 
         $arr = ["apple", "banana", "carrot", 4];
-        $this->logger->log($arr);
+        $this->logger->logArray($arr);
 
-        $this->assertEquals("array (\n  0 => 'apple',\n  1 => 'banana',\n  2 => 'carrot',\n  3 => 4,\n)", StreamIntercept::$cache);
+        $this->assertEquals('{"severity":"Debug","message":"array (\n  0 => \'apple\',\n  1 => \'banana\',\n  2 => \'carrot\',\n  3 => 4,\n)"}', StreamIntercept::$cache);
 
     }
 

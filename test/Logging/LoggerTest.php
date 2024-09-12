@@ -2,6 +2,9 @@
 
 namespace Kinikit\Core\Logging;
 
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Reflection\TestAttributePOPO;
+use Kinikit\Core\Testing\MockObjectProvider;
 use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
@@ -15,42 +18,55 @@ include_once "autoloader.php";
  */
 class LoggerTest extends TestCase {
 
+    private LoggingProvider $mockLoggingProvider;
+
+    private LoggingProvider $defaultLoggingProvider;
+
     public function setUp(): void {
-        parent::setUp();
-        passthru("rm -rf /tmp/ooacorelog.log");
+        $this->mockLoggingProvider = MockObjectProvider::mock(LoggingProvider::class);
+
+        $this->defaultLoggingProvider = Container::instance()->get(LoggingProvider::class);
+        Container::instance()->set(LoggingProvider::class, $this->mockLoggingProvider);
     }
 
-    public function testCanLogSimpleGeneralStringsDirectlyToLogFile() {
-
-        Logger::log("Hello World");
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tGENERAL\tHello World", trim(file_get_contents("/tmp/ooacorelog.log")));
-
-        Logger::log("Gumdrop");
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tGENERAL\tHello World\n" . date("d/m/Y H:i:s") . "\tGENERAL\tGumdrop", trim(file_get_contents("/tmp/ooacorelog.log")));
-
+    public function tearDown(): void {
+        Container::instance()->set(LoggingProvider::class, $this->defaultLoggingProvider);
     }
 
+    public function testLoggerCallsCorrectFunctionForStrings() {
+        Logger::log("A log");
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("log", ["A log", 7]));
 
-    public function testCanLogStringsWithCustomCategoryToLogFile() {
-        Logger::log("Custom Test", "BESPOKE");
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tBESPOKE\tCustom Test", trim(file_get_contents("/tmp/ooacorelog.log")));
-
-        Logger::log("Another One", "MAIL");
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tBESPOKE\tCustom Test\n" . date("d/m/Y H:i:s") . "\tMAIL\tAnother One", trim(file_get_contents("/tmp/ooacorelog.log")));
+        Logger::log("Another log", 5);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("log", ["Another log", 5]));
     }
 
-    public function testCanLogExceptionsDirectlyAndTheseGetLoggedAsErrors() {
-        Logger::log(new \Exception("Test exception"));
-        $this->assertEquals(date("d/m/Y H:i:s") . "\t\033[31mERROR:\033[0m\tException\nTest exception", trim(file_get_contents("/tmp/ooacorelog.log")));
+    public function testLoggerCallsCorrectFunctionForArrays() {
+        Logger::log([1, 2, 3]);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logArray", [[1, 2, 3], 7]));
+
+        Logger::log([4, 5, 6], 6);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logArray", [[4, 5, 6], 6]));
     }
 
-    public function testArraysAreLoggedUsingVarExportOnNewLine() {
-        Logger::log(array(1, 2, 3, 4, 5));
-        $this->assertEquals(date("d/m/Y H:i:s") . "\tGENERAL\tArray\n" . var_export(array(1, 2, 3, 4,
-                5), true), trim(file_get_contents("/tmp/ooacorelog.log")));
+    public function testLoggerCallsCorrectFunctionForObjects() {
+        $obj1 = new TestAttributePOPO(1, "Steve");
+        Logger::log($obj1);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logObject", [$obj1, 7]));
+
+        $obj2 = new TestAttributePOPO(2, "Fred");
+        Logger::log($obj2, 3);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logObject", [$obj2, 3]));
     }
 
+    public function testLoggerCallsCorrectFunctionForExceptions() {
+        $e1 = new \Exception("Uh oh!");
+        Logger::log($e1);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logException", [$e1, 4]));
 
-
+        $e2 = new TestException("Oh dear!");
+        Logger::log($e2, 2);
+        $this->assertTrue($this->mockLoggingProvider->methodWasCalled("logException", [$e2, 2]));
+    }
 
 }

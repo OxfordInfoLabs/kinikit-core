@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\Logging;
 
-use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 
 
@@ -13,16 +12,35 @@ use Kinikit\Core\DependencyInjection\Container;
  */
 class Logger {
 
-    const GENERAL = "GENERAL";
-    const PROFILING = "PROFILING";
-    const ERROR = "\033[31mERROR:\033[0m";
-    const WARNING = "\033[33mWARNING:\033[0m";
+    const SEVERITY_MAP = [
+        0 => "Emergency",
+        1 => "Alert",
+        2 => "Critical",
+        3 => "Error",
+        4 => "Warning",
+        5 => "Notice",
+        6 => "Informational",
+        7 => "Debug"
+    ];
 
-    public static function log($message, $category = self::GENERAL) {
+    /**
+     * @param mixed $message
+     * @param int $severity
+     * @return void
+     */
+    public static function log(mixed $message, int $severity = 7): void {
 
         $logger = Container::instance()->get(LoggingProvider::class);
 
-        $logger->log($message, $category);
+        if ($message instanceof \Exception) {
+            if ($severity > 4) $severity = 4; // Exceptions have a minimum severity of 4
+            $logger->logException($message, $severity);
+        } else if (is_array($message))
+            $logger->logArray($message, $severity);
+        else if (is_object($message))
+            $logger->logObject($message, $severity);
+        else
+            $logger->log($message, $severity);
 
     }
 

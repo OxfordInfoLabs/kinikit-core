@@ -43,7 +43,7 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
         $maxResponseBytes = Configuration::readParameter("amp.http.max.response.bytes");
         if (!$maxResponseBytes){
             $e = new MissingConfigurationParameterException("amp.http.max.response.bytes");
-            Logger::log($e->getMessage(), Logger::WARNING);
+            Logger::log($e->getMessage(), 4);
             $maxResponseBytes = 10_000_000;
         }
 
