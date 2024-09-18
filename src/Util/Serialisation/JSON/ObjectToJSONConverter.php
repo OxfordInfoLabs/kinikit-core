@@ -25,7 +25,7 @@ class ObjectToJSONConverter implements ObjectToFormatConverter {
         $object = $this->normaliseToArrayForm($object, $ignoreNonSerialisables);
 
         // Then simply encode using PHP JSON libraries.
-        return json_encode($object, $prettyPrint ? JSON_PRETTY_PRINT : null);
+        return json_encode($object, $prettyPrint ? JSON_PRETTY_PRINT : 0);
     }
 
     /**
