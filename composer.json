@@ -14,7 +14,7 @@
   "homepage": "https://kinikit.com",
   "type": "library",
   "require": {
-    "php": "^5.6|^7.0",
+    "php": "^5.6|^7.0|^8.0",
     "ext-iconv": "*",
     "ext-libxml": "*",
     "ext-mbstring": "*"
