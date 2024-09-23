@@ -10,6 +10,10 @@ namespace Kinikit\Core\Util;
  */
 class StringUtils {
 
+    const MATCH_WITH_NUMBERS = "/[0-9\pL]+/u";
+    const MATCH_WITHOUT_NUMBERS = "/[\pL]+/u";
+
+
     /**
      * Generate a random string of the given length (for e.g. passwords etc).
      * Optional flags allow for capital letters, numbers and symbols
@@ -40,15 +44,15 @@ class StringUtils {
     /**
      * Convert a string with spaces etc to Camel Case
      *
-     * @param $string
+     * @param string|null $string
      * @return string
      */
-    public static function convertToCamelCase($string) {
+    public static function convertToCamelCase(?string $string, bool $includeNumbers = false): string {
 
         $string = $string ?? "";
 
         // Grab all words first of all in a unicode supporting manner
-        preg_match_all('/\pL+/u', $string, $allWords);
+        preg_match_all($includeNumbers ? self::MATCH_WITH_NUMBERS : self::MATCH_WITHOUT_NUMBERS, $string, $allWords);
 
         $newString = "";
         foreach ($allWords[0] as $index => $word) {
@@ -95,13 +99,14 @@ class StringUtils {
      * @param $string
      * @return string
      */
-    public static function convertToSnakeCase($string) {
+    public static function convertToSnakeCase($string, bool $includeNumbers = false) {
 
         // Undo any camel case
         $string = self::convertFromCamelCase($string);
 
         // Grab all words first of all in a unicode supporting manner
-        preg_match_all('/[0-9\pL]+/u', $string, $allWords);
+        preg_match_all($includeNumbers ? self::MATCH_WITH_NUMBERS : self::MATCH_WITHOUT_NUMBERS,
+            $string, $allWords);
 
         $newString = implode("_", $allWords[0]);
 

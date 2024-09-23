@@ -37,8 +37,8 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
             $headersArray["Accept-Encoding"] = "deflate";
         }
         $ampRequest->setHeaders($headersArray);
-        $ampRequest->setTransferTimeout(120);
-        $ampRequest->setInactivityTimeout(120);
+        $ampRequest->setTransferTimeout($request->getTimeout() ?? 120);
+        $ampRequest->setInactivityTimeout($request->getTimeout() ?? 120);
 
         $maxResponseBytes = Configuration::readParameter("amp.http.max.response.bytes");
         if (!$maxResponseBytes){
