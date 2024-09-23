@@ -97,6 +97,7 @@ class StringUtils {
      * Convert a string with spaces to snake_case
      *
      * @param $string
+     * @return string
      */
     public static function convertToSnakeCase($string, bool $includeNumbers = false) {
 

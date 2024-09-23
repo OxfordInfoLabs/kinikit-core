@@ -2,6 +2,8 @@
 
 namespace Kinikit\Core\Template\ValueFunction;
 
+use UnexpectedValueException;
+
 class ValueFunctionEvaluator {
 
     /**
@@ -51,9 +53,7 @@ class ValueFunctionEvaluator {
      * @param array $model
      */
     public function evaluateString($string, $model = [], $delimiters = ["[[", "]]"]) {
-
         $evaluated = preg_replace_callback("/" . preg_quote($delimiters[0]) . "(.*?)" . preg_quote($delimiters[1]) . "/", function ($matches) use ($model, $delimiters) {
-
             $exploded = explode(" | ", $matches[1]);
 
             $expression = trim($exploded[0]);
@@ -86,17 +86,29 @@ class ValueFunctionEvaluator {
                 $value = "OBJECT||" . json_encode($value);
             }
 
-            return $value;
+            return match($value) {
+                true => "true",
+                false => "false",
+                default => $value
+            };
 
         }, $string ?? "");
 
         // Decode if applicable
-        if (substr($evaluated, 0, 8) == "OBJECT||") {
+        if (str_starts_with($evaluated, "OBJECT||")) {
+            $nObjects = preg_match_all("/OBJECT\|\|/", $evaluated);
+            if ($nObjects > 1){
+                throw new UnexpectedValueException("Cannot have multiple expressions containing objects!");
+            }
             $evaluated = json_decode(substr($evaluated, 8), true);
         }
 
-        return $evaluated !== "" ? $evaluated : null;
-
+        return match($evaluated) {
+            "" => null,
+            "true" => true,
+            "false" => false,
+            default => $evaluated
+        };
     }
 
 

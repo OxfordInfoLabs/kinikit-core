@@ -98,7 +98,6 @@ class Container {
      */
     public function get($className) {
         return $this->__doGet($className);
-
     }
 
 

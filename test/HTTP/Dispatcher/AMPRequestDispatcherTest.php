@@ -106,4 +106,12 @@ class AMPRequestDispatcherTest extends TestCase {
         $array = json_decode($result->getBody(), true);
         $this->assertTrue($array["gzipped"]);
     }
+
+    public function testGzippedRequest(){
+        $url = "compress.zlib://http://ftp.afrinic.net/dbase/afrinic.db.gz";
+        $request = new Request($url, Request::METHOD_GET);
+        $result = $this->dispatcher->dispatch($request);
+        $top = substr($result->getBody(), 0, 1000);
+        $this->assertStringContainsString("AFRINIC", $top);
+    }
 }
