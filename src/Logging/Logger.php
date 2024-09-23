@@ -7,8 +7,6 @@ use Kinikit\Core\DependencyInjection\Container;
 
 /**
  * Simple logger class for writing log entries to the standard configured log file.
- *
- * Class Logger
  */
 class Logger {
 
