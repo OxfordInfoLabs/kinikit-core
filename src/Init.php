@@ -72,9 +72,18 @@ class Init {
      * @throws ErrorException
      */
     public function genericErrorHandler($severity, $message, $file, $line) {
-        Logger::log($message . ": at line $line in file $file");
+        $logEntry = $message . ": at line $line in file $file";
+
+        $severityLevel = match ($severity) {
+            E_NOTICE, E_USER_ERROR, E_DEPRECATED => 5,
+            default => 4
+        };
+
+        Logger::log($logEntry, $severityLevel);
+
         if ($severity !== E_DEPRECATED)
             throw new ErrorException($message, 0, $severity, $file, $line);
+
     }
 
 

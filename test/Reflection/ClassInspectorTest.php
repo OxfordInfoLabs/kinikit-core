@@ -8,6 +8,7 @@ use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Testing\MockObjectProvider;
+use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
 
@@ -16,7 +17,7 @@ include_once "autoloader.php";
  *
  * Class ClassInspectorTest
  */
-class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
+class ClassInspectorTest extends TestCase {
 
     public function testCanGetClassLevelAttributesFromInspector() {
 
@@ -77,9 +78,26 @@ class ClassInspectorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(new Method($reflectionClass->getMethod("setDob"), $annotations->getMethodAnnotations()["setDob"], $classInspector), $classInspector->getPublicMethod("setDob"));
         $this->assertEquals(new Method($reflectionClass->getMethod("clone"), $annotations->getMethodAnnotations()["clone"], $classInspector), $classInspector->getPublicMethod("clone"));
 
-
     }
 
+    public function testDoesIgnoreDeprecatedMethodsOnGetAllMethods() {
+
+        $classInspector = new ClassInspector(\ReflectionParameter::class);
+
+        $reflectionClass = new \ReflectionClass(\ReflectionParameter::class);
+        $parser = new ClassAnnotationParser();
+
+        $annotations = $parser->parse(\ReflectionParameter::class);
+
+        // Check constructor
+        $this->assertEquals(new Method($reflectionClass->getConstructor(), $annotations->getMethodAnnotations()["__construct"], $classInspector), $classInspector->getConstructor());
+
+
+        // Check public methods
+        $publicMethods = $classInspector->getPublicMethods();
+        $this->assertEquals(18, sizeof($publicMethods)); // The class ReflectionParameter has 22 public methods, of which 4 are deprecated.
+
+    }
 
     public function testCanGetGetterAndSetterMembersForClass() {
 
