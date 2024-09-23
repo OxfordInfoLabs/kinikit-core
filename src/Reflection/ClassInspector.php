@@ -194,6 +194,11 @@ class ClassInspector {
         if (!isset($this->publicMethods)) {
             $this->publicMethods = array();
             foreach ($this->reflectionClass->getMethods() as $method) {
+
+                if ($method->isDeprecated()) {
+                    continue;
+                }
+
                 if ($method->isPublic() && !$method->isConstructor()) {
                     $methodName = $method->getName();
                     $methodInspector = $this->getMethodInspector($methodName);
