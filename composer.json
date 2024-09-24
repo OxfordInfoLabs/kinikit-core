@@ -25,7 +25,8 @@
     "amphp/parallel": "^2.2",
     "amphp/socket": "*",
     "amphp/http": "*",
-    "amphp/http-client": "*"
+    "amphp/http-client": "*",
+    "google/cloud-logging": "dev-main"
   },
   "autoload": {
     "psr-4": {
