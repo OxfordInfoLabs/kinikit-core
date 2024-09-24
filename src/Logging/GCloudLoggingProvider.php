@@ -8,7 +8,7 @@ use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 
-class GCloudLogger implements LoggingProvider {
+class GCloudLoggingProvider implements LoggingProvider {
 
     private PsrLogger $logger;
 
