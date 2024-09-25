@@ -4,6 +4,9 @@ namespace Kinikit\Core\Template\ValueFunction;
 
 use UnexpectedValueException;
 
+/**
+ * @noProxy
+ */
 class ValueFunctionEvaluator {
 
     /**
