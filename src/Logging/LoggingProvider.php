@@ -7,6 +7,7 @@ namespace Kinikit\Core\Logging;
  *
  * @implementation file Kinikit\Core\Logging\FileLoggingProvider
  * @implementation stdout Kinikit\Core\Logging\STDOutLoggingProvider
+ * @implementation gcloud Kinikit\Core\Logging\GCloudLoggingProvider
  *
  * @defaultImplementation Kinikit\Core\Logging\FileLoggingProvider
  */
