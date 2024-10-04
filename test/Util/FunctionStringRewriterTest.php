@@ -173,4 +173,20 @@ class FunctionStringRewriterTest extends TestCase {
         $this->assertEquals(["two", "three", "one"], $params);
     }
 
+    public function testCanSupportVariadicParametersForCommaSeparatedList() {
+
+        // Default value case
+        $result = FunctionStringRewriter::rewrite("function()", "function", "COUNT(*) OVER (PARTITION BY $1...)", ["null"]);
+        $this->assertEquals("COUNT(*) OVER (PARTITION BY null)", $result);
+
+        // Two arguments
+        $result = FunctionStringRewriter::rewrite("function(this, that)", "function", "COUNT(*) OVER (PARTITION BY $1...)", ["null"]);
+        $this->assertEquals("COUNT(*) OVER (PARTITION BY this, that)", $result);
+
+        // 4 Arguments
+        $result = FunctionStringRewriter::rewrite("function(this, that, the, other)", "function", "COUNT(*) OVER (PARTITION BY $1...)", ["null"]);
+        $this->assertEquals("COUNT(*) OVER (PARTITION BY this, that, the, other)", $result);
+
+    }
+
 }

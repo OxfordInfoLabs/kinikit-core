@@ -2,38 +2,34 @@
 
 namespace Kinikit\Core\Logging;
 
-use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\DependencyInjection\Container;
 
 
 /**
  * Simple logger class for writing log entries to the standard configured log file.
- *
- * Class Logger
  */
 class Logger {
-    const GENERAL = "GENERAL";
-    const PROFILING = "PROFILING";
-    const ERROR = "\033[31mERROR:\033[0m";
-    const WARNING = "\033[33mWARNING:\033[0m";
 
-    public static function log($message, $category = self::GENERAL) {
+    const SEVERITY_MAP = [
+        0 => "Emergency",
+        1 => "Alert",
+        2 => "Critical",
+        3 => "Error",
+        4 => "Warning",
+        5 => "Notice",
+        6 => "Informational",
+        7 => "Debug"
+    ];
 
-        if ($message instanceof \Exception) {
-            $category = self::ERROR;
-            $message = get_class($message) . "\n" . $message->getMessage();
-        } else if (is_object($message)) {
-            $message = get_class($message) . "\n" . var_export($message, true);
-        } else if (is_array($message)) {
-            $message = "Array\n" . var_export($message, true);
-        }
+    /**
+     * @param mixed $message
+     * @param int $severity
+     * @return void
+     */
+    public static function log(mixed $message, int $severity = 7): void {
 
-        $message = "\n" . date("d/m/Y H:i:s") . "\t" . $category . "\t" . $message;
-
-        $fileLocation =
-            Configuration::readParameter("log.file") ? Configuration::readParameter("log.file") : "/tmp/application.log";
-
-        // Append a string to the log file.
-        file_put_contents($fileLocation, $message, FILE_APPEND);
+        $logger = Container::instance()->get(LoggingProvider::class);
+        $logger->log($message, $severity);
 
     }
 

@@ -55,18 +55,31 @@ class FunctionStringRewriter {
             // Collect new function params
             $newFunctionParams = [];
 
-            // Substitute values
-            $newFunctionString = preg_replace_callback("/\\$([0-9])/", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
+            // Substitute regular values
+            $newFunctionString = preg_replace_callback("/\\$([0-9])([^\.])/", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
                 $placeholderIndex = $replacePlaceholders[1] - 1;
                 if (isset($functionArgs[$placeholderIndex])) {
                     $newFunctionParams = array_merge($newFunctionParams, $argParams[$placeholderIndex]);
-                    return $functionArgs[$placeholderIndex];
+                    return $functionArgs[$placeholderIndex].$replacePlaceholders[2];
+                } else if (isset($defaultValues[$placeholderIndex])) {
+                    return $defaultValues[$placeholderIndex].$replacePlaceholders[2];
+                } else {
+                    throw new InsufficientParametersException("Number of default values doesn't match.");
+                }
+            }, $replace);
+
+            // Substitute variadic values
+            $newFunctionString = preg_replace_callback("/\\$([0-9])\.\.\./", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
+                $placeholderIndex = $replacePlaceholders[1] - 1;
+                if (isset($functionArgs[$placeholderIndex])) {
+                    return join(", ", array_slice($functionArgs, $placeholderIndex));
                 } else if (isset($defaultValues[$placeholderIndex])) {
                     return $defaultValues[$placeholderIndex];
                 } else {
                     throw new InsufficientParametersException("Number of default values doesn't match.");
                 }
-            }, $replace);
+            }, $newFunctionString);
+
 
             // Replace the string
             $string = substr($string, 0, $matchOffset) . $newFunctionString . substr($string, $matchOffset + $functionStringLength);

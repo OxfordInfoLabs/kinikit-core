@@ -10,8 +10,9 @@ use Kinikit\Core\Reflection\ClassInspectorProvider;
  * This processes the search paths in the file resolver to identify the base namespace
  * for included libraries.
  *
- *
+ * @noProxy
  * @package Kinikit\Core\Configuration
+ *
  */
 class SearchNamespaces {
 

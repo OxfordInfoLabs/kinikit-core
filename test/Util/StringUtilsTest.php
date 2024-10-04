@@ -93,6 +93,12 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("happyHappyJoyJoy", StringUtils::convertToCamelCase("happy_happy_joy_joy"));
 
 
+        $this->assertEquals("melancholy", StringUtils::convertToCamelCase("Melancholy 123"));
+
+        // Only include numbers if flag set
+        $this->assertEquals("melancholy123", StringUtils::convertToCamelCase("Melancholy 123", true));
+
+        $this->assertEquals("aWHO", StringUtils::convertToCamelCase("A WHO"));
     }
 
     public function testCanConvertStringFromCamelCase() {
@@ -133,8 +139,10 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
         // Check for hyphenated formats
         $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happy_happy_joy_joy"));
 
-        // Check numbers are retained
-        $this->assertEquals("happy_happy_joy_joy_123", StringUtils::convertToSnakeCase("happyHappyJoyJoy123"));
+        // Check numbers are retained if include numbers set
+        $this->assertEquals("happy_happy_joy_joy", StringUtils::convertToSnakeCase("happyHappyJoyJoy123"));
+
+        $this->assertEquals("happy_happy_joy_joy_123", StringUtils::convertToSnakeCase("happyHappyJoyJoy123", true));
 
     }
 
