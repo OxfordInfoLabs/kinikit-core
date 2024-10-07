@@ -9,7 +9,6 @@
 namespace Kinikit\Core\Exception;
 
 
-use Kinikit\Core\Util\Logging\Logger;
 use Kinikit\Core\Util\Serialisation\Serialisable;
 use Throwable;
 
@@ -32,7 +31,7 @@ class SerialisableException extends \Exception {
      * @param integer $code
      * @param \Exception $sourceException
      */
-    public function __construct($message = null, $code = 0, $sourceException = null) {
+    public function __construct($message = null, $code = null, $sourceException = null) {
         if (!$message && $sourceException) {
             $message = "Non-Serialisable Exception Raised";
         }
@@ -44,9 +43,7 @@ class SerialisableException extends \Exception {
             $this->sourceException["line"] = $sourceException->getLine();
             $this->sourceException["trace"] = $sourceException->getTraceAsString();
         }
-
-
-        parent::__construct($message, $code ?? 0);
+        parent::__construct($message, $code);
 
 
     }
