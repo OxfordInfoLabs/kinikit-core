@@ -29,7 +29,7 @@ class ExternalCommandProcessor {
         if ($throwOnError && $resultCode != 0){
             $time = microtime(true);
             $output = join("\n", $outputArray);
-            Logger::log("$time External Command Processor failed on $command with error code $resultCode | Command output:\n$output");
+            Logger::log("$time External Command Processor failed on $command with error code $resultCode | Command output:\n$output", 4);
             throw new ExternalCommandException("Command returned error code $resultCode at time $time. See logs for details.");
         }
         return $resultCode;
