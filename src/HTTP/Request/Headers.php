@@ -12,10 +12,9 @@ namespace Kinikit\Core\HTTP\Request;
 class Headers {
 
     /**
-     * @var string[string]
+     * @var string[]
      */
-    private $headers;
-
+    private array $headers;
     const ACCEPT = "Accept";
     const ACCEPT_CHARSET = "Accept-Charset";
     const ACCEPT_DATETIME = "Accept-Datetime";
@@ -49,7 +48,7 @@ class Headers {
      * Headers constructor.
      * @param array $headers
      */
-    public function __construct($headers = []) {
+    public function __construct(array $headers = []) {
         $this->headers = $headers;
     }
 
@@ -60,14 +59,14 @@ class Headers {
      * @param string $headerName
      * @param string $value
      */
-    public function set($headerName, $value) {
+    public function set(string $headerName, string $value): void {
         $this->headers[$headerName] = $value;
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public function getHeaders() {
+    public function getHeaders(): array {
         return $this->headers;
     }
 

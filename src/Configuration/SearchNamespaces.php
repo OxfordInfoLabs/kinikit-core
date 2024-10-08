@@ -19,17 +19,17 @@ class SearchNamespaces {
     /**
      * @var FileResolver
      */
-    private $fileResolver;
+    private FileResolver $fileResolver;
 
     /**
      * @var ClassInspectorProvider
      */
-    private $classInspectorProvider;
+    private ClassInspectorProvider $classInspectorProvider;
 
     /**
      * @var string[]
      */
-    private $namespaces;
+    private array $namespaces = [];
 
 
     /**
@@ -38,7 +38,7 @@ class SearchNamespaces {
      * @param FileResolver $fileResolver
      * @param ClassInspectorProvider $classInspectorProvider
      */
-    public function __construct($fileResolver, $classInspectorProvider) {
+    public function __construct(FileResolver $fileResolver, ClassInspectorProvider $classInspectorProvider) {
         $this->fileResolver = $fileResolver;
         $this->classInspectorProvider = $classInspectorProvider;
     }
@@ -49,14 +49,15 @@ class SearchNamespaces {
      *
      * @return string[]
      */
-    public function getNamespaces() {
+    public function getNamespaces(): array {
 
         // Gather search namespaces
         if (!$this->namespaces) {
             $this->namespaces = [];
             foreach ($this->fileResolver->getSearchPaths() as $searchPath) {
-                if ($searchPath == ".")
+                if ($searchPath === ".") {
                     continue;
+                }
 
                 // Look for a bootstrap file to detect search namespace.
                 if (file_exists($searchPath . "/Bootstrap.php")) {

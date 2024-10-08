@@ -15,32 +15,21 @@ class Parameter {
      *
      * @var ReflectionParameter
      */
-    private $reflectionParameter;
-
-
-    /**
-     * The method inspector for the method which this parameter is called upon.
-     *
-     * @var Method
-     */
-    private $method;
-
+    private ReflectionParameter $reflectionParameter;
 
     /**
      * The type for this parameter
      *
      * @var string
      */
-    private $type;
-
+    private string $type;
 
     /**
      * An indicator as to whether or not this parameter is explicitly typed.
      *
      * @var bool
      */
-    private $explicitlyTyped;
-
+    private bool $explicitlyTyped;
 
     /**
      * Construct with the reflection parameter and the ownning method inspector.
@@ -49,9 +38,8 @@ class Parameter {
      * @param ReflectionParameter $reflectionParameter
      * @param Method $method
      */
-    public function __construct($reflectionParameter, $method) {
+    public function __construct(ReflectionParameter $reflectionParameter, Method $method) {
         $this->reflectionParameter = $reflectionParameter;
-        $this->method = $method;
 
         $declaredNamespaceClasses = $method->getDeclaringClassInspector()->getDeclaredNamespaceClasses();
 
@@ -63,7 +51,7 @@ class Parameter {
         $this->explicitlyTyped = false;
         $reflectionType = $reflectionParameter->getType();
         if ($reflectionType instanceof \ReflectionUnionType) {
-            $type = join("|", $reflectionType->getTypes());
+            $type = implode("|", $reflectionType->getTypes());
             if ($reflectionType->allowsNull()) {
                 $nullablePrefix = "?";
             }
@@ -71,17 +59,17 @@ class Parameter {
             !str_contains($reflectionType->getName() ?? "", "array")
         ) {
             if ($reflectionParameter->getType() instanceof \ReflectionNamedType) {
-                list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
+                [$type, $arraySuffix] = $this->stripArrayTypeSuffix($reflectionParameter->getType()->getName());
 
                 if (!Primitive::isStringPrimitiveType($type))
                     $type = "\\" . ltrim(trim($type), "\\");
             } else {
-                list($type, $arraySuffix) = $this->stripArrayTypeSuffix($reflectionParameter->getType());
+                [$type, $arraySuffix] = $this->stripArrayTypeSuffix($reflectionParameter->getType());
             }
             $this->explicitlyTyped = true;
         } else { // Untyped or array - refer to annotations
 
-            $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
+            $methodAnnotations = $method->getMethodAnnotations()["param"] ?? [];
 
             foreach ($methodAnnotations as $annotation) {
                 if (preg_match("/.+?\\$" . $reflectionParameter->getName() . "($|\\[| )/", $annotation->getValue())) {
@@ -90,15 +78,13 @@ class Parameter {
                     $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
                     $type = explode(" ", $type)[0];
 
-                    list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
+                    [$type, $arraySuffix] = $this->stripArrayTypeSuffix($type);
 
                     if (!Primitive::isStringPrimitiveType($type)) {
-                        if (isset($declaredNamespaceClasses[$type]))
+                        if (isset($declaredNamespaceClasses[$type])) {
                             $type = $declaredNamespaceClasses[$type];
-                        else {
-                            if (substr($type, 0, 1) != "\\") {
-                                $type = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $type;
-                            }
+                        } else if (!str_starts_with($type, "\\")) {
+                            $type = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $type;
                         }
 
                     }
@@ -111,56 +97,64 @@ class Parameter {
             $nullablePrefix = "?";
         }
 
-        if ($type == "mixed") $nullablePrefix = "";     // Type mixed is nullable but cannot be prefixed with a '?'
+        if ($type === "mixed") {    // Type mixed is nullable but cannot be prefixed with a '?'
+            $nullablePrefix = "";
+        }
         $this->type = $nullablePrefix . $type . $arraySuffix;
 
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getName() {
+    public function getName(): string {
         return $this->reflectionParameter->getName();
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getType() {
+    public function getType(): string {
         return $this->type;
     }
 
-    public function isNullable() {
+    /**
+     * @return bool
+     */
+    public function isNullable(): bool {
         return str_starts_with(trim($this->type), "?");
     }
 
     /**
      * Is this parameter an array type
      */
-    public function isArray() {
+    public function isArray(): bool {
         return preg_match("/\[.*\]$/", $this->type) || str_contains($this->type, "array");
-//        return $this->type != $this->stripArrayTypeSuffix($this->type);
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function isRequired() {
+    public function isRequired(): bool {
         return (!$this->reflectionParameter->isVariadic()) && ((!$this->reflectionParameter->isOptional()) || (!$this->reflectionParameter->isDefaultValueAvailable()));
     }
 
     /**
      * @return mixed
      */
-    public function getDefaultValue() {
-        return $this->isRequired() ? null : ($this->reflectionParameter->isDefaultValueAvailable() ? $this->reflectionParameter->getDefaultValue() : null);
+    public function getDefaultValue(): mixed {
+        if (!$this->isRequired()) {
+            return $this->reflectionParameter->isDefaultValueAvailable() ? $this->reflectionParameter->getDefaultValue() : null;
+        }
+
+        return null;
     }
 
 
     /**
      * @return bool
      */
-    public function isVariadic() {
+    public function isVariadic(): bool {
         return $this->reflectionParameter->isVariadic();
     }
 
@@ -168,7 +162,7 @@ class Parameter {
     /**
      * @return bool
      */
-    public function isPassedByReference() {
+    public function isPassedByReference(): bool {
         return $this->reflectionParameter->isPassedByReference();
     }
 
@@ -183,7 +177,7 @@ class Parameter {
     /**
      * @return bool
      */
-    public function isPrimitive() {
+    public function isPrimitive(): bool {
         $type = trim($this->getType(), "?");
         return in_array($type, Primitive::TYPES);
     }
@@ -191,7 +185,7 @@ class Parameter {
 
     // Strip Array type suffix
     // If "string[int]" is the input, output is ["string", "[int]"]
-    private function stripArrayTypeSuffix($type) {
+    private function stripArrayTypeSuffix($type): array {
         $strippedType = trim(preg_replace("/\[.*\]$/", "", $type));
         $arraySuffix = substr($type, strlen($strippedType));
         return [$strippedType, $arraySuffix];

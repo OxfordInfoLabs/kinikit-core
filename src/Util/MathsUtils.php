@@ -10,7 +10,8 @@ class MathsUtils {
             throw new \Exception("Tried to dot two vectors of non-matching lengths");
         }
 
-        for ($i = 0; $i < count($v1); $i++){
+        $count = count($v1);
+        for ($i = 0; $i < $count; $i++){
             $out += $v1[$i] * $v2[$i];
         }
 

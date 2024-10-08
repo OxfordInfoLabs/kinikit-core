@@ -38,7 +38,7 @@ class EqualsFieldValidator extends ObjectFieldValidator {
      */
     public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
-        if (sizeof($validatorParams) < 1) {
+        if (count($validatorParams) < 1) {
             throw new MisconfiguredValidatorException($this->getValidatorKey(), $fieldName, $targetObject);
         }
 

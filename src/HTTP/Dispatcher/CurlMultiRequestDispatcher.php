@@ -116,7 +116,7 @@ class CurlMultiRequestDispatcher implements HttpMultiRequestDispatcher {
         // Create an associative array containing the response headers
         foreach ($headerLines as $value) {
             $splitHeader = explode(":", $value);
-            if (sizeof($splitHeader) == 2) {
+            if (count($splitHeader) == 2) {
                 $indexedHeaders[trim($splitHeader[0])] = trim($splitHeader[1]);
             }
         }

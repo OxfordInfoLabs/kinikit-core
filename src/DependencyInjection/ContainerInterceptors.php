@@ -5,7 +5,7 @@ namespace Kinikit\Core\DependencyInjection;
 
 class ContainerInterceptors {
 
-    private $interceptors = [];
+    private array $interceptors = [];
 
     /**
      * Add an interceptor to this collection.
@@ -13,7 +13,7 @@ class ContainerInterceptors {
      * @param ContainerInterceptor $interceptor
      * @param string[] $applicableClasses
      */
-    public function addInterceptor($interceptor, $applicableClasses = []) {
+    public function addInterceptor(ContainerInterceptor $interceptor, array $applicableClasses = []): void {
 
         // Ensure we assign to global if set
         if (!$applicableClasses) {
@@ -28,7 +28,7 @@ class ContainerInterceptors {
             if (!isset($this->interceptors[$applicableClass])) {
                 $this->interceptors[$applicableClass] = [];
             }
-            if (!in_array($interceptor, $this->interceptors[$applicableClass])) {
+            if (!in_array($interceptor, $this->interceptors[$applicableClass], true)) {
                 $this->interceptors[$applicableClass][] = $interceptor;
             }
         }
@@ -46,9 +46,10 @@ class ContainerInterceptors {
     /**
      * Get interceptors defined for an underlying class
      *
-     * @param $className
+     * @param string $className
+     * @return array
      */
-    public function getInterceptorsForClass($className) {
+    public function getInterceptorsForClass(string $className): array {
         $className = ltrim($className, "\\");
         return array_merge($this->interceptors["GLOBAL"] ?? [], $this->interceptors[$className] ?? []);
     }

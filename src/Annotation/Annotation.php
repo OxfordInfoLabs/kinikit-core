@@ -10,45 +10,45 @@ namespace Kinikit\Core\Annotation;
 
 class Annotation {
 
-    private $label;
-    private $value;
+    private string $label;
+    private ?string $value;
 
     /**
      * Annotation constructor.
-     * @param $label
-     * @param $value
+     * @param string $label
+     * @param string|null $value
      */
-    public function __construct($label, $value = null) {
+    public function __construct(string $label, ?string $value = null) {
         $this->label = $label;
         $this->value = $value;
     }
 
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getLabel() {
+    public function getLabel(): string {
         return $this->label;
     }
 
     /**
-     * @param mixed $label
+     * @param string $label
      */
-    public function setLabel($label) {
+    public function setLabel(string $label): void {
         $this->label = $label;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getValue() {
+    public function getValue(): ?string {
         return $this->value;
     }
 
     /**
-     * @param mixed $value
+     * @param string|null $value
      */
-    public function setValue($value) {
+    public function setValue(?string $value): void {
         $this->value = $value;
     }
 
@@ -56,7 +56,7 @@ class Annotation {
     /**
      * Return value as an array split by ","
      */
-    public function getValues() {
+    public function getValues(): array {
         $exploded = explode(",", $this->getValue());
         $values = [];
         foreach ($exploded as $entry) {

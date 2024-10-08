@@ -184,7 +184,7 @@ class Email {
          */
         $hasher = Container::instance()->get(SHA512HashProvider::class);
 
-        $joinedRecipients = $this->getRecipients() ? join(",", $this->getRecipients()) : "";
+        $joinedRecipients = $this->getRecipients() ? implode(",", $this->getRecipients()) : "";
         
         // Return hash value based upon recipients, subject and text body
         return $hasher->generateHash($joinedRecipients . $this->getSubject() . $this->getTextBody());

@@ -11,14 +11,14 @@ class Request {
      *
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * Method (one of the constants below)
      *
      * @var string
      */
-    private $method;
+    private string $method;
 
     /**
      * Array of parameters (key / value pairs).  If the request is a
@@ -27,12 +27,12 @@ class Request {
      *
      * @var array<string, string> $parameters
      */
-    private $parameters;
+    private array $parameters;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $payload;
+    private ?string $payload;
 
 
     /**
@@ -40,14 +40,14 @@ class Request {
      *
      * @var Headers
      */
-    private $headers;
+    private Headers $headers;
 
     /**
      * Timeout in seconds for this request can be set to null
      *
-     * @var integer
+     * @var integer|null
      */
-    private $timeout;
+    private ?int $timeout;
 
 
     // Method type constants for method type
@@ -63,11 +63,12 @@ class Request {
      * Request constructor.
      * @param string $url
      * @param string $method
-     * @param string $parameters
-     * @param string $payload
+     * @param array $parameters
+     * @param string|null $payload
      * @param Headers $headers
+     * @param int|null $timeout
      */
-    public function __construct($url, $method = self::METHOD_POST, $parameters = [], $payload = null, $headers = null, $timeout = null) {
+    public function __construct(string $url, string $method = self::METHOD_POST, array $parameters = [], ?string $payload = null, $headers = null, $timeout = null) {
         $this->url = $url;
         $this->method = $method;
         $this->parameters = $parameters;
@@ -79,84 +80,84 @@ class Request {
     /**
      * @return string
      */
-    public function getUrl() {
+    public function getUrl(): string {
         return $this->url;
     }
 
     /**
      * @param string $url
      */
-    public function setUrl($url) {
+    public function setUrl(string $url): void {
         $this->url = $url;
     }
 
     /**
      * @return string
      */
-    public function getMethod() {
+    public function getMethod(): string {
         return $this->method;
     }
 
     /**
      * @param string $method
      */
-    public function setMethod($method) {
+    public function setMethod(string $method): void {
         $this->method = $method;
     }
 
     /**
      * @return array<string, string>
      */
-    public function getParameters() {
+    public function getParameters(): array {
         return $this->parameters;
     }
 
     /**
-     * @param string $parameters
+     * @param array<string,string> $parameters
      */
-    public function setParameters($parameters) {
+    public function setParameters(array $parameters): void {
         $this->parameters = $parameters;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPayload() {
+    public function getPayload(): ?string {
         return $this->payload;
     }
 
     /**
-     * @param string $payload
+     * @param string|null $payload
      */
-    public function setPayload($payload) {
+    public function setPayload(?string $payload): void {
         $this->payload = $payload;
     }
 
     /**
      * @return Headers
      */
-    public function getHeaders() {
+    public function getHeaders(): Headers {
         return $this->headers;
     }
 
     /**
      * @param Headers $headers
      */
-    public function setHeaders($headers) {
+    public function setHeaders(Headers $headers): void {
         $this->headers = $headers;
     }
 
     /**
      * @return int
      */
-    public function getTimeout() {
+    public function getTimeout(): ?int {
         return $this->timeout;
     }
 
     /**
-     * @param int $timeout
+     * @param int|null $timeout
      */
-    public function setTimeout($timeout) {
+    public function setTimeout(?int $timeout): void {
         $this->timeout = $timeout;
     }
 
@@ -164,11 +165,11 @@ class Request {
     /**
      * Get the URL with any params appended as required
      */
-    public function getEvaluatedUrl() {
+    public function getEvaluatedUrl(): string {
 
         $url = $this->getUrl();
 
-        if ($this->method == self::METHOD_GET || $this->payload) {
+        if ($this->method === self::METHOD_GET || $this->payload) {
             $queryString = http_build_query($this->parameters);
             if ($queryString) {
                 $url .= (strpos($url, "?") ? "&" : "?") . $queryString;
@@ -181,17 +182,21 @@ class Request {
     /**
      * Get the body for this request for non GET requests
      */
-    public function getBody() {
+    public function getBody(): ?string {
 
         // If a payload
         if ($this->payload) {
             return $this->payload;
-        } else if ($this->method != self::METHOD_GET) {
+        }
+
+        if ($this->method !== self::METHOD_GET) {
             $queryString = http_build_query($this->parameters);
             if ($queryString) {
                 return $queryString;
             }
         }
+
+        return null;
 
     }
 

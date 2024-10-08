@@ -12,19 +12,23 @@ class KinibindTemplateParser implements TemplateParser {
     /**
      * @var string
      */
-    private $prefix;
+    private string $prefix;
 
     /**
      * @var string[]
      */
-    private $enclosures;
+    private array $enclosures;
 
     /**
      * @var ValueFunctionEvaluator
      */
-    private $valueFunctionEvaluator;
+    private ValueFunctionEvaluator $valueFunctionEvaluator;
 
-    public function __construct($prefix = "k", $enclosures = ["{{", "}}"]) {
+    /**
+     * @param string $prefix
+     * @param string[] $enclosures
+     */
+    public function __construct(string $prefix = "k", array $enclosures = ["{{", "}}"]) {
         $this->prefix = $prefix;
         $this->enclosures = $enclosures;
         $this->valueFunctionEvaluator = new ValueFunctionEvaluator();
@@ -62,21 +66,20 @@ class KinibindTemplateParser implements TemplateParser {
         }
 
         // Strip any <block> tags
-        $output = preg_replace("/<\/?block\s*>/", "", $output);
-
-        return $output;
+        return preg_replace("/<\/?block\s*>/", "", $output);
 
     }
 
     /**
      * Process a DOMDocument html fragment
      *
-     * @param \DOMElement $fragment
+     * @param $fragment
+     * @param $model
      * @return void
      */
-    private function processHTMLFragment($fragment, &$model) {
+    private function processHTMLFragment($fragment, &$model): void {
 
-        if (is_a($fragment, 'DOMText')) {
+        if ($fragment instanceof \DOMText) {
             $this->parseTextContent($fragment, $model);
             return;
         }
@@ -127,20 +130,20 @@ class KinibindTemplateParser implements TemplateParser {
 
                     default:
                         // Duplicates a html fragment as per the 'each' statement
-                        if (strpos($attr->name, $this->prefix . "-each-") === 0) {
+                        if (str_starts_with($attr->name, $this->prefix . "-each-")) {
                             $this->processEachStatement($fragment, $attr, $model);
                             $processSubFragments = false;
                             break;
                         }
                         // Sets a variable which can be used within the block
-                        if (strpos($attr->name, $this->prefix . "-set-") === 0) {
+                        if (str_starts_with($attr->name, $this->prefix . "-set-")) {
                             $variable = substr($attr->name, 6);
                             $model[$variable] = $this->parseFormatters($attr->value, $model);
                             $fragment->removeAttributeNode($attr);
                             break;
                         }
                         // Conditionally sets formatting classes
-                        if (strpos($attr->name, $this->prefix . "-class-") === 0) {
+                        if (str_starts_with($attr->name, $this->prefix . "-class-")) {
                             $className = substr($attr->name, 8);
                             $classAttr = $fragment->getAttribute("class");
                             if ($this->parseFormatters($attr->value, $model)) {
@@ -159,7 +162,7 @@ class KinibindTemplateParser implements TemplateParser {
                             break;
                         }
                         // For eg. k-fruit='pineapple' sets attribute fruit='pineapple' - good for variables
-                        if (strpos($attr->name, $this->prefix . "-") === 0) {
+                        if (str_starts_with($attr->name, $this->prefix . "-")) {
                             $attrName = substr($attr->name, 2);
                             $newAttrValue = $this->parseFormatters($attr->value, $model);
                             $fragment->setAttribute($attrName, $newAttrValue);
@@ -190,10 +193,10 @@ class KinibindTemplateParser implements TemplateParser {
      * @param array $model
      * @return void
      */
-    private function processEachStatement($fragment, $attr, &$model) {
+    private function processEachStatement($fragment, $attr, &$model): void {
 
         // Set the loop variable and what is being looped
-        $variable = substr($attr->name, 7);;
+        $variable = substr($attr->name, 7);
         $values = $this->parseFormatters($attr->value, $model);
         $fragment->removeAttributeNode($attr);
 
@@ -213,8 +216,7 @@ class KinibindTemplateParser implements TemplateParser {
     }
 
     private function parseFormatters($text, &$model) {
-        $evaluated = $this->valueFunctionEvaluator->evaluateString("[[$text]]", $model);
-        return $evaluated;
+        return $this->valueFunctionEvaluator->evaluateString("[[$text]]", $model);
     }
 
     /**
@@ -224,7 +226,7 @@ class KinibindTemplateParser implements TemplateParser {
      * @param array $model
      * @return void
      */
-    private function parseTextContent($textNode, $model) {
+    private function parseTextContent($textNode, $model): void {
         $text = $textNode->textContent;
         $text = $this->valueFunctionEvaluator->evaluateString($text, $model, $this->enclosures) ?? "";
         $newTextNode = new \DOMText($text);

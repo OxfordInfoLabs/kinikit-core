@@ -11,14 +11,14 @@ namespace Kinikit\Core\Reflection;
  */
 class ClassInspectorProvider {
 
-    private $classInspectors;
+    private array $classInspectors = [];
 
     /**
      * @param $className
      *
      * @return ClassInspector
      */
-    public function getClassInspector($className) {
+    public function getClassInspector($className): ClassInspector {
         $className = ltrim($className, "?");
 
         $normalisedClassName = "\\" . ltrim(trim($className), "\\");

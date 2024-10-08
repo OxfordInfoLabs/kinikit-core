@@ -91,8 +91,8 @@ class LogicValueFunction extends ValueFunctionWithArguments {
                 return $value || !$functionArgs[0];
 
             case "case":
-                for ($i = 0; $i < sizeof($functionArgs); $i += 2) {
-                    if ($i + 1 == sizeof($functionArgs)) {
+                for ($i = 0; $i < count($functionArgs); $i += 2) {
+                    if ($i + 1 == count($functionArgs)) {
                         return $functionArgs[$i];
                     }
 

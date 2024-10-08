@@ -41,7 +41,7 @@ class SharedValueFunction extends ValueFunctionWithArguments {
 
             case "length":
                 if (is_array($value)) {
-                    return sizeof($value);
+                    return count($value);
                 } else if (is_string($value)) {
                     return strlen($value);
                 }

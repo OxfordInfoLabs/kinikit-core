@@ -8,61 +8,62 @@ use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Exception\WrongPropertyTypeException;
 use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Primitive;
+use ReflectionProperty;
 
 class Property {
 
     /**
-     * @var \ReflectionProperty
+     * @var ReflectionProperty
      */
-    private $reflectionProperty;
+    private ReflectionProperty $reflectionProperty;
 
     /**
      * @var Annotation[][]
      */
-    private $propertyAnnotations;
+    private array $propertyAnnotations;
 
     /**
      * @var ClassInspector
      */
-    private $declaringClassInspector;
+    private ClassInspector $declaringClassInspector;
 
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
 
-    const VISIBILITY_PUBLIC = "public";
-    const VISIBILITY_PROTECTED = "protected";
-    const VISIBILITY_PRIVATE = "private";
+    public const VISIBILITY_PUBLIC = "public";
+    public const VISIBILITY_PROTECTED = "protected";
+    public const VISIBILITY_PRIVATE = "private";
 
     /**
      * Property constructor.
-     * @param \ReflectionProperty $reflectionProperty
+     * @param ReflectionProperty $reflectionProperty
      * @param Annotation[][] $propertyAnnotations
      * @param ClassInspector $declaringClassInspector
      */
-    public function __construct($reflectionProperty, $propertyAnnotations, $declaringClassInspector) {
+    public function __construct(ReflectionProperty $reflectionProperty, array $propertyAnnotations, ClassInspector $declaringClassInspector) {
         $this->reflectionProperty = $reflectionProperty;
         $this->propertyAnnotations = $propertyAnnotations;
         $this->declaringClassInspector = $declaringClassInspector;
 
 
-        $propertyAnnotations = isset($propertyAnnotations["var"]) ? $propertyAnnotations["var"] : [];
+        $propertyAnnotations = $propertyAnnotations["var"] ?? [];
 
         $declaredNamespaceClasses = $declaringClassInspector->getDeclaredNamespaceClasses();
 
         $type = "mixed";
         $arraySuffix = "";
         $nullablePrefix = "";
-        if (sizeof($propertyAnnotations) > 0) {
+        if (count($propertyAnnotations) > 0) {
             $annotation = $propertyAnnotations[0];
 
             //TODO Cover Union type case
 
             $type = trim($annotation->getValue());
-            if (str_contains($type, "?")){
+            if (str_contains($type, "?")) {
                 $nullablePrefix = "?";
                 $type = str_replace("?", "", $type);
             }
@@ -72,23 +73,21 @@ class Property {
             if (!Primitive::isStringPrimitiveType($type)) {
                 if (isset($declaredNamespaceClasses[$type]))
                     $type = $declaredNamespaceClasses[$type];
-                else {
-                    if (substr($type, 0, 1) != "\\") {
-                        $type = "\\" . $reflectionProperty->getDeclaringClass()->getNamespaceName() . "\\" . $type;
-                    }
+                else if (!str_starts_with($type, "\\")) {
+                    $type = "\\" . $reflectionProperty->getDeclaringClass()->getNamespaceName() . "\\" . $type;
                 }
             }
-        } else if ($reflectionProperty->hasType()){
+        } else if ($reflectionProperty->hasType()) {
             $reflectionType = $reflectionProperty->getType();
-            if ($reflectionType instanceof \ReflectionUnionType){
-                $type = join("|", $reflectionType->getTypes());
+            if ($reflectionType instanceof \ReflectionUnionType) {
+                $type = implode("|", $reflectionType->getTypes());
 //                throw new \Error("ReflectionUnionType found: " . print_r($reflectionType->getTypes(), true));
             } else {
                 $type = $reflectionType->getName();
             }
         }
 
-        $this->type = $nullablePrefix .  $type . $arraySuffix;
+        $this->type = $nullablePrefix . $type . $arraySuffix;
 
     }
 
@@ -98,16 +97,16 @@ class Property {
      *
      * @return string
      */
-    public function getPropertyName() {
+    public function getPropertyName(): string {
         return $this->reflectionProperty->getName();
     }
 
     /**
      * Get the reflection property
      *
-     * @return \ReflectionProperty
+     * @return ReflectionProperty
      */
-    public function getReflectionProperty() {
+    public function getReflectionProperty(): ReflectionProperty {
         return $this->reflectionProperty;
     }
 
@@ -116,7 +115,7 @@ class Property {
      *
      * @return Annotation[][]
      */
-    public function getPropertyAnnotations() {
+    public function getPropertyAnnotations(): array {
         return $this->propertyAnnotations;
     }
 
@@ -125,7 +124,7 @@ class Property {
      *
      * @return ClassInspector
      */
-    public function getDeclaringClassInspector() {
+    public function getDeclaringClassInspector(): ClassInspector {
         return $this->declaringClassInspector;
     }
 
@@ -134,7 +133,7 @@ class Property {
      *
      * @return string
      */
-    public function getType() {
+    public function getType(): string {
         return str_replace("?", "", $this->type);
     }
 
@@ -142,26 +141,34 @@ class Property {
     /**
      * Return a boolean indicating whether or not this is a primitive type.
      */
-    public function isPrimitive() {
+    public function isPrimitive(): bool {
         return in_array($this->type, Primitive::TYPES);
     }
 
-    public function isNullable(){
+    public function isNullable(): bool {
         return str_starts_with($this->type, "?");
     }
 
     /**
      * Return a static indicator
      */
-    public function isStatic() {
+    public function isStatic(): bool {
         return $this->reflectionProperty->isStatic();
     }
 
     /**
      * Get the visibility for this property.
      */
-    public function getVisibility() {
-        return $this->reflectionProperty->isPublic() ? self::VISIBILITY_PUBLIC : ($this->reflectionProperty->isProtected() ? self::VISIBILITY_PROTECTED : self::VISIBILITY_PRIVATE);
+    public function getVisibility(): string {
+        if ($this->reflectionProperty->isPublic()) {
+            return self::VISIBILITY_PUBLIC;
+        }
+
+        if ($this->reflectionProperty->isProtected()) {
+            return self::VISIBILITY_PROTECTED;
+        }
+
+        return self::VISIBILITY_PRIVATE;
     }
 
 
@@ -198,18 +205,18 @@ class Property {
 
     }
 
-    private function wrongType(string $type, mixed $value){
+    private function wrongType(string $type, mixed $value): bool {
         $type = trim($type);
 
         $wrongType = true;
-        if ($value === null){ // Allow nullability for all types
+        if ($value === null) { // Allow nullability for all types
             $wrongType = false;
         } else if (Primitive::isStringPrimitiveType($type) && Primitive::isOfPrimitiveType($type, $value)) {
             $wrongType = false; // Allows bools and ints as strings
         } else if (is_object($value)) { // If it's not an instance/subclass of the class
-            $wrongType = !(get_class($value) == trim($type, "\\")
+            $wrongType = !(get_class($value) === trim($type, "\\")
                 || is_subclass_of($value, trim($type, "\\")));
-        } else if (is_array($value) && ((strpos($type, "[") && strpos($type, "]")) || $type == "array")) { // If it's an array we are fine
+        } else if (is_array($value) && ((strpos($type, "[") && strpos($type, "]")) || $type === "array")) { // If it's an array we are fine
             $wrongType = false;
         }
         return $wrongType;
@@ -227,10 +234,10 @@ class Property {
 
 
     // Strip Array type suffix
-    private function stripArrayTypeSuffix($type) {
+    private function stripArrayTypeSuffix($type): array {
         $strippedType = trim(preg_replace("/\[.*\]$/", "", $type));
         $arraySuffix = substr($type, strlen($strippedType));
-        return[$strippedType, $arraySuffix];
+        return [$strippedType, $arraySuffix];
     }
 
 }

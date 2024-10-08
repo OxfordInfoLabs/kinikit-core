@@ -184,7 +184,7 @@ class PHPMailerProvider implements EmailProvider {
         $addressAndNames = [];
         foreach ($address as $addressComponent) {
             preg_match("/<(.*)>/", $addressComponent, $matches);
-            if (sizeof($matches) == 2) {
+            if (count($matches) == 2) {
                 $addressAndNames[] = [$matches[1], trim(str_replace($matches[0], "", $addressComponent))];
             } else {
                 $addressAndNames[] = [$address[0], null];

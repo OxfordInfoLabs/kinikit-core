@@ -15,29 +15,30 @@ class Configuration extends ConfigFile {
     // private only constructor here, since we should only access this through other instance methods.
     public function __construct() {
         $envVariable = getenv("KINIKIT_CONFIG_FILE");
-        parent::__construct("Config/" . ($envVariable ? $envVariable : "config.txt"));
+        parent::__construct("Config/" . ($envVariable ?: "config.txt"));
     }
 
     /**
      * Get the singleton configuration instance.
      *
-     * @return Configuration   
+     * @return Configuration
      */
     public static function instance($newInstance = false) {
-        if (Configuration::$instance == null || $newInstance) {
-            Configuration::$instance = new Configuration ();
+        if (self::$instance === null || $newInstance) {
+            self::$instance = new Configuration();
         }
 
-        return Configuration::$instance;
+        return self::$instance;
     }
 
     /**
      * Static get parameter function.  Convenience quicky for calling internal getParameter
      *
      * @param string $key
+     * @return string|null
      */
-    public static function readParameter($key) {
-        return Configuration::instance()->getParameter($key);
+    public static function readParameter(string $key): ?string {
+        return self::instance()->getParameter($key);
     }
 
 }

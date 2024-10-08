@@ -63,7 +63,7 @@ class ValuesFieldValidator extends ObjectFieldValidator {
                     $values[] = $argument["value"];
                 }
             }
-            $placeholderArguments = ["[" . join(", ", $values) . "]"];
+            $placeholderArguments = ["[" . implode(", ", $values) . "]"];
         } else {
             $placeholderArguments = ["Defined Values"];
         }

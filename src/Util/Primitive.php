@@ -30,8 +30,9 @@ class Primitive {
      * Return a boolean indicator as to whether or not this value is primitive
      *
      * @param $value
+     * @return bool
      */
-    public static function isPrimitive($value) {
+    public static function isPrimitive($value): bool {
         return is_bool($value) || is_int($value) || is_float($value) || is_string($value);
     }
 
@@ -40,8 +41,10 @@ class Primitive {
      * Check whether a value is of a primitive type.
      *
      * @param $primitiveType
+     * @param $value
+     * @return bool
      */
-    public static function isOfPrimitiveType($primitiveType, $value) {
+    public static function isOfPrimitiveType($primitiveType, $value): bool {
         $primitiveType = ltrim($primitiveType, "?");
         switch ($primitiveType) {
             case self::TYPE_BOOLEAN:
@@ -85,14 +88,14 @@ class Primitive {
                 case self::TYPE_BOOL:
                     if ($value === "true") return true;
                     if ($value === "false") return false;
-                    return boolval($value);
+                    return (bool)$value;
                 case self::TYPE_INT:
                 case self::TYPE_INTEGER:
-                    return intval($value);
+                    return (int)$value;
                 case self::TYPE_FLOAT:
-                    return floatval($value);
+                    return (float)$value;
                 case self::TYPE_STRING:
-                    return strval($value);
+                    return (string)$value;
             }
         }
 

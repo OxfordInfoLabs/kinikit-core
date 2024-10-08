@@ -3,7 +3,6 @@
 
 namespace Kinikit\Core\Proxy;
 
-use Kinikit\Core\Exception\RecursiveDependencyException;
 use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\Method;
 
@@ -30,7 +29,7 @@ class ProxyGenerator {
      *
      * @return string
      */
-    public function generateProxy($className, $proxySuffix, $includedTraits, $blankConstructor = false) {
+    public function generateProxy(string $className, string $proxySuffix, array $includedTraits, $blankConstructor = false): string {
         $className = ltrim($className, "?");
         $classInspector = new ClassInspector($className);
 
@@ -49,15 +48,18 @@ class ProxyGenerator {
 
         $classString = "";
 
-        if ($namespace)
+        if ($namespace) {
             $classString = "
         namespace $namespace;";
+        }
 
         $classString .= "
         class $proxyClassName $extensionType $shortClass {
             
         ";
-        foreach ($includedTraits as $trait) $classString .= "use \\" . ltrim($trait, "\\") . ";\n";
+        foreach ($includedTraits as $trait) {
+            $classString .= "use \\" . ltrim($trait, "\\") . ";\n";
+        }
 
         if ($classInspector->getConstructor()) {
             if (!$blankConstructor) {
@@ -75,8 +77,9 @@ class ProxyGenerator {
         // Loop through all public methods and reimplement.
         foreach ($classInspector->getPublicMethods() as $method) {
 
-            if ($method->isStatic() || $method->isFinal() || $method->getMethodName() == "__call")
+            if ($method->isStatic() || $method->isFinal() || $method->getMethodName() === "__call") {
                 continue;
+            }
 
 
             $paramsString = $this->getMethodParamsString($method);
@@ -111,7 +114,7 @@ class ProxyGenerator {
      * @param Method $method
      * @return string
      */
-    private function getMethodParamsString($method) {
+    private function getMethodParamsString(Method $method): string {
 
         $params = [];
         foreach ($method->getParameters() as $parameter) {
@@ -144,10 +147,8 @@ class ProxyGenerator {
             }
             $params[] = $param;
         }
-        $paramsString = join(",", $params);
 
-
-        return $paramsString;
+        return implode(",", $params);
 
     }
 

@@ -84,7 +84,7 @@ class HttpRemoteRequest {
             'content' => $contentData, 'ignore_errors' => $ignoreErrors]];
 
         $url = $this->url;
-        if ($paramsAsGet && sizeof($this->parameters) > 0) {
+        if ($paramsAsGet && count($this->parameters) > 0) {
             $url .= "?" . $queryParams;
         }
 

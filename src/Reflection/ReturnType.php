@@ -11,12 +11,12 @@ class ReturnType {
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var bool
      */
-    private $explicitlyTyped;
+    private bool $explicitlyTyped;
 
 
     /**
@@ -25,7 +25,7 @@ class ReturnType {
      * @param Method $methodInspector
      *
      */
-    public function __construct($methodInspector) {
+    public function __construct(Method $methodInspector) {
 
         $reflectionMethod = $methodInspector->getReflectionMethod();
         $methodAnnotations = $methodInspector->getMethodAnnotations();
@@ -37,27 +37,24 @@ class ReturnType {
             $type = $reflectionMethod->getReturnType();
             if ($type instanceof \ReflectionNamedType) {
                 $type = $type->getName();
-                if (!Primitive::isStringPrimitiveType($type))
+                if (!Primitive::isStringPrimitiveType($type)) {
                     $type = "\\" . ltrim($type, "\\");
+                }
 
                 $type = $reflectionMethod->getReturnType()->allowsNull() ? "?".$type : $type;
             }
             $this->explicitlyTyped = true;
-        } else {
-            if (isset($methodAnnotations["return"])) {
-                $type = trim($methodAnnotations["return"][0]->getValue());
-                if (!in_array($type, Primitive::TYPES)) {
-                    if (isset($declaredNamespaceClasses[$type])) {
-                        $type = $declaredNamespaceClasses[$type];
-                    } else {
-                        if (str_starts_with($type, "?")) { //If nullable
-                            $type = "?\\" . $reflectionMethod->getDeclaringClass()->getNamespaceName() . "\\" . strpos($type, 1);
-                        } else {
-                            $type = "\\" . $reflectionMethod->getDeclaringClass()->getNamespaceName() . "\\" . $type;
-                        }
-                    }
-
+        } else if (isset($methodAnnotations["return"])) {
+            $type = trim($methodAnnotations["return"][0]->getValue());
+            if (!in_array($type, Primitive::TYPES)) {
+                if (isset($declaredNamespaceClasses[$type])) {
+                    $type = $declaredNamespaceClasses[$type];
+                } else if (str_starts_with($type, "?")) { //If nullable
+                    $type = "?\\" . $reflectionMethod->getDeclaringClass()->getNamespaceName() . "\\" . strpos($type, 1);
+                } else {
+                    $type = "\\" . $reflectionMethod->getDeclaringClass()->getNamespaceName() . "\\" . $type;
                 }
+
             }
         }
 
@@ -68,7 +65,7 @@ class ReturnType {
     /**
      * @return string
      */
-    public function getType() {
+    public function getType(): string {
         return $this->type;
     }
 
@@ -78,17 +75,17 @@ class ReturnType {
      *
      * @param string $otherClassName
      */
-    public function isInstanceOf($otherClassName) {
+    public function isInstanceOf(string $otherClassName): bool {
         $type = "\\" . trim($this->type, "\\");
         $otherClassName = "\\" . trim($otherClassName, "\\");
 
-        return is_subclass_of($type, $otherClassName) || $otherClassName == $type;
+        return is_subclass_of($type, $otherClassName) || $otherClassName === $type;
     }
 
     /**
      * @return bool
      */
-    public function isExplicitlyTyped() {
+    public function isExplicitlyTyped(): bool {
         return $this->explicitlyTyped;
     }
 

@@ -21,45 +21,43 @@ class Container {
     private static $instance;
 
     /**
-     * @var mixed[string]
+     * @var array
      */
-    private $instances = [];
+    private array $instances = [];
 
 
     /**
      * Global interceptors
      *
-     * @var \Kinikit\Core\DependencyInjection\ContainerInterceptors
+     * @var ContainerInterceptors
      */
-    private $interceptors;
+    private ContainerInterceptors $interceptors;
 
 
     /**
      * Array of explicit interface mappings (defined in e.g. Bootstrap scripts)
      * for providing concrete implementation to interface.
      *
-     * @var string[string]
+     * @var array<string,string>
      */
-    private $classMappings = [];
-
+    private array $classMappings = [];
 
     /**
      * Proxy generator
      *
      * @var ProxyGenerator
      */
-    private $proxyGenerator;
-
+    private ProxyGenerator $proxyGenerator;
 
     /**
      * @var ClassInspectorProvider
      */
-    private $classInspectorProvider;
+    private ClassInspectorProvider $classInspectorProvider;
 
     /**
      * @var InterfaceResolver
      */
-    private $interfaceResolver;
+    private InterfaceResolver $interfaceResolver;
 
 
     // Constructor
@@ -80,7 +78,7 @@ class Container {
      *
      * @return Container
      */
-    public static function instance() {
+    public static function instance(): Container {
         if (!self::$instance) {
             self::$instance = new Container();
         }
@@ -96,7 +94,7 @@ class Container {
      * @psalm-param class-string<T> $className
      * @return T
      */
-    public function get($className) {
+    public function get($className): object {
         return $this->__doGet($className);
     }
 
@@ -110,7 +108,7 @@ class Container {
      * @param $className
      * @param bool $allowProxy
      */
-    public function new($className, $allowProxy = false) {
+    public function new($className, bool $allowProxy = false): object {
         return $this->__doGet($className, true, $allowProxy);
     }
 
@@ -121,7 +119,7 @@ class Container {
      * @param $className
      * @param $instance
      */
-    public function set($className, $instance) {
+    public function set($className, $instance): void {
         $className = "\\" . ltrim(trim($className), "\\");
         $this->instances[$className] = $instance;
     }
@@ -147,7 +145,7 @@ class Container {
      * @param $interfaceClass
      * @param $implementationKey
      */
-    public function getInterfaceImplementationClass($interfaceClass, $implementationKey) {
+    public function getInterfaceImplementationClass($interfaceClass, $implementationKey): string {
         return $this->interfaceResolver->getImplementationClassForKey($interfaceClass, $implementationKey);
     }
 
@@ -160,7 +158,7 @@ class Container {
      * @param $implementationKey
      * @param $implementationClass
      */
-    public function addInterfaceImplementation($interfaceClass, $implementationKey, $implementationClass) {
+    public function addInterfaceImplementation($interfaceClass, $implementationKey, $implementationClass): void {
         $this->interfaceResolver->addImplementationClassForKey($interfaceClass, $implementationKey, $implementationClass);
     }
 
@@ -168,14 +166,14 @@ class Container {
     /**
      * @return ContainerInterceptors
      */
-    public function getInterceptors() {
+    public function getInterceptors(): ContainerInterceptors {
         return $this->interceptors;
     }
 
     /**
      * @param ContainerInterceptors $interceptors
      */
-    public function setInterceptors($interceptors) {
+    public function setInterceptors(ContainerInterceptors $interceptors): void {
         $this->interceptors = $interceptors;
     }
 
@@ -188,7 +186,7 @@ class Container {
      * @param ContainerInterceptor $interceptor
      * @param string[] $applicableClasses
      */
-    public function addInterceptor($interceptor, $applicableClasses = []) {
+    public function addInterceptor(ContainerInterceptor $interceptor, array $applicableClasses = []): void {
         $this->interceptors->addInterceptor($interceptor, $applicableClasses);
     }
 
@@ -200,7 +198,7 @@ class Container {
      * @param string $sourceClass
      * @param string $targetClass
      */
-    public function addClassMapping($sourceClass, $targetClass) {
+    public function addClassMapping(string $sourceClass, string $targetClass): void {
 
         $sourceClass = "\\" . ltrim(trim($sourceClass), "\\");
         $targetClass = "\\" . ltrim(trim($targetClass), "\\");
@@ -214,7 +212,7 @@ class Container {
      *
      * @param $className
      */
-    public function getClassMapping($className) {
+    public function getClassMapping($className): string {
         $sourceClass = "\\" . ltrim(trim($className), "\\");
         return $this->classMappings[$sourceClass] ?? $className;
     }
@@ -227,7 +225,7 @@ class Container {
      * @return object
      * @throws \ReflectionException
      */
-    public function __doGet($className, $createNew = false, $allowProxy = true, $dependentClasses = []) {
+    public function __doGet($className, bool $createNew = false, bool $allowProxy = true, array $dependentClasses = []): object {
 
         // Remove leading \'s.
         $className = "\\" . ltrim(trim($className), "\\");
@@ -259,16 +257,15 @@ class Container {
 
         // Sort out parameters
         $params = [];
-        if (!$createNew) {
-            if ($constructor = $classInspector->getConstructor()) {
-                foreach ($constructor->getParameters() as $param) {
+        if (!$createNew && $constructor = $classInspector->getConstructor()) {
+            foreach ($constructor->getParameters() as $param) {
 
-                    if (trim($param->getType(), "[]") == $param->getType() && !in_array($param->getType(), Primitive::TYPES)) {
-                        if (in_array($param->getType(), $dependentClasses))
-                            throw new RecursiveDependencyException($param->getType());
-
-                        $params[$param->getName()] = $this->__doGet($param->getType(), $createNew, $allowProxy, $dependentClasses);
+                if (!in_array($param->getType(), Primitive::TYPES, true) && (trim($param->getType(), "[]") === $param->getType())) {
+                    if (in_array($param->getType(), $dependentClasses, true)) {
+                        throw new RecursiveDependencyException($param->getType());
                     }
+
+                    $params[$param->getName()] = $this->__doGet($param->getType(), $createNew, $allowProxy, $dependentClasses);
                 }
             }
         }
@@ -287,12 +284,14 @@ class Container {
         $instance = $classInspector->createInstance($params);
 
         // Populate with base functionality if a proxy.
-        if ($proxy)
+        if ($proxy) {
             $instance->__populate($this->interceptors, $originalClassInspector);
+        }
 
         // Store for future efficiency if not create new
-        if (!$createNew)
+        if (!$createNew) {
             $this->instances[$className] = $instance;
+        }
 
         return $instance;
     }

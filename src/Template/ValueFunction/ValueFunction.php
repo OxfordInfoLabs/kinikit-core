@@ -7,7 +7,7 @@ interface ValueFunction {
     /**
      * Does a value function apply to the passed function string
      *
-     * @param $functionString
+     * @param string $functionString
      * @return boolean
      */
     public function doesFunctionApply($functionString);

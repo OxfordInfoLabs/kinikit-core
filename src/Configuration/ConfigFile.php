@@ -12,16 +12,16 @@ use Exception;
  */
 class ConfigFile {
 
-    private $configFilePath;
-    private $parameters = [];
+    private ?string $configFilePath;
+    private array $parameters = [];
 
     /**
      * Construct a config file object using the passed file name.
      *
-     * @param string $configFilePath
-     * @return Configuration
+     * @param string|null $configFilePath
+     * @return void
      */
-    public function __construct($configFilePath = null) {
+    public function __construct(?string $configFilePath = null) {
 
         if (file_exists($configFilePath)) {
             $this->parseFile($configFilePath);
@@ -35,12 +35,10 @@ class ConfigFile {
      * or null if non existent
      *
      * @param string $key
+     * @return string|null
      */
-    public function getParameter($key) {
-        if (array_key_exists($key, $this->parameters))
-            return $this->parameters [$key];
-        else
-            return null;
+    public function getParameter(string $key): ?string {
+        return $this->parameters[$key] ?? null;
     }
 
     /**
@@ -49,8 +47,8 @@ class ConfigFile {
      * @param string $key
      * @param string $value
      */
-    public function addParameter($key, $value) {
-        $this->parameters [$key] = $value;
+    public function addParameter(string $key, string $value): void {
+        $this->parameters[$key] = $value;
     }
 
     /**
@@ -58,8 +56,8 @@ class ConfigFile {
      *
      * @param string $key
      */
-    public function removeParameter($key) {
-        unset ($this->parameters [$key]);
+    public function removeParameter(string $key): void {
+        unset ($this->parameters[$key]);
     }
 
     /**
@@ -67,16 +65,16 @@ class ConfigFile {
      *
      * @param array $parameters
      */
-    public function setParameters($parameters) {
+    public function setParameters(array $parameters): void {
         $this->parameters = $parameters;
     }
 
     /**
      * Get all the parameters
      *
-     * @param unknown_type $parameters
+     * @return array
      */
-    public function getAllParameters() {
+    public function getAllParameters(): array {
         return $this->parameters;
     }
 
@@ -91,13 +89,14 @@ class ConfigFile {
      *
      * @return string[]
      */
-    public function getParametersMatchingPrefix($prefix, $stripKeyPrefixes = false) {
+    public function getParametersMatchingPrefix($prefix, bool $stripKeyPrefixes = false): array {
 
         $matchingParams = [];
         foreach ($this->parameters as $key => $param) {
             if (strncmp($key, $prefix, strlen($prefix)) === 0) {
-                if ($stripKeyPrefixes)
+                if ($stripKeyPrefixes) {
                     $key = substr($key, strlen($prefix));
+                }
                 $matchingParams[$key] = $param;
             }
         }
@@ -113,7 +112,7 @@ class ConfigFile {
      *
      * @return string
      */
-    public function getConfigFileText() {
+    public function getConfigFileText(): string {
         $configFileText = "";
         foreach ($this->parameters as $key => $value) {
             $configFileText .= $key . "=" . $value . "\n";
@@ -123,12 +122,12 @@ class ConfigFile {
 
     /**
      * Save the config file back out.  If null supplied for filepath, the constructed configFilePath is used
-     *
+     * @param string|null $filePath
      */
-    public function save($filePath = null) {
+    public function save(?string $filePath = null): void {
 
         // Determine the correct file path.
-        $filePath = ($filePath == null) ? $this->configFilePath : $filePath;
+        $filePath = $filePath ?? $this->configFilePath;
 
         // Store the file
         file_put_contents($filePath, $this->getConfigFileText());
@@ -138,7 +137,7 @@ class ConfigFile {
      * Parse function.  Splits the config file into lines and
      * then looks for key value pairs of the form key=value
      */
-    private function parseFile($configFilePath) {
+    private function parseFile($configFilePath): void {
         $configFileText = file_get_contents($configFilePath);
 
         // Now split each line on carriage return
@@ -154,7 +153,7 @@ class ConfigFile {
 
             //  if the first entry is zero length when trimmed we know the line is a comment so we ignore the whole line
             // Otherwise continue and use the bit before any potential comment
-            if (strlen($propertyLine) > 0) {
+            if ($propertyLine !== '') {
 
                 // Now split into key, value on =
                 $positionOfFirstEquals = strpos($propertyLine, "=");
@@ -164,15 +163,15 @@ class ConfigFile {
                     $value = trim(substr($propertyLine, $positionOfFirstEquals + 1));
 
                     // Convert boolean strings to boolean values
-                    if ($value == "true") {
+                    if ($value === "true") {
                         $value = true;
-                    } else if ($value == "false") {
+                    } else if ($value === "false") {
                         $value = false;
                     }
 
                     $this->parameters [trim(substr($propertyLine, 0, $positionOfFirstEquals))] = $value;
                 } else {
-                    throw new Exception ("Error in config file: Parameter '" . $propertyLine . "' Does not have a value");
+                    throw new Exception("Error in config file: Parameter '" . $propertyLine . "' Does not have a value");
                 }
 
             }

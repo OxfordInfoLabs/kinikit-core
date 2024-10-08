@@ -82,8 +82,8 @@ class ValueFunctionEvaluator {
                 $value = $specialExpression;
             }
 
-            if (sizeof($exploded) > 1) {
-                for ($i = 1; $i < sizeof($exploded); $i++) {
+            if (count($exploded) > 1) {
+                for ($i = 1; $i < count($exploded); $i++) {
                     $value = $this->evaluateValueFunction(trim($exploded[$i]), $value, $model);
                 }
             }
@@ -169,11 +169,11 @@ class ValueFunctionEvaluator {
 
         }
 
-        if ($expression == "true") {
+        if ($expression === "true") {
             return true;
         }
 
-        if ($expression == "false") {
+        if ($expression === "false") {
             return false;
         }
 
@@ -185,8 +185,8 @@ class ValueFunctionEvaluator {
     private function expandMemberExpression($expression, $model) {
 
         $explodedExpression = explode(".", $expression);
-        foreach ($explodedExpression as $expression) {
-            $model = $model[$expression] ?? null;
+        foreach ($explodedExpression as $component) {
+            $model = $model[$component] ?? null;
         }
         return $model;
     }

@@ -139,7 +139,7 @@ class ArrayValueFunction extends ValueFunctionWithArguments {
                     }
                     break;
                 case "startsWith":
-                    if (strtolower(substr($elt[$fieldName], 0, 1)) == strtolower($fieldValue)) {
+                    if (stripos($elt[$fieldName], strtolower($fieldValue)) === 0) {
                         $filteredArray[] = $elt;
                     }
                     break;

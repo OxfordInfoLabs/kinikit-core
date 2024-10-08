@@ -4,12 +4,12 @@
 namespace Kinikit\Core\Reflection;
 
 
-use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\Primitive;
+use ReflectionMethod;
 
 /**
  * Method inspector.
@@ -20,32 +20,30 @@ use Kinikit\Core\Util\Primitive;
 class Method {
 
     /**
-     * @var \ReflectionMethod
+     * @var ReflectionMethod
      */
-    private $reflectionMethod;
+    private ReflectionMethod $reflectionMethod;
 
     /**
      * @var Annotation[]
      */
-    private $methodAnnotations;
-
+    private array $methodAnnotations;
 
     /**
      * @var ClassInspector
      */
-    private $declaringClassInspector;
-
+    private ClassInspector $declaringClassInspector;
 
     /**
      * @var Parameter[]
      */
-    private $parameters = [];
+    private array $parameters = [];
 
 
     /**
-     * @var string
+     * @var ReturnType
      */
-    private $returnType;
+    private ReturnType $returnType;
 
 
     /**
@@ -53,11 +51,11 @@ class Method {
      *
      * MethodInspector constructor.
      *
-     * @param \ReflectionMethod $reflectionMethod
+     * @param ReflectionMethod $reflectionMethod
      * @param Annotation[] $methodAnnotations
      * @param ClassInspector $declaringClassInspector
      */
-    public function __construct($reflectionMethod, $methodAnnotations, $declaringClassInspector) {
+    public function __construct(ReflectionMethod $reflectionMethod, array $methodAnnotations, ClassInspector $declaringClassInspector) {
         $this->reflectionMethod = $reflectionMethod;
         $this->methodAnnotations = $methodAnnotations;
         $this->declaringClassInspector = $declaringClassInspector;
@@ -68,7 +66,7 @@ class Method {
      *
      * @return ClassInspector
      */
-    public function getDeclaringClassInspector() {
+    public function getDeclaringClassInspector(): ClassInspector {
         return $this->declaringClassInspector;
     }
 
@@ -78,7 +76,7 @@ class Method {
      *
      * @return string
      */
-    public function getMethodName() {
+    public function getMethodName(): string {
         return $this->reflectionMethod->getName();
     }
 
@@ -88,14 +86,14 @@ class Method {
      *
      * @return Annotation[][]
      */
-    public function getMethodAnnotations() {
+    public function getMethodAnnotations(): array {
         return $this->methodAnnotations;
     }
 
     /**
-     * @return \ReflectionMethod
+     * @return ReflectionMethod
      */
-    public function getReflectionMethod() {
+    public function getReflectionMethod(): ReflectionMethod {
         return $this->reflectionMethod;
     }
 
@@ -105,7 +103,7 @@ class Method {
      *
      * @return boolean
      */
-    public function isStatic() {
+    public function isStatic(): bool {
         return $this->reflectionMethod->isStatic();
     }
 
@@ -115,7 +113,7 @@ class Method {
      *
      * @return bool
      */
-    public function isFinal() {
+    public function isFinal(): bool {
         return $this->reflectionMethod->isFinal();
     }
 
@@ -125,9 +123,9 @@ class Method {
      * in key / value format for convenience.
      *
      * @param mixed $object
-     * @param mixed[string] $arguments
+     * @param array<mixed,string> $arguments
      */
-    public function call($object, $arguments, $allowMissingArgs = false) {
+    public function call(object $object, array $arguments, bool $allowMissingArgs = false) {
 
         $orderedArguments = $this->__processMethodArguments($arguments, $allowMissingArgs);
         return $this->reflectionMethod->invokeArgs($object, $orderedArguments);
@@ -140,7 +138,7 @@ class Method {
      *
      * @return Parameter[]
      */
-    public function getParameters() {
+    public function getParameters(): array {
         return array_values($this->getIndexedParameters());
     }
 
@@ -148,7 +146,7 @@ class Method {
     /**
      * Get the parameters indexed by string key for this method.
      */
-    public function getIndexedParameters() {
+    public function getIndexedParameters(): array {
         if (!$this->parameters) {
             $this->parameters = [];
 
@@ -167,7 +165,7 @@ class Method {
      *
      * @return ReturnType
      */
-    public function getReturnType() {
+    public function getReturnType(): ReturnType {
         if (!isset($this->returnType)) {
             $this->returnType = new ReturnType($this);
         }
@@ -180,9 +178,9 @@ class Method {
      * Process arguments passed as key/value pairs and order into correct
      * order for invoking the method by reflection.
      *
-     * @param mixed[string] $arguments
+     * @param array<mixed,string> $arguments
      */
-    public function __processMethodArguments($arguments, $allowMissingArgs = false) {
+    public function __processMethodArguments(array $arguments, bool $allowMissingArgs = false) {
 
         // Loop through each parameter
         $orderedArgs = [];
@@ -202,36 +200,32 @@ class Method {
                 }
 
                 // If Variadic, explode arguments out as separate items
-                if ($parameter->isVariadic() && is_array($parameterValue)) {
+                if (is_array($parameterValue) && $parameter->isVariadic()) {
                     $orderedArgs = array_merge($orderedArgs, $parameterValue);
                 } else {
                     $orderedArgs[] = $parameterValue;
                 }
-            } else {
+            } else if ($parameter->isRequired()) {
 
-                if ($parameter->isRequired()) {
-
-                    // If type is explicit, we are angry if it's null, so catch this here
-                    if (($parameter->isExplicitlyTyped() && !$parameter->isNullable()) || !$allowMissingArgs) {
-                        $missingRequired[] = $parameter->getName();
-                    } else {
-                        $orderedArgs[] = $parameter->getDefaultValue();
-                    }
-                } else if (!$parameter->isVariadic()) {
+                // If type is explicit, we are angry if it's null, so catch this here
+                if (($parameter->isExplicitlyTyped() && !$parameter->isNullable()) || !$allowMissingArgs) {
+                    $missingRequired[] = $parameter->getName();
+                } else {
                     $orderedArgs[] = $parameter->getDefaultValue();
                 }
-
+            } else if (!$parameter->isVariadic()) {
+                $orderedArgs[] = $parameter->getDefaultValue();
             }
         }
 
         // If missing required, throw an exception
-        if (sizeof($missingRequired)) {
-            $joinedMissing = join(", ", $missingRequired);
+        if (count($missingRequired)) {
+            $joinedMissing = implode(", ", $missingRequired);
             throw new InsufficientParametersException("Too few arguments were supplied to the method {$this->getMethodName()} on the class {$this->getDeclaringClassInspector()->getClassName()}.  Expected $joinedMissing");
         }
 
-        if (sizeof($wrongParams)) {
-            $joinedWrong = join(", ", $wrongParams);
+        if (count($wrongParams)) {
+            $joinedWrong = implode(", ", $wrongParams);
             $paramType = gettype($arguments[$wrongParams[0]]);
             throw new WrongParametersException("The values for the fields $joinedWrong supplied to the method {$this->getMethodName()} on the class {$this->getDeclaringClassInspector()->getClassName()} are of the wrong type. Attempted param type: $paramType");
         }
@@ -239,7 +233,7 @@ class Method {
         return $orderedArgs;
     }
 
-    private function paramIsRightType(string $type, mixed $parameterValue){
+    private function paramIsRightType(string $type, mixed $parameterValue): bool {
         $rightParams = true;
 
         // If a primitive and not of right type, throw now.
@@ -251,9 +245,8 @@ class Method {
             $parameterValue &&
             !is_array($parameterValue) &&
             !ArrayUtils::any( // Not an instance of any of the unions in $strippedType
-                array_map(fn($t) =>
-                    is_object($parameterValue) &&
-                    get_class($parameterValue) == trim($t, "\\") ||
+                array_map(static fn($t) => (is_object($parameterValue) &&
+                        get_class($parameterValue) === trim($t, "\\")) ||
                     is_subclass_of($parameterValue, trim($t, "\\")),
                     explode("|", $type)
                 )

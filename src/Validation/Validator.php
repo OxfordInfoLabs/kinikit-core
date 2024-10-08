@@ -158,7 +158,7 @@ class Validator {
                     }
                 }
 
-                if (sizeof($validationErrorArray)) {
+                if (count($validationErrorArray)) {
                     if (!isset($validationErrors[$field]))
                         $validationErrors[$field] = [];
 
@@ -174,7 +174,7 @@ class Validator {
         // validation errors in.
         if (isset($classInspector->getPublicMethods()["validate"])) {
             $customValidation = $object->validate();
-            if (is_array($customValidation) && sizeof($customValidation)) {
+            if (is_array($customValidation) && count($customValidation)) {
                 $validationErrors = array_merge($validationErrors, $customValidation);
             }
         }

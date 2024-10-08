@@ -14,7 +14,7 @@ namespace Kinikit\Core\Configuration;
 class FileResolver {
 
     // Initialise the search paths with the current directory.
-    private $searchPaths = ["."];
+    private array $searchPaths = ["."];
 
 
     /**
@@ -25,7 +25,7 @@ class FileResolver {
     public function __construct() {
         if ($configuredSearchPaths = Configuration::readParameter("search.paths")) {
             $configuredPaths = explode(";", $configuredSearchPaths);
-            foreach($configuredPaths as $configuredPath){
+            foreach ($configuredPaths as $configuredPath) {
                 $this->addSearchPath($configuredPath);
             }
 
@@ -36,33 +36,34 @@ class FileResolver {
     /**
      * Add a search path to the file resolver programmatically .
      *
-     * @param $searchPath
+     * @param string $searchPath
      */
-    public function addSearchPath($searchPath) {
-        if ($searchPath)
+    public function addSearchPath(string $searchPath): void {
+        if ($searchPath) {
             $this->searchPaths[] = $searchPath;
+        }
     }
 
 
     /**
-     * @return mixed
+     * @return string[]
      */
-    public function getSearchPaths() {
+    public function getSearchPaths(): array {
         return $this->searchPaths;
     }
 
     /**
      * Resolve a relative file to a full path using the attached search paths.
      *
-     * @param string $string
+     * @param string $relativeFilePath
+     * @param bool $caseInsensitive
      * @return string
      */
-    public function resolveFile($relativeFilePath, $caseInsensitive = false) {
+    public function resolveFile(string $relativeFilePath, bool $caseInsensitive = false): ?string {
 
 
         // Slower more careful algorithm for case insensitive.
         if ($caseInsensitive) {
-
 
             foreach ($this->searchPaths as $searchPath) {
 
@@ -77,8 +78,10 @@ class FileResolver {
                     $iterator = new \DirectoryIterator($builtPath);
                     $elementMatch = false;
                     foreach ($iterator as $item) {
-                        if ($item->isDot()) continue;
-                        if (strtolower($item->getFilename()) == strtolower($pathElement)) {
+                        if ($item->isDot()) {
+                            continue;
+                        }
+                        if (strtolower($item->getFilename()) === strtolower($pathElement)) {
                             $builtPath .= "/" . $item->getFilename();
                             $elementMatch = true;
                             break;

@@ -17,16 +17,16 @@ trait Proxy {
     /**
      * @var ContainerInterceptors
      */
-    private $interceptors;
+    private ContainerInterceptors $interceptors;
 
 
     /**
      * @var ClassInspector
      */
-    private $classInspector;
+    private ClassInspector $classInspector;
 
-    // Undefined valud
-    private $UNDEFINED_VALUE = "<<<<<UNDEFINED>>>>>";
+    // Undefined value
+    private string $UNDEFINED_VALUE = "<<<<<UNDEFINED>>>>>";
 
 
     /**
@@ -35,14 +35,13 @@ trait Proxy {
      * @param ContainerInterceptors $containerInterceptors
      * @param ClassInspector $classInspector
      */
-    public function __populate($containerInterceptors, $classInspector) {
+    public function __populate(ContainerInterceptors $containerInterceptors, ClassInspector $classInspector) {
         $this->classInspector = $classInspector;
         $this->interceptors = $containerInterceptors;
 
 
         // Add explicitly defined interceptors from annotations
-        $interceptorAnnotations = isset($classInspector->getClassAnnotations()["interceptor"]) ?
-            $classInspector->getClassAnnotations()["interceptor"] : [];
+        $interceptorAnnotations = $classInspector->getClassAnnotations()["interceptor"] ?? [];
 
         if ($interceptorAnnotations) {
 

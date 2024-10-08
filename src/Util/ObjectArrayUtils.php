@@ -10,9 +10,6 @@ namespace Kinikit\Core\Util;
 
 
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Exception\ClassNotSerialisableException;
-use Kinikit\Core\Object\AssociativeArray;
-use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 
@@ -27,8 +24,9 @@ class ObjectArrayUtils {
      * @static
      * @param $member
      * @param $objects
+     * @return array
      */
-    public static function getMemberValueArrayForObjects($member, $objects) {
+    public static function getMemberValueArrayForObjects($member, $objects): array {
 
         $returnValues = [];
 
@@ -39,7 +37,7 @@ class ObjectArrayUtils {
 
             if (is_object($value)) {
 
-                if (!$currentInspector || (get_class($value) != $currentInspector->getClassName())) {
+                if (!$currentInspector || (get_class($value) !== $currentInspector->getClassName())) {
                     $currentInspector = $classInspectorProvider->getClassInspector(get_class($value));
                 }
 
@@ -74,7 +72,7 @@ class ObjectArrayUtils {
 
         // Call this recursively if we have more members to process
         foreach ($groupedItems as $key => $items) {
-            if (sizeof($member) > 0) {
+            if (count($member) > 0) {
                 $groupedItems[$key] = self::indexArrayOfObjectsByMember($member, $items);
             } else {
                 $groupedItems[$key] = $items[0];
@@ -94,7 +92,7 @@ class ObjectArrayUtils {
      * @param $objects
      * @param $filterValue
      */
-    public static function filterArrayOfObjectsByMember($member, $objects, $filterValue) {
+    public static function filterArrayOfObjectsByMember($member, $objects, $filterValue): array {
 
         $filterValues = is_array($filterValue) ? $filterValue :[$filterValue];
 
@@ -108,11 +106,11 @@ class ObjectArrayUtils {
 
             foreach ($filterValues as $value) {
 
-                if (!$currentInspector || (get_class($object) != $currentInspector->getClassName())) {
+                if (!$currentInspector || (get_class($object) !== $currentInspector->getClassName())) {
                     $currentInspector = $classInspectorProvider->getClassInspector(get_class($object));
                 }
 
-                if ($value == $currentInspector->getPropertyData($object, $member)) {
+                if ($value === $currentInspector->getPropertyData($object, $member)) {
                     $filteredObjects[] = $object;
                     break;
                 }
@@ -132,8 +130,9 @@ class ObjectArrayUtils {
      */
     public static function groupArrayOfObjectsByMember($member, $objects) {
 
-        if (!is_array($member))
-            $member =[$member];
+        if (!is_array($member)) {
+            $member = [$member];
+        }
 
         $leafMember = array_pop($member);
 
@@ -148,26 +147,32 @@ class ObjectArrayUtils {
 
         foreach ($objects as $object) {
 
-            if (!$currentInspector || (get_class($object) != $currentInspector->getClassName())) {
+            if (!$currentInspector || (get_class($object) !== $currentInspector->getClassName())) {
                 $currentInspector = $classInspectorProvider->getClassInspector(get_class($object));
             }
 
             $rootNode = &$groupedObjects;
             foreach ($member as $memberComponent) {
                 $groupValue = $currentInspector->getPropertyData($object, $memberComponent);
-                if (!$groupValue && !is_numeric($groupValue)) $groupValue = "NULL";
+                if (!$groupValue && !is_numeric($groupValue)) {
+                    $groupValue = "NULL";
+                }
 
-                if (!isset($rootNode[$groupValue]))
+                if (!isset($rootNode[$groupValue])) {
                     $rootNode[$groupValue] = [];
+                }
 
                 $rootNode = &$rootNode[$groupValue];
             }
 
-            $leafValue = $groupValue = $currentInspector->getPropertyData($object, $leafMember);
-            if (!$leafValue && !is_numeric($leafValue)) $leafValue = "NULL";
+            $leafValue = $currentInspector->getPropertyData($object, $leafMember);
+            if (!$leafValue && !is_numeric($leafValue)) {
+                $leafValue = "NULL";
+            }
 
-            if (!isset($rootNode[$leafValue]))
+            if (!isset($rootNode[$leafValue])) {
                 $rootNode[$leafValue] = [];
+            }
 
             $leafValues = $rootNode[$leafValue];
             $leafValues[] = $object;

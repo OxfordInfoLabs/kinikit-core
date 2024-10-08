@@ -3,7 +3,7 @@
 namespace Kinikit\Core\HTTP\Dispatcher;
 
 use Kinikit\Core\HTTP\Request\Request;
-use Kinikit\Core\HTTP\Response\Headers;
+use Kinikit\Core\HTTP\Request\Headers;
 use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
@@ -25,7 +25,7 @@ class AMPRequestDispatcherTest extends TestCase {
 
 
         // Check headers populated
-        $this->assertEquals("true", $response->getHeaders()->get(Headers::ACCESS_CONTROL_ALLOW_CREDENTIALS));
+        $this->assertEquals("true", $response->getHeaders()->get(\Kinikit\Core\HTTP\Response\Headers::ACCESS_CONTROL_ALLOW_CREDENTIALS));
 
 
         $request = new Request("https://jsonplaceholder.typicode.com/comments", Request::METHOD_GET,

@@ -51,7 +51,7 @@ class RegexpFieldValidator extends ObjectFieldValidator {
         if ($this->regexp) {
             $regexp = $this->regexp;
         } else {
-            if (sizeof($validatorParams) < 1) {
+            if (count($validatorParams) < 1) {
                 throw new MisconfiguredValidatorException($this->getValidatorKey(), $fieldName, $targetObject);
             }
 

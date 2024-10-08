@@ -22,14 +22,14 @@ class Bootstrapper {
     /**
      * @var SearchNamespaces
      */
-    private $searchNamespaces;
+    private SearchNamespaces $searchNamespaces;
 
     /**
      * Init constructor.  Automatically sets things up.
      *
      * @param SearchNamespaces $searchNamespaces
      */
-    public function __construct($searchNamespaces) {
+    public function __construct(SearchNamespaces $searchNamespaces) {
 
         // Process our bootstrap
         $this->searchNamespaces = $searchNamespaces;
@@ -38,7 +38,7 @@ class Bootstrapper {
 
 
     // Process bootstrap logic.
-    private function process() {
+    private function process(): void {
 
         $namespaces = $this->searchNamespaces->getNamespaces();
 

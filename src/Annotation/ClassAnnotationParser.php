@@ -20,7 +20,7 @@ class ClassAnnotationParser {
      * Parse annotations for a class
      * @return ClassAnnotations
      */
-    public function parse($className) {
+    public function parse($className): ClassAnnotations {
 
 
         try {
@@ -42,8 +42,9 @@ class ClassAnnotationParser {
 
         foreach ($properties as $property) {
 
-            if ($property->isStatic())
+            if ($property->isStatic()) {
                 continue;
+            }
 
 
             $fieldComment = $this->getCommentAnnotations($property->getDocComment());
@@ -59,12 +60,14 @@ class ClassAnnotationParser {
 
         foreach ($methods as $method) {
 
-            if ($method->isStatic() || $method->isPrivate() || $method->isProtected())
+            if ($method->isStatic() || $method->isPrivate() || $method->isProtected()) {
                 continue;
+            }
+
             $methodComment = $this->getCommentAnnotations($method->getDocComment());
             $methodAnnotations[$method->getName()] = $methodComment;
 
-            if ($method->getDeclaringClass()->getName() != $className) {
+            if ($method->getDeclaringClass()->getName() !== $className) {
                 $methodAnnotations[$method->getName()]["inherited"] = 1;
             }
 
@@ -83,13 +86,14 @@ class ClassAnnotationParser {
      * @param string $comment
      * @return Annotation[][]
      */
-    private function getCommentAnnotations($comment) {
+    private function getCommentAnnotations(string $comment): array {
 
         $cleaned = str_replace(array("*/", "/*", "\n/"), ["", "", "", ""], $comment);
         $annotations = [];
-        preg_replace_callback("/@([a-zA-Z-]*)(.*)/", function ($matches) use (&$annotations) {
-            if (!isset($annotations[$matches[1]]))
+        preg_replace_callback("/@([a-zA-Z-]*)(.*)/", static function ($matches) use (&$annotations) {
+            if (!isset($annotations[$matches[1]])) {
                 $annotations[$matches[1]] = [];
+            }
 
             $annotations[$matches[1]][] = new Annotation($matches[1], trim($matches[2]));
             return "";
@@ -103,9 +107,9 @@ class ClassAnnotationParser {
      * @param string $comment
      * @return string
      */
-    private function cleanComment($comment) {
+    private function cleanComment(string $comment): string {
         $commentLines = explode(PHP_EOL, $comment);
-        for ($i = sizeof($commentLines) - 1; $i >= 0; $i--) {
+        for ($i = count($commentLines) - 1; $i >= 0; $i--) {
             $commentLine = $commentLines[$i];
             if (is_numeric(strpos($commentLine, "/**")) ||
                 is_numeric(strpos($commentLine, "*/")) ||
@@ -115,7 +119,7 @@ class ClassAnnotationParser {
             }
         }
 
-        return join(PHP_EOL, $commentLines);
+        return implode(PHP_EOL, $commentLines);
     }
 
 

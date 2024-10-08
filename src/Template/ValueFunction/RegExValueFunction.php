@@ -5,9 +5,9 @@ namespace Kinikit\Core\Template\ValueFunction;
 class RegExValueFunction implements ValueFunction {
 
     // We require an expression starting and ending with a /
-    public function doesFunctionApply($functionString) {
-        return substr($functionString, 0, 1) == "/" &&
-            substr($functionString, -1, 1) == "/";
+    public function doesFunctionApply($functionString): bool {
+        return substr($functionString, 0, 1) === "/" &&
+            substr($functionString, -1, 1) === "/";
     }
 
     /**
@@ -17,10 +17,10 @@ class RegExValueFunction implements ValueFunction {
      * @param string $value
      * @return string
      */
-    public function applyFunction($functionString, $value, $model) {
+    public function applyFunction($functionString, $value, $model): ?string {
         if (!$functionString)
             return $value;
         preg_match($functionString, $value, $fieldMatches);
-        return isset($fieldMatches[1]) ? join("", array_slice($fieldMatches, 1)) : ($fieldMatches[0] ?? null);
+        return isset($fieldMatches[1]) ? implode("", array_slice($fieldMatches, 1)) : ($fieldMatches[0] ?? null);
     }
 }

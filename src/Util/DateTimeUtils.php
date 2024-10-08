@@ -103,7 +103,7 @@ class DateTimeUtils {
 
     public static function convertJSDateFormatToPHP($format) {
 
-        $matchString = join("|", array_keys(self::JS_TO_PHP_DATE_FORMATS));
+        $matchString = implode("|", array_keys(self::JS_TO_PHP_DATE_FORMATS));
 
         $format = preg_replace_callback("/$matchString/", function ($matches) {
             return self::JS_TO_PHP_DATE_FORMATS[$matches[0]] ?? $matches[0];

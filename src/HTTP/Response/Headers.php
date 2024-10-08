@@ -7,10 +7,9 @@ namespace Kinikit\Core\HTTP\Response;
 class Headers {
 
     /**
-     * @var string[string]
+     * @var string[]
      */
-    private $headers = [];
-
+    private array $headers = [];
 
     // Mapping constants for header names
 
@@ -58,7 +57,7 @@ class Headers {
      * Headers constructor.
      * @param array $headers
      */
-    public function __construct($headers = []) {
+    public function __construct(array $headers = []) {
 
         foreach ($headers as $key => $value) {
             $this->headers[strtolower($key)] = $value;
@@ -72,7 +71,7 @@ class Headers {
      *
      * @return array
      */
-    public function getHeaders() {
+    public function getHeaders(): array {
         return $this->headers;
     }
 
@@ -80,9 +79,9 @@ class Headers {
      * Get a specific header or return null if not set
      *
      * @param $headerName
-     * @return mixed|null
+     * @return string|null
      */
-    public function get($headerName) {
+    public function get($headerName): ?string {
         return $this->headers[$headerName] ?? null;
     }
 

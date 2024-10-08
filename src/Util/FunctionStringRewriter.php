@@ -9,13 +9,14 @@ class FunctionStringRewriter {
     /**
      * New rewrite logic.
      *
-     * @param $string
-     * @param $search
-     * @param $replace
+     * @param string $string
+     * @param string $search
+     * @param string $replace
      * @param array $defaultValues
      * @param array $parameterValues
+     * @return string
      */
-    public static function rewrite($string, $search, $replace, $defaultValues = [], &$parameterValues = []) {
+    public static function rewrite(string $string, string $search, string $replace, array $defaultValues = [], array &$parameterValues = []) {
 
         preg_match_all("/(.*?)($search\()/i", $string, $matches, PREG_OFFSET_CAPTURE);
 
@@ -31,7 +32,9 @@ class FunctionStringRewriter {
             // Eliminate any matches which are contained in other functions.
             if ($prefixCharacterMatches[$index][0]) {
                 preg_match("/[a-zA-Z_]+/", substr($prefixCharacterMatches[$index][0], -1), $prefixCharacterItems);
-                if (sizeof($prefixCharacterItems)) continue;
+                if (count($prefixCharacterItems)) {
+                    continue;
+                }
             }
 
             // Grab any preceding parameters
@@ -56,28 +59,36 @@ class FunctionStringRewriter {
             $newFunctionParams = [];
 
             // Substitute regular values
-            $newFunctionString = preg_replace_callback("/\\$([0-9])([^\.])/", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
+            $newFunctionString = preg_replace_callback("/\\$([0-9])([^\.])/", static function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
                 $placeholderIndex = $replacePlaceholders[1] - 1;
+
                 if (isset($functionArgs[$placeholderIndex])) {
                     $newFunctionParams = array_merge($newFunctionParams, $argParams[$placeholderIndex]);
-                    return $functionArgs[$placeholderIndex].$replacePlaceholders[2];
-                } else if (isset($defaultValues[$placeholderIndex])) {
-                    return $defaultValues[$placeholderIndex].$replacePlaceholders[2];
-                } else {
-                    throw new InsufficientParametersException("Number of default values doesn't match.");
+                    return $functionArgs[$placeholderIndex] . $replacePlaceholders[2];
                 }
+
+                if (isset($defaultValues[$placeholderIndex])) {
+                    return $defaultValues[$placeholderIndex] . $replacePlaceholders[2];
+                }
+
+                throw new InsufficientParametersException("Number of default values doesn't match.");
+
             }, $replace);
 
             // Substitute variadic values
-            $newFunctionString = preg_replace_callback("/\\$([0-9])\.\.\./", function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
+            $newFunctionString = preg_replace_callback("/\\$([0-9])\.\.\./", static function ($replacePlaceholders) use ($functionArgs, $argParams, $defaultValues, &$newFunctionParams) {
                 $placeholderIndex = $replacePlaceholders[1] - 1;
+
                 if (isset($functionArgs[$placeholderIndex])) {
-                    return join(", ", array_slice($functionArgs, $placeholderIndex));
-                } else if (isset($defaultValues[$placeholderIndex])) {
-                    return $defaultValues[$placeholderIndex];
-                } else {
-                    throw new InsufficientParametersException("Number of default values doesn't match.");
+                    return implode(", ", array_slice($functionArgs, $placeholderIndex));
                 }
+
+                if (isset($defaultValues[$placeholderIndex])) {
+                    return $defaultValues[$placeholderIndex];
+                }
+
+                throw new InsufficientParametersException("Number of default values doesn't match.");
+
             }, $newFunctionString);
 
 
@@ -103,7 +114,7 @@ class FunctionStringRewriter {
      *
      * @return string[]
      */
-    public static function extractArgs($functionString, $functionName, $atStart = true, &$functionStringLength = 0) {
+    public static function extractArgs(string $functionString, string $functionName, bool $atStart = true, &$functionStringLength = 0): array {
 
         $args = [];
         $currentArg = "";
@@ -132,9 +143,9 @@ class FunctionStringRewriter {
                     break;
                 case ')':
                     $bracketCount--;
-                    if ($bracketCount == -1) {
+                    if ($bracketCount === -1) {
                         $currentArg = trim($currentArg);
-                        if ($currentArg == "") {
+                        if ($currentArg === "") {
                             $currentArg = null;
                         }
                         $args[] = $currentArg;
@@ -144,7 +155,7 @@ class FunctionStringRewriter {
                     $currentArg .= $char;
                     break;
                 case ',':
-                    if ($bracketCount == 0) {
+                    if ($bracketCount === 0) {
                         $args[] = trim($currentArg);
                         $currentArg = "";
                     } else {

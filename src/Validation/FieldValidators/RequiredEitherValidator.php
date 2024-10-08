@@ -57,7 +57,7 @@ class RequiredEitherValidator extends ObjectFieldValidator {
                 return true;
         }
 
-        $this->setValidationMessage("One of the fields $fieldName, " . join(", ", $otherFields) . " is required");
+        $this->setValidationMessage("One of the fields $fieldName, " . implode(", ", $otherFields) . " is required");
 
         return false;
     }

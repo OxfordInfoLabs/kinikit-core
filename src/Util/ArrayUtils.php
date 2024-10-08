@@ -16,12 +16,14 @@ class ArrayUtils {
      *
      * @return array
      */
-    public static function mapArrayKeys($sourceArray, $keyMappings, $removeUnmappedKeys = true) {
+    public static function mapArrayKeys(array $sourceArray, array $keyMappings, bool $removeUnmappedKeys = true): array {
         $returnArray = [];
         foreach ($sourceArray as $key => $item) {
             if (isset($keyMappings[$key])) {
                 $returnArray[$keyMappings[$key]] = $item;
-            } else if (!$removeUnmappedKeys) $returnArray[$key] = $item;
+            } else if (!$removeUnmappedKeys) {
+                $returnArray[$key] = $item;
+            }
         }
         return $returnArray;
     }
@@ -30,11 +32,11 @@ class ArrayUtils {
     /**
      * Recursive array merge which preserves keys at all levels
      *
-     * @param $array1
+     * @param array $array1
      * @param ...$arrays
-     * @return mixed|null
+     * @return array
      */
-    public static function mergeArrayRecursive($array1, ...$arrays) {
+    public static function mergeArrayRecursive(array $array1, ...$arrays): array {
 
         foreach ($arrays as $array) {
             reset($array1); //important

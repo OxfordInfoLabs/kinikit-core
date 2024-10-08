@@ -105,7 +105,7 @@ class PCNTLAsynchronousProcessor implements AsynchronousProcessor {
         }
 
         // Pop them off as they complete
-        while (sizeof($instancesByFile) > 0) {
+        while (count($instancesByFile) > 0) {
             foreach ($instancesByFile as $file => $instance) {
 
                 if (file_exists($file) && $contents = file_get_contents($file)) {

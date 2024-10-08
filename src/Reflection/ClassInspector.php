@@ -17,30 +17,23 @@ use ReflectionException;
  */
 class ClassInspector {
 
-    /**
-     * @var ReflectionClass $reflectionClass
-     */
-    private $reflectionClass;
-    /**
-     * @var ClassAnnotations
-     */
-    private $classAnnotations;
-    private $declaredNamespaces;
-
-    private $publicMethods;
-    private $setters = [];
-    private $getters = [];
-    private $properties;
-    private $methodInspectors = [];
+    private ReflectionClass $reflectionClass;
+    private ClassAnnotations $classAnnotations;
+    private array $declaredNamespaces = [];
+    private array $publicMethods = [];
+    private array $setters = [];
+    private array $getters = [];
+    private array $properties;
+    private array $methodInspectors = [];
 
     /**
      * Construct with a class name or filename.
      *
      * ClassInspector constructor.
-     * @param mixed $class
+     * @param string $class
      * @throws ReflectionException
      */
-    public function __construct($class) {
+    public function __construct(string $class) {
 
         if (is_numeric(strpos($class, "."))) {
             $class = $this->getClassNameFromFile($class);
@@ -57,7 +50,7 @@ class ClassInspector {
     /**
      * Get the class name for this class
      */
-    public function getClassName() {
+    public function getClassName(): string {
         return "\\" . ltrim($this->reflectionClass->getName(), "\\");
     }
 
@@ -65,7 +58,7 @@ class ClassInspector {
      * Get the last portion of the full class name.
      * @return string
      */
-    public function getShortClassName() {
+    public function getShortClassName(): string {
         $exploded = explode("\\", $this->getClassName());
         return array_pop($exploded);
     }
@@ -75,7 +68,7 @@ class ClassInspector {
      *
      * @return ReflectionClass
      */
-    public function getReflectionClass() {
+    public function getReflectionClass(): ReflectionClass {
         return $this->reflectionClass;
     }
 
@@ -85,7 +78,7 @@ class ClassInspector {
      *
      * @return bool
      */
-    public function isInterface() {
+    public function isInterface(): bool {
         return $this->reflectionClass->isInterface();
     }
 
@@ -95,7 +88,7 @@ class ClassInspector {
      *
      * @return bool
      */
-    public function isAbstract() {
+    public function isAbstract(): bool {
         return $this->reflectionClass->isAbstract();
     }
 
@@ -103,9 +96,9 @@ class ClassInspector {
     /**
      * Get the constructor as a method inspector object.
      *
-     * @return Method
+     * @return Method|null
      */
-    public function getConstructor() {
+    public function getConstructor(): ?Method {
         return $this->reflectionClass->getConstructor() ? $this->getMethodInspector("__construct") : null;
     }
 
@@ -115,14 +108,14 @@ class ClassInspector {
      *
      * @return string
      */
-    public function getNamespace() {
+    public function getNamespace(): string {
         return $this->reflectionClass->getNamespaceName();
     }
 
     /**
      * Get the declared namespace classes for this class.
      */
-    public function getDeclaredNamespaceClasses() {
+    public function getDeclaredNamespaceClasses(): array {
 
         if (!$this->declaredNamespaces) {
 
@@ -168,9 +161,9 @@ class ClassInspector {
     /**
      * Get the whole annotations object
      *
-     * @return \Kinikit\Core\Annotation\ClassAnnotations
+     * @return ClassAnnotations
      */
-    public function getClassAnnotationsObject() {
+    public function getClassAnnotationsObject(): ClassAnnotations {
         return $this->classAnnotations;
     }
 
@@ -180,7 +173,7 @@ class ClassInspector {
      *
      * @return Annotation[][]
      */
-    public function getClassAnnotations() {
+    public function getClassAnnotations(): array {
         return $this->classAnnotations->getClassAnnotations();
     }
 
@@ -190,9 +183,8 @@ class ClassInspector {
      *
      * @return Method[]
      */
-    public function getPublicMethods() {
-        if (!isset($this->publicMethods)) {
-            $this->publicMethods = [];
+    public function getPublicMethods(): array {
+        if (!($this->publicMethods)) {
             foreach ($this->reflectionClass->getMethods() as $method) {
 
                 if ($method->isDeprecated()) {
@@ -204,11 +196,11 @@ class ClassInspector {
                     $methodInspector = $this->getMethodInspector($methodName);
                     $this->publicMethods[$methodName] = $methodInspector;
 
-                    if (substr($methodName, 0, 3) == "get" && sizeof($methodInspector->getParameters()) == 0) {
+                    if (str_starts_with($methodName, "get") && count($methodInspector->getParameters()) === 0) {
                         $this->getters[lcfirst(substr($methodName, 3))] = $methodInspector;
-                    } else if (substr($method->getName(), 0, 2) == "is" && sizeof($methodInspector->getParameters()) == 0) {
+                    } else if (str_starts_with($method->getName(), "is") && count($methodInspector->getParameters()) === 0) {
                         $this->getters[lcfirst(substr($methodName, 2))] = $methodInspector;
-                    } else if (substr($method->getName(), 0, 3) == "set") {
+                    } else if (str_starts_with($method->getName(), "set")) {
                         $this->setters[lcfirst(substr($methodName, 3))] = $methodInspector;
                     }
 
@@ -226,7 +218,7 @@ class ClassInspector {
      * @param string $string
      * @return Method
      */
-    public function getPublicMethod(string $string) {
+    public function getPublicMethod(string $string): Method {
         return $this->getMethodInspector($string);
     }
 
@@ -236,13 +228,14 @@ class ClassInspector {
      *
      * @return Property[]
      */
-    public function getProperties() {
+    public function getProperties(): array {
         if (!isset($this->properties)) {
 
             $this->properties = [];
 
             foreach ($this->reflectionClass->getProperties() as $property) {
-                $this->properties[$property->getName()] = new Property($property, $this->classAnnotations->getFieldAnnotations()[$property->getName()] ?? [], $this);
+                $propertyName = $property->getName();
+                $this->properties[$propertyName] = new Property($property, $this->classAnnotations->getFieldAnnotations()[$propertyName] ?? [], $this);
             }
         }
 
@@ -253,9 +246,9 @@ class ClassInspector {
     /**
      * Get getters
      *
-     * @return Method[string]
+     * @return Method[]
      */
-    public function getGetters() {
+    public function getGetters(): array {
         $this->getPublicMethods();
         return $this->getters;
     }
@@ -264,9 +257,9 @@ class ClassInspector {
     /**
      * Get setters
      *
-     * @return Method[string]
+     * @return Method[]
      */
-    public function getSetters() {
+    public function getSetters(): array {
         $this->getPublicMethods();
         return $this->setters;
     }
@@ -277,12 +270,13 @@ class ClassInspector {
      *
      * @param $propertyName
      */
-    public function hasAccessor($propertyName) {
+    public function hasAccessor($propertyName): bool {
 
         // Check getters first
         $getters = $this->getGetters();
-        if (isset($getters[$propertyName]))
+        if (isset($getters[$propertyName])) {
             return true;
+        }
 
         // Fall back to properties
         $properties = $this->getProperties();
@@ -295,7 +289,7 @@ class ClassInspector {
      *
      * @param mixed[string] $constructorArguments
      */
-    public function createInstance($constructorArguments) {
+    public function createInstance(array $constructorArguments) {
         $processedArguments = $this->getConstructor() ? $this->getConstructor()->__processMethodArguments($constructorArguments, true) : [];
 
         return $this->reflectionClass->newInstanceArgs($processedArguments);
@@ -309,10 +303,10 @@ class ClassInspector {
      *
      * @param object $object
      * @param array $data
-     * @param string $propertyName
+     * @param string|null $propertyName
      * @param bool $publicOnly
      */
-    public function setPropertyData($object, $data, $propertyName = null, $publicOnly = true) {
+    public function setPropertyData(object $object, mixed $data, string $propertyName = null, bool $publicOnly = true): void {
 
         // If property name, doing one at a time.
         if ($propertyName) {
@@ -327,8 +321,9 @@ class ClassInspector {
             } else {
                 $properties = $this->getProperties();
                 if (isset($properties[$propertyName])) {
-                    if (!$publicOnly || $properties[$propertyName]->getVisibility() == Property::VISIBILITY_PUBLIC)
+                    if (!$publicOnly || $properties[$propertyName]->getVisibility() === Property::VISIBILITY_PUBLIC) {
                         $properties[$propertyName]->set($object, $data);
+                    }
 //                } else {
 //                    print("No property $propertyName exists on class ". $this->getClassName() . "\n");
 ////                    throw new WrongParametersException("No property $propertyName exists on class ". $this->getClassName());
@@ -352,12 +347,12 @@ class ClassInspector {
      * getter, otherwise properties will be coerced to accessible.
      *
      * @param object $object
-     * @param string $propertyName
+     * @param string|null $propertyName
      * @param bool $publicOnly
      *
      * @return mixed
      */
-    public function getPropertyData($object, $propertyName = null, $publicOnly = true) {
+    public function getPropertyData(object $object, ?string $propertyName = null, bool $publicOnly = true) {
         if ($propertyName) {
             $getters = $this->getGetters();
             if (isset($getters[$propertyName])) {
@@ -366,9 +361,11 @@ class ClassInspector {
 
             $properties = $this->getProperties();
             if (isset($properties[$propertyName])) {
-                if (!$publicOnly || $properties[$propertyName]->getVisibility() == Property::VISIBILITY_PUBLIC)
+                if (!$publicOnly || $properties[$propertyName]->getVisibility() === Property::VISIBILITY_PUBLIC) {
                     return $properties[$propertyName]->get($object);
+                }
             }
+
         } else {
             $returnData = [];
             $keysSeen = [];
@@ -377,8 +374,9 @@ class ClassInspector {
                 $keysSeen[] = $key;
             }
             foreach ($this->getProperties() as $key => $property) {
-                if (!in_array($key, $keysSeen) && !$publicOnly || $property->getVisibility() == Property::VISIBILITY_PUBLIC)
+                if ((!in_array($key, $keysSeen, true) && !$publicOnly) || $property->getVisibility() === Property::VISIBILITY_PUBLIC) {
                     $returnData[$key] = $this->getPropertyData($object, $key, $publicOnly);
+                }
             }
             return $returnData;
 
@@ -392,8 +390,8 @@ class ClassInspector {
      * @param $attributeClass
      * @return boolean
      */
-    public function hasClassAttribute($attributeClass) {
-        return sizeof($this->reflectionClass->getAttributes($attributeClass)) ? true : false;
+    public function hasClassAttribute($attributeClass): bool {
+        return (bool)count($this->reflectionClass->getAttributes($attributeClass));
     }
 
     /**
@@ -402,15 +400,18 @@ class ClassInspector {
      * @param string $traitName
      * @return bool
      */
-    public function usesTrait($traitName) {
+    public function usesTrait(string $traitName): bool {
         return in_array($traitName, $this->reflectionClass->getTraitNames());
     }
 
-
-    // Get a method inspector - cached as accessed for better performance.
-    private function getMethodInspector($methodName) {
+    /**
+     * Get a method inspector - cached as accessed for better performance.
+     * @returns Method
+     * @throws ReflectionException
+     */
+    private function getMethodInspector($methodName): Method {
         if (!isset($this->methodInspectors[$methodName])) {
-            $reflectionMethod = $methodName == "__construct" ? $this->reflectionClass->getConstructor() : $this->reflectionClass->getMethod($methodName);
+            $reflectionMethod = $methodName === "__construct" ? $this->reflectionClass->getConstructor() : $this->reflectionClass->getMethod($methodName);
 
             $this->methodInspectors[$methodName] = new Method($reflectionMethod, $this->classAnnotations->getMethodAnnotations()[$methodName] ?? [], $this);
         }
@@ -420,7 +421,7 @@ class ClassInspector {
 
 
     // Get a class name from a file
-    private function getClassNameFromFile($filename) {
+    private function getClassNameFromFile($filename): string {
 
         $file = file_get_contents($filename);
 

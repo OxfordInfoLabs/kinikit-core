@@ -91,7 +91,7 @@ class TemplatedEmail extends Email {
 
         // Check for header fields and parse them out.
         $explodedTemplate = explode("---", $template);
-        if (sizeof($explodedTemplate) > 1) {
+        if (count($explodedTemplate) > 1) {
 
             // Template is the second half
             $template = trim($explodedTemplate[1]);
@@ -100,7 +100,7 @@ class TemplatedEmail extends Email {
             foreach ($headerLines as $headerLine) {
                 $headerLine = explode(":", $headerLine);
                 $key = strtolower($headerLine[0]);
-                $value = join(":", array_slice($headerLine, 1));
+                $value = implode(":", array_slice($headerLine, 1));
 
                 // Handle array types
                 if ($key == "to" || $key == "cc" || $key == "bcc") {

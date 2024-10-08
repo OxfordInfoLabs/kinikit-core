@@ -19,7 +19,7 @@ class ContainerInterceptor {
      * @param $objectInstance
      * @param ClassInspector $classInspector
      */
-    public function afterCreate($objectInstance, $classInspector) {
+    public function afterCreate($objectInstance, ClassInspector $classInspector) {
     }
 
 
@@ -31,10 +31,10 @@ class ContainerInterceptor {
      *
      * @param object $objectInstance - The object being called
      * @param string $methodName - The method name
-     * @param mixed[string] $params - The parameters passed to the method as name => value pairs.
+     * @param mixed $params - The parameters passed to the method as name => value pairs.
      * @param Method $methodInspector - The class inspector instance for this class
      *
-     * @return string[string] - The params array either intact or modified if required.
+     * @return mixed - The params array either intact or modified if required.
      */
     public function beforeMethod($objectInstance, $methodName, $params, $methodInspector) {
         return $params;
@@ -47,7 +47,7 @@ class ContainerInterceptor {
      * @param callable $callable - The callable function being called
      * @param object $objectInstance - The object instance being called
      * @param string $methodName - The method namne
-     * @param mixed[string] $params - The parameters passed to the method as name => value pairs.
+     * @param mixed $params - The parameters passed to the method as name => value pairs.
      * @param Method $methodInspector - The reflection method object for this method.
      *
      * @return callable
@@ -63,13 +63,13 @@ class ContainerInterceptor {
      *
      * This should throw a suitable exception or simply return if no issues.
      *
-     * @param $object The object instance being called
-     * @param $methodName - The method name being called.
-     * @param $params - The input params to the method
-     * @param $returnValue - The return value from the method
+     * @param object $objectInstance The object instance being called
+     * @param string $methodName - The method name being called.
+     * @param array $params - The input params to the method
+     * @param mixed $returnValue - The return value from the method
      * @param Method $methodInspector - The reflection method object for this method.
      *
-     * @return $string - The return value, modified if required.
+     * @return mixed - The return value, modified if required.
      *
      */
     public function afterMethod($objectInstance, $methodName, $params, $returnValue, $methodInspector) {
@@ -83,9 +83,9 @@ class ContainerInterceptor {
      *
      * This doesn't return a value but throws the exception back to the client after completion.
      *
-     * @param $objectInstance - The object instance being called.
-     * @param $methodName - The method being called
-     * @param $params - The input params to the method.
+     * @param object $objectInstance - The object instance being called.
+     * @param string $methodName - The method being called
+     * @param mixed $params - The input params to the method.
      * @param \Throwable $exception - The exception object thrown
      * @param Method $methodInspector - The reflection method object for this method.
      */

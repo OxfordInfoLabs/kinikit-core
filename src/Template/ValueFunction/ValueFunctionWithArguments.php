@@ -15,8 +15,8 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
      * Implement the does function apply method to split the function name
      * and check our list of applicable functions
      *
-     * @param $functionString
-     * @return bool|void
+     * @param string $functionString
+     * @return bool
      */
     public function doesFunctionApply($functionString) {
 
@@ -30,7 +30,8 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
      *
      * @param string $functionString
      * @param mixed $value
-     * @return string|void
+     * @param array|null $model
+     * @return string
      */
     public function applyFunction($functionString, $value, $model) {
 
@@ -66,20 +67,24 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
             return $trimmed;
         }
 
-        if ($expression == "null") {
+        if ($expression === "null") {
             return null;
-        } elseif ($expression == "true") {
+        }
+
+        if ($expression === "true") {
             return true;
-        } elseif ($expression == "false") {
+        }
+
+        if ($expression === "false") {
             return false;
         }
 
         $explodedExpression = explode(".", $expression);
-        foreach ($explodedExpression as $expression) {
+        foreach ($explodedExpression as $component) {
             if (is_array($model))
-                $model = $model[$expression] ?? $expression;
+                $model = $model[$component] ?? $component;
             else
-                $model = $expression;
+                $model = $component;
         }
 
         return $model;

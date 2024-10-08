@@ -18,10 +18,13 @@ class StringUtils {
      * Generate a random string of the given length (for e.g. passwords etc).
      * Optional flags allow for capital letters, numbers and symbols
      *
-     * @param $numberOfChars
+     * @param int $numberOfChars
+     * @param bool $includeCaps
+     * @param bool $includeNumbers
      * @param bool $includeSymbols
+     * @return string
      */
-    public static function generateRandomString($numberOfChars, $includeCaps = true, $includeNumbers = true, $includeSymbols = false) {
+    public static function generateRandomString(int $numberOfChars, bool $includeCaps = true, bool $includeNumbers = true, bool $includeSymbols = false): string {
 
         $possibleChars = range(97, 122);
 
@@ -33,7 +36,7 @@ class StringUtils {
 
         $string = "";
         for ($i = 0; $i < $numberOfChars; $i++) {
-            $string .= chr($possibleChars[rand(0, sizeof($possibleChars) - 1)]);
+            $string .= chr($possibleChars[random_int(0, count($possibleChars) - 1)]);
         }
 
 
@@ -56,7 +59,7 @@ class StringUtils {
 
         $newString = "";
         foreach ($allWords[0] as $index => $word) {
-            $newString .= ($index == 0 ? lcfirst($word) : ucfirst($word));
+            $newString .= ($index === 0 ? lcfirst($word) : ucfirst($word));
         }
 
         return $newString;
@@ -67,21 +70,22 @@ class StringUtils {
     /**
      * Convert a string from camel case to space formatted with caps etc
      *
-     * @param $string
+     * @param string $string
+     * @return string
      */
-    public static function convertFromCamelCase($string) {
+    public static function convertFromCamelCase(string $string): string {
 
-        $string = preg_replace_callback('/(^|\W)([a-zA-Z].*?)($|\W)/', function ($matches) {
+        $string = preg_replace_callback('/(^|\W)([a-zA-Z].*?)($|\W)/', static function ($matches) {
 
             $splitCase = preg_split("/([A-Z0-9_]+)/", ucfirst($matches[2]), -1, PREG_SPLIT_DELIM_CAPTURE);
 
             $replacedString = "";
             foreach ($splitCase as $index => $item) {
-                if (($index + 1) % 2 == 0) {
+                if (($index + 1) % 2 === 0) {
                     $replacedString .= " ";
                 }
                 if ($item !== "_")
-                    $replacedString .= (($splitCase[$index - 1] ?? "") == "_") ? ucfirst($item) : $item;
+                    $replacedString .= (($splitCase[$index - 1] ?? "") === "_") ? ucfirst($item) : $item;
             }
 
             return $matches[1] . trim($replacedString) . $matches[3];
@@ -96,10 +100,11 @@ class StringUtils {
     /**
      * Convert a string with spaces to snake_case
      *
-     * @param $string
+     * @param string $string
+     * @param bool $includeNumbers
      * @return string
      */
-    public static function convertToSnakeCase($string, bool $includeNumbers = false) {
+    public static function convertToSnakeCase(string $string, bool $includeNumbers = false): string {
 
         // Undo any camel case
         $string = self::convertFromCamelCase($string);

@@ -117,20 +117,20 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
 
                 $expressions = [];
                 if ($unitDivisor) {
-                    for ($i = sizeof(self::DURATIONS) - 1; $i >= 0; $i--) {
+                    for ($i = count(self::DURATIONS) - 1; $i >= 0; $i--) {
                         $durationValue = $value / self::DURATIONS[$i]["multiplier"] * $unitDivisor;
                         if ($durationValue >= 1) {
                             $duration = floor($durationValue);
                             $expressions[] = $duration . " " . self::DURATIONS[$i]["label"] . ($duration > 1 ? "s" : "");
                             $value -= $duration * self::DURATIONS[$i]["multiplier"]; // This line not in ts version but not sure why
                         }
-                        if (sizeof($expressions) >= ($functionArgs[1] ?? 10)) {
+                        if (count($expressions) >= ($functionArgs[1] ?? 10)) {
                             break;
                         }
                     }
                 }
 
-                return join(" ", $expressions);
+                return implode(" ", $expressions);
 
             default:
                 return $value;

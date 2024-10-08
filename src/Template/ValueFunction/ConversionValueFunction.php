@@ -39,7 +39,7 @@ class ConversionValueFunction extends ValueFunctionWithArguments {
             case "toNumber":
                 $value = preg_replace("/[^0-9]/", "", $value ?? "");
                 if (is_numeric($value)) {
-                    return strpos($value, ".") ? floatval($value) : intval($value);
+                    return strpos($value, ".") ? (float)$value : (int)$value;
                 } else {
                     return $functionArgs[0] ?? null;
                 }
@@ -66,10 +66,11 @@ class ConversionValueFunction extends ValueFunctionWithArguments {
                     $queryParams = [];
                     foreach ($rawParams as $param) {
                         $exploded = explode("=", $param);
-                        if (sizeof($exploded) == 2)
+                        if (count($exploded) === 2) {
                             $queryParams[] = $exploded[0] . "=" . rawurlencode($exploded[1]);
+                        }
                     }
-                    $url .= "?" . join("&", $queryParams);
+                    $url .= "?" . implode("&", $queryParams);
                 }
                 return $url;
 

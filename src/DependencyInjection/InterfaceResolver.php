@@ -20,17 +20,17 @@ class InterfaceResolver {
      *
      * @var array
      */
-    private $explicitImplementations = [];
+    private array $explicitImplementations = [];
 
 
-    private $classInspectorProvider;
+    private ClassInspectorProvider $classInspectorProvider;
 
     /**
      * InterfaceResolver constructor.  Requires an injected class inspector provider.
      *
      * @param ClassInspectorProvider $classInspectorProvider
      */
-    public function __construct($classInspectorProvider) {
+    public function __construct(ClassInspectorProvider $classInspectorProvider) {
         $this->classInspectorProvider = $classInspectorProvider;
     }
 
@@ -44,7 +44,7 @@ class InterfaceResolver {
      * @return string
      * @throws MissingInterfaceImplementationException
      */
-    public function getCurrentlyConfiguredImplementationClass($interfaceClass) {
+    public function getCurrentlyConfiguredImplementationClass(string $interfaceClass): string {
 
         // Get the annotations for the class
         $classInspector = $this->classInspectorProvider->getClassInspector($interfaceClass);
@@ -52,8 +52,7 @@ class InterfaceResolver {
 
         // Look for implementation configs and parameter
         $configValue = null;
-        if (isset($classAnnotations["implementationConfigParam"]) &&
-            isset($classAnnotations["implementation"])) {
+        if (isset($classAnnotations["implementationConfigParam"], $classAnnotations["implementation"])) {
             $configParam = $classAnnotations["implementationConfigParam"][0]->getValue();
             $configValue = Configuration::readParameter($configParam);
 
@@ -72,11 +71,11 @@ class InterfaceResolver {
      * passed key.
      *
      * @param string $interfaceClass
-     * @param string $implementationKey
+     * @param string|null $implementationKey
      * @return string
      * @throws MissingInterfaceImplementationException
      */
-    public function getImplementationClassForKey($interfaceClass, $implementationKey = null) {
+    public function getImplementationClassForKey(string $interfaceClass, ?string $implementationKey = null): string {
 
         $interfaceClass = ltrim($interfaceClass, "\\");
         $classInspector = $this->classInspectorProvider->getClassInspector($interfaceClass);
@@ -92,7 +91,7 @@ class InterfaceResolver {
             $implementations = $classAnnotations["implementation"] ?? [];
             foreach ($implementations as $implementation) {
                 $explodedImp = explode(" ", trim($implementation->getValue()));
-                if ($explodedImp[0] == $implementationKey) {
+                if ($explodedImp[0] === $implementationKey) {
                     return ltrim(trim($explodedImp[1]), "\\");
                 }
             }
@@ -102,19 +101,20 @@ class InterfaceResolver {
 
             if (class_exists($className)){
                 return $className;
-            } elseif (class_exists("\\$className")) {
+            }
+
+            if (class_exists("\\$className")) {
                 return "\\$className";
-            } else {
-                throw new MissingInterfaceImplementationException("No interface implementation exists of type $interfaceClass for key $implementationKey. Classname: $className");
             }
-        } else {
-            // Otherwise, check for default implementation
-            if (isset($classAnnotations["defaultImplementation"])) {
-                return ltrim(trim($classAnnotations["defaultImplementation"][0]->getValue()), "\\");
-            } else {
-                throw new MissingInterfaceImplementationException("No default implementation exists of type $interfaceClass");
-            }
+
+            throw new MissingInterfaceImplementationException("No interface implementation exists of type $interfaceClass for key $implementationKey. Classname: $className");
         }
+
+        if (isset($classAnnotations["defaultImplementation"])) {
+            return ltrim(trim($classAnnotations["defaultImplementation"][0]->getValue()), "\\");
+        }
+
+        throw new MissingInterfaceImplementationException("No default implementation exists of type $interfaceClass");
 
     }
 
@@ -122,11 +122,11 @@ class InterfaceResolver {
     /**
      * Add an implementation class for the supplied key
      *
-     * @param $interfaceClass
-     * @param $implementationKey
+     * @param string $interfaceClass
+     * @param string $implementationKey
      * @param $implementationClass
      */
-    public function addImplementationClassForKey($interfaceClass, $implementationKey, $implementationClass) {
+    public function addImplementationClassForKey(string $interfaceClass, string $implementationKey, $implementationClass): void {
         $interfaceClass = ltrim($interfaceClass, "\\");
         if (!isset($this->explicitImplementations[$interfaceClass])) {
             $this->explicitImplementations[$interfaceClass] = [];

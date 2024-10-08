@@ -51,7 +51,7 @@ class AMPRequestDispatcher implements HttpRequestDispatcher {
         $ampHeaders = $ampResponse->getHeaders();
         $headers = [];
         foreach ($ampHeaders as $key => $headerArray){
-            $headers[$key] = join(";", $headerArray);
+            $headers[$key] = implode(";", $headerArray);
         }
         // TODO properly stream result
         // See the Amp/ByteStream/Payload interface

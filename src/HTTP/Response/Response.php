@@ -14,14 +14,14 @@ class Response {
      *
      * @var ReadableStream
      */
-    private $stream;
+    private ReadableStream $stream;
 
     /**
      * The status code for this response
      *
      * @var integer
      */
-    private $statusCode;
+    private int $statusCode;
 
 
     /**
@@ -29,14 +29,14 @@ class Response {
      *
      * @var Headers
      */
-    private $headers;
+    private Headers $headers;
 
     /**
      * The request which generated this response
      *
      * @var Request
      */
-    private $request;
+    private Request $request;
 
     /**
      * Response constructor.
@@ -46,8 +46,7 @@ class Response {
      * @param Headers $headers
      * @param Request $request
      */
-    public function __construct($stream, $statusCode, $headers, $request) {
-
+    public function __construct(ReadableStream $stream, int $statusCode, Headers $headers, Request $request) {
         $this->stream = $stream;
         $this->statusCode = $statusCode;
         $this->headers = $headers;
@@ -60,7 +59,7 @@ class Response {
      *
      * @return ReadableStream
      */
-    public function getStream() {
+    public function getStream(): ReadableStream {
         return $this->stream;
     }
 
@@ -69,28 +68,28 @@ class Response {
      *
      * @return string
      */
-    public function getBody() {
+    public function getBody(): string {
         return $this->stream->getContents();
     }
 
     /**
      * @return int
      */
-    public function getStatusCode() {
+    public function getStatusCode(): int {
         return $this->statusCode;
     }
 
     /**
      * @return Headers
      */
-    public function getHeaders() {
+    public function getHeaders(): Headers {
         return $this->headers;
     }
 
     /**
      * @return Request
      */
-    public function getRequest() {
+    public function getRequest(): Request {
         return $this->request;
     }
 

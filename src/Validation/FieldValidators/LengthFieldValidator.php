@@ -62,7 +62,7 @@ class LengthFieldValidator extends ObjectFieldValidator {
      */
     public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
-        if (sizeof($validatorParams) < ($this->mode == self::MODE_RANGE ? 2 : 1)) {
+        if (count($validatorParams) < ($this->mode == self::MODE_RANGE ? 2 : 1)) {
             throw new MisconfiguredValidatorException($this->getValidatorKey(), $fieldName, $targetObject);
         }
 

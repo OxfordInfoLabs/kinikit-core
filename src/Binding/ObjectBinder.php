@@ -3,7 +3,6 @@
 
 namespace Kinikit\Core\Binding;
 
-use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -22,14 +21,14 @@ class ObjectBinder {
     /**
      * @var ClassInspectorProvider
      */
-    private $classInspectorProvider;
+    private ClassInspectorProvider $classInspectorProvider;
 
 
     /**
      * ObjectBinder constructor.
      * @param ClassInspectorProvider $classInspectorProvider
      */
-    public function __construct($classInspectorProvider) {
+    public function __construct(ClassInspectorProvider $classInspectorProvider) {
         $this->classInspectorProvider = $classInspectorProvider;
     }
 
@@ -74,7 +73,7 @@ class ObjectBinder {
                     // Not this type
                 }
             }
-            throw new ObjectBindingException("Couldn't bind union type $targetClass to any of ".join(", ", $targetClasses));
+            throw new ObjectBindingException("Couldn't bind union type $targetClass to any of " . implode(", ", $targetClasses));
         }
 
         if (enum_exists($targetClass)) {
@@ -132,7 +131,7 @@ class ObjectBinder {
 
             // Inject each setter for params which were passed in and weren't included in constructor
             foreach ($classInspector->getSetters() as $key => $setter) {
-                if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
+                if (!in_array($key, $processedKeys) && isset($data[$key]) && count($setter->getParameters()) > 0) {
                     $parameter = $setter->getParameters()[0];
                     $parameterType = $parameter->getType();
                     $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly);
@@ -174,11 +173,11 @@ class ObjectBinder {
      * @param $object
      * @return array|string
      */
-    public function bindToArray($object, $publicOnly = true, $seenObjects = []) {
+    public function bindToArray($object, bool $publicOnly = true, array $seenObjects = []) {
 
 
         if ($object === null) {
-            return $object;
+            return null;
         }
 
         // if primitive, return intact straight away.
@@ -200,11 +199,11 @@ class ObjectBinder {
         }
 
         // If we have already seen this object, return null
-        if (in_array($object, $seenObjects)) {
+        if (in_array($object, $seenObjects, true)) {
             return null;
-        } else {
-            $seenObjects[] = $object;
         }
+
+        $seenObjects[] = $object;
 
 
         // If a resource we can't serialise
@@ -240,7 +239,7 @@ class ObjectBinder {
         // Now work through members.
         $members = $classInspector->getProperties();
         foreach ($members as $key => $member) {
-            if (!isset($processedKeys[$key]) && (!$publicOnly || $member->getVisibility() == Property::VISIBILITY_PUBLIC)) {
+            if (!isset($processedKeys[$key]) && (!$publicOnly || $member->getVisibility() === Property::VISIBILITY_PUBLIC)) {
                 $value = $member->get($object);
                 $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
                 $processedKeys[$key] = 1;

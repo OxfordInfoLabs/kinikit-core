@@ -118,7 +118,7 @@ trait MockObject {
         $methodCallHistory = $this->getMethodCallHistory($methodName);
 
         // Return false if never called
-        if (sizeof($methodCallHistory) == 0) {
+        if (count($methodCallHistory) == 0) {
             return false;
         }
 
@@ -181,7 +181,7 @@ trait MockObject {
 
         foreach ($array[$methodName] as $index => list($args, $currentReturnValue)) {
 
-            $matches = sizeof($args) == sizeof($matchingArgs);
+            $matches = count($args) == count($matchingArgs);
 
 
             if ($matches) {
@@ -199,7 +199,7 @@ trait MockObject {
         }
 
         foreach ($unsetArray[$methodName] ?? [] as $index => list($args, $currentReturnValue)){
-            $matches = sizeof($args) == sizeof($matchingArgs);
+            $matches = count($args) == count($matchingArgs);
 
 
             if ($matches) {
@@ -229,7 +229,7 @@ trait MockObject {
             $catchAll = null;
             foreach ($array[$methodName] as list($args, $returnValue)) {
 
-                $matches = sizeof($args) == sizeof($matchingArgs);
+                $matches = count($args) == count($matchingArgs);
 
                 if ($matches) {
                     foreach ($args as $index => $arg) {
