@@ -5,7 +5,6 @@ namespace Kinikit\Core\HTTP\Dispatcher;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Headers;
 use PHPUnit\Framework\TestCase;
-use Kinikit\Core\HTTP\Dispatcher\AMPRequestDispatcher;
 
 include_once "autoloader.php";
 
@@ -37,7 +36,7 @@ class AMPRequestDispatcherTest extends TestCase {
         $response = $this->dispatcher->dispatch($request);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue(strpos($response->getBody(), '"postId": 1') > 0);
-        $this->assertTrue(sizeof($response->getHeaders()->getHeaders()) > 5);
+        $this->assertTrue(count($response->getHeaders()->getHeaders()) > 5);
         $this->assertEquals("Express", $response->getHeaders()->get("x-powered-by"));
 
 

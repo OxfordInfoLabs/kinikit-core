@@ -3,7 +3,6 @@
 namespace Kinikit\Core\Logging;
 
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Reflection\TestAttributePOPO;
 use Kinikit\Core\Testing\MockObjectProvider;
 use PHPUnit\Framework\TestCase;
 

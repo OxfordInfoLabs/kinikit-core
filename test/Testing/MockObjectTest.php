@@ -4,14 +4,12 @@
 namespace Kinikit\Core\Testing;
 
 
-use http\Exception\BadMethodCallException;
 use Kinikit\Core\Binding\SimpleNullableObject;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\DependencyInjection\SimpleService;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Exception\NoneExistentMethodException;
-use Kinikit\Core\Exception\StatusException;
 use Kinikit\Core\Exception\WrongParametersException;
 
 include_once "autoloader.php";

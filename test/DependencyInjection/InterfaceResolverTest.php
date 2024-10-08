@@ -77,7 +77,6 @@ class InterfaceResolverTest extends \PHPUnit\Framework\TestCase {
         /** @var InterfaceResolver $resolver */
         $resolver = Container::instance()->get(InterfaceResolver::class);
         $resolver->addImplementationClassForKey("\\" . ImplementationMapping1::class, "goof", ImplementationMapping2::class);
-        $class = $resolver->getImplementationClassForKey("\\". ImplementationMapping1::class, "goof");
         $class = $resolver->getImplementationClassForKey(ImplementationMapping1::class, "goof");
         $this->assertEquals(ImplementationMapping2::class, $class);
     }

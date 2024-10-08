@@ -4,9 +4,7 @@
 namespace Kinikit\Core\Reflection;
 
 
-use Kinikit\Core\Annotation\Annotation;
 use Kinikit\Core\Annotation\ClassAnnotationParser;
-use Kinikit\Core\Annotation\TestAnnotatedClass;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 
@@ -38,11 +36,11 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $classInspector = new ClassInspector(TestTypedPOPO::class);
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getConstructor();
         $reflectionParams = $reflectionMethod->getParameters();
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
 
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(3, sizeof($params));
+        $this->assertEquals(3, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
         $this->assertEquals(new Parameter($reflectionParams[1], $methodInspector), $params[1]);
         $this->assertEquals(new Parameter($reflectionParams[2], $methodInspector), $params[2]);
@@ -50,28 +48,28 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         // Check one without params
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("getId");
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(0, sizeof($params));
+        $this->assertEquals(0, count($params));
 
 
         // Check one with param
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("setDob");
         $reflectionParams = $reflectionMethod->getParameters();
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(1, sizeof($params));
+        $this->assertEquals(1, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
 
         // Check one with class param
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("clone");
         $reflectionParams = $reflectionMethod->getParameters();
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(1, sizeof($params));
+        $this->assertEquals(1, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
 
     }
@@ -90,7 +88,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(3, sizeof($params));
+        $this->assertEquals(3, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
         $this->assertEquals(new Parameter($reflectionParams[1], $methodInspector), $params[1]);
         $this->assertEquals(new Parameter($reflectionParams[2], $methodInspector), $params[2]);
@@ -104,7 +102,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(0, sizeof($params));
+        $this->assertEquals(0, count($params));
 
 
         // Check one with param
@@ -115,7 +113,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(1, sizeof($params));
+        $this->assertEquals(1, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
 
         // Check one with class param
@@ -127,7 +125,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(1, sizeof($params));
+        $this->assertEquals(1, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
 
 
@@ -140,7 +138,7 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
         $methodInspector = new Method($reflectionMethod, $annotations, $classInspector);
 
         $params = $methodInspector->getParameters();
-        $this->assertEquals(1, sizeof($params));
+        $this->assertEquals(1, count($params));
         $this->assertEquals(new Parameter($reflectionParams[0], $methodInspector), $params[0]);
 
     }
@@ -152,25 +150,25 @@ class MethodTest extends \PHPUnit\Framework\TestCase {
 
         // Check constructor
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getConstructor();
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
 
         // Check one without params
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("getId");
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
 
         // Check one with param
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("setDob");
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
 
         // Check one with class param
         $reflectionMethod = (new \ReflectionClass(TestTypedPOPO::class))->getMethod("clone");
-        $methodInspector = new Method($reflectionMethod, null, $classInspector);
+        $methodInspector = new Method($reflectionMethod, [], $classInspector);
         $this->assertEquals(new ReturnType($methodInspector), $methodInspector->getReturnType());
 
 

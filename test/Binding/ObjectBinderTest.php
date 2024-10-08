@@ -2,10 +2,7 @@
 
 namespace Kinikit\Core\Binding;
 
-use Kinikit\Core\Binding\ObjectBindingException;
-use Kinikit\Core\Exception\StatusException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
-use Kinikit\Core\Reflection\TestAnnotatedPOPO;
 use Kinikit\Core\Reflection\TestEnum;
 use Kinikit\Core\Reflection\TestPropertyPOPO;
 use Kinikit\Core\Reflection\TestTypedPOPO;

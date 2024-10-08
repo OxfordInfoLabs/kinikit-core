@@ -5,7 +5,6 @@ namespace Kinikit\Core\Communication\Email;
 
 
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 
 class EmailTest extends \PHPUnit\Framework\TestCase {

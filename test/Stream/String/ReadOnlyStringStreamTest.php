@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\Stream\String;
 
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\StreamException;
 
 include_once "autoloader.php";

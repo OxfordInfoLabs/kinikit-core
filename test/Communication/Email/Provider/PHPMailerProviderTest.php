@@ -2,8 +2,6 @@
 
 namespace Kinikit\Core\Communication\Email\Provider;
 
-use Kinikit\Core\Communication\Email\Email;
-use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\Communication\Email\FileEmailAttachment;
 
 

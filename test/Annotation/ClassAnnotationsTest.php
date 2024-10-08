@@ -20,7 +20,7 @@ class ClassAnnotationsTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $matchingAnnotations = $annotations->getFieldAnnotationsForMatchingTag("validation");
-        $this->assertEquals(2, sizeof($matchingAnnotations));
+        $this->assertEquals(2, count($matchingAnnotations));
         $this->assertEquals(new Annotation("validation", "required"), $matchingAnnotations["tag"][0]);
         $this->assertEquals(new Annotation("validation", "required,maxlength(255)"), $matchingAnnotations["description"][0]);
 

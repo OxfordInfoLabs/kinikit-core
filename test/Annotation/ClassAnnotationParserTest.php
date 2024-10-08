@@ -21,7 +21,7 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $classAnnotations = $annotations->getClassAnnotations();
-        $this->assertEquals(5, sizeof($classAnnotations));
+        $this->assertEquals(5, count($classAnnotations));
         $this->assertEquals(new Annotation("mapped"), $classAnnotations["mapped"][0]);
         $this->assertEquals(new Annotation("ormTable", "active_record_container"), $classAnnotations["ormTable"][0]);
         $this->assertEquals(new Annotation("package", "Kinikit\Core\Util\Annotation"), $classAnnotations["package"][0]);
@@ -37,10 +37,10 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($annotations instanceof ClassAnnotations);
 
         $fieldAnnotations = $annotations->getFieldAnnotations();
-        $this->assertEquals(4, sizeof($fieldAnnotations));
+        $this->assertEquals(4, count($fieldAnnotations));
 
         $tagAnnotations = $fieldAnnotations["tag"];
-        $this->assertEquals(5, sizeof($tagAnnotations));
+        $this->assertEquals(5, count($tagAnnotations));
         $this->assertEquals(new Annotation("field"), $tagAnnotations["field"][0]);
         $this->assertEquals(new Annotation("primaryKey"), $tagAnnotations["primaryKey"][0]);
         $this->assertEquals(new Annotation("ormColumn", "tag_name"), $tagAnnotations["ormColumn"][0]);
@@ -49,14 +49,14 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
 
 
         $descAnnotations = $fieldAnnotations["description"];
-        $this->assertEquals(3, sizeof($descAnnotations));
+        $this->assertEquals(3, count($descAnnotations));
         $this->assertEquals(new Annotation("field"), $descAnnotations["field"][0]);
         $this->assertEquals(new Annotation("validation", "required,maxlength(255)"), $descAnnotations["validation"][0]);
         $this->assertTrue(isset($descAnnotations["comment"]));
 
 
         $arAnnotations = $fieldAnnotations["activeRecords"];
-        $this->assertEquals(6, sizeof($arAnnotations));
+        $this->assertEquals(6, count($arAnnotations));
         $this->assertEquals(new Annotation("relationship"), $arAnnotations["relationship"][0]);
         $this->assertEquals(new Annotation("multiple"), $arAnnotations["multiple"][0]);
         $this->assertEquals(new Annotation("relatedClass", "TestActiveRecord"), $arAnnotations["relatedClass"][0]);
@@ -66,7 +66,7 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
 
 
         $npAnnotations = $fieldAnnotations["nonPersisted"];
-        $this->assertEquals(1, sizeof($npAnnotations));
+        $this->assertEquals(1, count($npAnnotations));
         $this->assertTrue(isset($npAnnotations["comment"]));
 
 

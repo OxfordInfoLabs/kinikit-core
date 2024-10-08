@@ -2,10 +2,7 @@
 
 namespace Kinikit\Core\Stream\File;
 
-use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\StreamException;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
 
 include_once "autoloader.php";
 

@@ -10,8 +10,8 @@ namespace Kinikit\Core\Util;
 
 use Kinikit\Core\Exception\ClassNotSerialisableException;
 use Kinikit\Core\Object\NoneSerialisable;
-use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Object\ObjectWithId;
+use Kinikit\Core\Object\SerialisableObject;
 
 include_once "autoloader.php";
 

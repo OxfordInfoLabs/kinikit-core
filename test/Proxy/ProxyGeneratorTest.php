@@ -41,15 +41,15 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         // Check that there are inherited methods for all methods in service.
         $getName = $reflectionClass->getMethod("getName");
         $this->assertEquals($getName->getDeclaringClass()->getName(), "Kinikit\Core\DependencyInjection\SimpleServiceProxy");
-        $this->assertEquals(0, sizeof($getName->getParameters()));
+        $this->assertEquals(0, count($getName->getParameters()));
 
         $echoParams = $reflectionClass->getMethod("echoParams");
         $this->assertEquals($echoParams->getDeclaringClass()->getName(), "Kinikit\Core\DependencyInjection\SimpleServiceProxy");
-        $this->assertEquals(4, sizeof($echoParams->getParameters()));
+        $this->assertEquals(4, count($echoParams->getParameters()));
 
         $byReferenceParams = $reflectionClass->getMethod("byReference");
         $this->assertEquals($byReferenceParams->getDeclaringClass()->getName(), "Kinikit\Core\DependencyInjection\SimpleServiceProxy");
-        $this->assertEquals(1, sizeof($byReferenceParams->getParameters()));
+        $this->assertEquals(1, count($byReferenceParams->getParameters()));
 
 
         // Check that the methods can be called as usual on the proxy
@@ -82,7 +82,7 @@ class ProxyGeneratorTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(ServiceWithExplicitType::class, $reflectionClass->getParentClass()->getName());
 
         // Check that the constructor has no arguments in this case.
-        $this->assertEquals(2, sizeof($reflectionClass->getConstructor()->getParameters()));
+        $this->assertEquals(2, count($reflectionClass->getConstructor()->getParameters()));
 
         // Manually populate the class with the requirements for the Proxy trait
         $proxy = new \Kinikit\Core\DependencyInjection\ServiceWithExplicitTypeExtended(new SimpleService(), new \Kinikit\Core\DependencyInjection\SecondaryService(null));

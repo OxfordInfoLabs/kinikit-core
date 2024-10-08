@@ -4,6 +4,9 @@
 namespace Kinikit\Core\DependencyInjection;
 
 
+use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Reflection\Method;
+
 class TestContainerInterceptor extends ContainerInterceptor {
 
     public $afterCreates = array();

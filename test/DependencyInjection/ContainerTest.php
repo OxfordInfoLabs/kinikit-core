@@ -60,10 +60,10 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         // Get a title
         $complexService->ok();
 
-        $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
+        $this->assertEquals(1, count($methodInterceptor->beforeCalls));
         $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "ok"), $methodInterceptor->beforeCalls[0]);
 
-        $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
+        $this->assertEquals(1, count($methodInterceptor->afterCalls));
         $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "ok"), $methodInterceptor->afterCalls[0]);
 
 
@@ -72,7 +72,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
             $this->fail("Should have thrown here");
         } catch (\Exception $e) {
 
-            $this->assertEquals(1, sizeof($methodInterceptor->exceptionCalls));
+            $this->assertEquals(1, count($methodInterceptor->exceptionCalls));
             $this->assertEquals(array("Kinikit\Core\DependencyInjection\SecondaryServiceProxy", "throwException"), $methodInterceptor->exceptionCalls[0]);
 
 
@@ -90,10 +90,10 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         // Get a title
         $secondaryService->ok();
 
-        $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
+        $this->assertEquals(1, count($methodInterceptor->beforeCalls));
         $this->assertEquals(array(SecondaryService::class . "Proxy", "ok"), $methodInterceptor->beforeCalls[0]);
 
-        $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
+        $this->assertEquals(1, count($methodInterceptor->afterCalls));
         $this->assertEquals(array(SecondaryService::class . "Proxy", "ok"), $methodInterceptor->afterCalls[0]);
 
 
@@ -105,8 +105,8 @@ class ContainerTest extends \PHPUnit\Framework\TestCase {
         $simpleService->getName();
 
         // Check no additional calls
-        $this->assertEquals(1, sizeof($methodInterceptor->beforeCalls));
-        $this->assertEquals(1, sizeof($methodInterceptor->afterCalls));
+        $this->assertEquals(1, count($methodInterceptor->beforeCalls));
+        $this->assertEquals(1, count($methodInterceptor->afterCalls));
 
 
     }

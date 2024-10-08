@@ -7,7 +7,6 @@ use Kinikit\Core\Binding\ComplexObject;
 use Kinikit\Core\DependencyInjection\SecondaryService;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
-use Kinikit\Core\Testing\MockObjectProvider;
 use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
@@ -63,7 +62,7 @@ class ClassInspectorTest extends TestCase {
 
         // Check public methods
         $publicMethods = $classInspector->getPublicMethods();
-        $this->assertEquals(6, sizeof($publicMethods));
+        $this->assertEquals(6, count($publicMethods));
         $this->assertEquals(new Method($reflectionClass->getMethod("getId"), $annotations->getMethodAnnotations()["getId"], $classInspector), $publicMethods["getId"]);
         $this->assertEquals(new Method($reflectionClass->getMethod("getName"), $annotations->getMethodAnnotations()["getName"], $classInspector), $publicMethods["getName"]);
         $this->assertEquals(new Method($reflectionClass->getMethod("setName"), $annotations->getMethodAnnotations()["setName"], $classInspector), $publicMethods["setName"]);
@@ -95,7 +94,7 @@ class ClassInspectorTest extends TestCase {
 
         // Check public methods
         $publicMethods = $classInspector->getPublicMethods();
-        $this->assertEquals(18, sizeof($publicMethods)); // The class ReflectionParameter has 22 public methods, of which 4 are deprecated.
+        $this->assertEquals(18, count($publicMethods)); // The class ReflectionParameter has 22 public methods, of which 4 are deprecated.
 
     }
 
@@ -103,13 +102,13 @@ class ClassInspectorTest extends TestCase {
 
         $classInspector = new ClassInspector(TestTypedPOPO::class);
         $getters = $classInspector->getGetters();
-        $this->assertEquals(3, sizeof($getters));
+        $this->assertEquals(3, count($getters));
         $this->assertEquals("getId", $getters["id"]->getMethodName());
         $this->assertEquals("getName", $getters["name"]->getMethodName());
         $this->assertEquals("isSpecial", $getters["special"]->getMethodName());
 
         $setters = $classInspector->getSetters();
-        $this->assertEquals(2, sizeof($setters));
+        $this->assertEquals(2, count($setters));
         $this->assertEquals("setName", $setters["name"]->getMethodName());
         $this->assertEquals("setDob", $setters["dob"]->getMethodName());
 
@@ -122,7 +121,7 @@ class ClassInspectorTest extends TestCase {
         $properties = $classInspector->getProperties();
         $annotations = (new ClassAnnotationParser())->parse(TestTypedPOPO::class);
 
-        $this->assertEquals(4, sizeof($properties));
+        $this->assertEquals(4, count($properties));
 
         $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("id"), $annotations->getFieldAnnotations()["id"], $classInspector), $properties["id"]);
         $this->assertEquals(new Property($classInspector->getReflectionClass()->getProperty("name"), $annotations->getFieldAnnotations()["name"], $classInspector), $properties["name"]);
@@ -345,7 +344,7 @@ class ClassInspectorTest extends TestCase {
         $classInspector = new ClassInspector(TestPOPOSimilarProperties::class);
         $constructorParameters = $classInspector->getConstructor()->getParameters();
 
-        $this->assertEquals(2, sizeof($constructorParameters));
+        $this->assertEquals(2, count($constructorParameters));
         $this->assertEquals("nameKey", $constructorParameters[0]->getName());
         $this->assertEquals("string", $constructorParameters[0]->getType());
         $this->assertEquals("name", $constructorParameters[1]->getName());

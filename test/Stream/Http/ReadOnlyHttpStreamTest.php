@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\Stream\Http;
 
-use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\StreamException;
 
 include_once "autoloader.php";
@@ -13,7 +12,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
     public function testStatusAndResponseHeadersCapturedCorrectlyForValidHTTPRequest() {
 
         $stream = new ReadOnlyHttpStream("https://jsonplaceholder.typicode.com/posts");
-        $this->assertTrue(sizeof($stream->getResponseHeaders()) > 0);
+        $this->assertTrue(count($stream->getResponseHeaders()) > 0);
         $this->assertEquals("200", $stream->getResponseCode());
         $this->assertEquals("1000", $stream->getResponseHeaders()["x-ratelimit-limit"]);
 
@@ -35,7 +34,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
 
     public function testIfRedirectedDomainRedirectionStatusIsCapturedToo(){
         $stream = new ReadOnlyHttpStream("https://apple.co.uk");
-        $this->assertTrue(sizeof($stream->getResponseHeaders()) > 0);
+        $this->assertTrue(count($stream->getResponseHeaders()) > 0);
         $this->assertEquals("301", $stream->getResponseCode());
         $this->assertEquals("200", $stream->getRedirectResponseCode());
 
