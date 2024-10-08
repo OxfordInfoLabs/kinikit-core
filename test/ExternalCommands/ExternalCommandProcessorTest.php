@@ -15,12 +15,20 @@ class ExternalCommandProcessorTest extends TestCase {
         try {
             $resultCode = $commandProcessor->process("maliciouscommand 1000");
             $this->fail();
-        } catch (\Exception $e) {
+        } catch (ExternalCommandException $e) {
             $this->assertStringContainsString("not whitelisted", $e->getMessage());
             //Success
         }
 
-        $resultCode = $commandProcessor->process("false");
+        $resultCode = $commandProcessor->process("false", false);
         $this->assertEquals(1, $resultCode);
+
+        try {
+            $resultCode = $commandProcessor->process("false", true);
+            $this->fail();
+        } catch( ExternalCommandException $e) {
+            // Success
+            $this->assertStringContainsString("error code 1", $e->getMessage());
+        }
     }
 }
