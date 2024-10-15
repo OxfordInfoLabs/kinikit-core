@@ -17,6 +17,19 @@ class ExternalCommandProcessor {
      * @throws ExternalCommandException
      */
     public function process(string $command, bool $throwOnError = true){
+        $this->validateCommand($command);
+
+        exec($command, $outputArray, $resultCode);
+        $output = join("\n", $outputArray);
+        if ($throwOnError && $resultCode != 0){
+            $time = microtime(true);
+            Logger::log("$time External Command Processor failed on $command with error code $resultCode | Command output:\n$output", 4);
+            throw new ExternalCommandException("Command returned error code $resultCode at time $time. See logs for details.");
+        }
+        return $resultCode;
+    }
+
+    private function validateCommand(string $command){
         $commandName = explode(" ", $command)[0];
         if (!$commandName || !in_array($commandName, self::WhiteListedCommands)
             || str_contains($command, "|")
@@ -24,14 +37,18 @@ class ExternalCommandProcessor {
         ){
             throw new ExternalCommandException("Command is not whitelisted");
         }
+    }
+
+    public function processToOutput(string $command, bool $throwOnError = true){
+        $this->validateCommand($command);
 
         exec($command, $outputArray, $resultCode);
+        $output = join("\n", $outputArray);
         if ($throwOnError && $resultCode != 0){
             $time = microtime(true);
-            $output = join("\n", $outputArray);
             Logger::log("$time External Command Processor failed on $command with error code $resultCode | Command output:\n$output", 4);
             throw new ExternalCommandException("Command returned error code $resultCode at time $time. See logs for details.");
         }
-        return $resultCode;
+        return $output;
     }
 }
