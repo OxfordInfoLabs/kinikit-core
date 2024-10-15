@@ -31,4 +31,22 @@ class ExternalCommandProcessorTest extends TestCase {
             $this->assertStringContainsString("error code 1", $e->getMessage());
         }
     }
+
+    public function testProcessToOutput() {
+        $commandProcessor = new ExternalCommandProcessor();
+        $out = $commandProcessor->processToOutput("echo fishing!");
+        $this->assertEquals("fishing!", $out);
+        try {
+            $out = $commandProcessor->processToOutput("maliciouscommand 1000");
+            $this->fail();
+        } catch (ExternalCommandException $e) {
+            // Success
+        }
+        try {
+            $commandProcessor->processToOutput("false");
+            $this->fail();
+        } catch (ExternalCommandException $e) {
+            // Success
+        }
+    }
 }
