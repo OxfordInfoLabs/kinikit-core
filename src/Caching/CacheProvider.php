@@ -6,8 +6,9 @@ namespace Kinikit\Core\Caching;
  * @implementationConfigParam cache.provider
  *
  * @implementation file Kinikit\Core\Caching\FileCacheProvider
+ * @implementation memcache Kinikit\Core\Caching\MemcacheCacheProvider
  *
- * @defaultImplementation Kinikit\Core\Logging\FileLoggingProvider
+ * @defaultImplementation Kinikit\Core\Caching\FileCacheProvider
  */
 interface CacheProvider {
 
