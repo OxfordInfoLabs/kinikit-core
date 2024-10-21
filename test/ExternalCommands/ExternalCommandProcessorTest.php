@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\ExternalCommands;
 
+use Kinintel\Objects\Datasource\Command\CommandDatasource;
 use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
@@ -48,5 +49,33 @@ class ExternalCommandProcessorTest extends TestCase {
         } catch (ExternalCommandException $e) {
             // Success
         }
+    }
+
+    /**
+     * @group nontravis
+     */
+    public function testWasModifiedRecently() {
+        passthru("touch -c ~/.bashrc");
+
+        passthru("mkdir -p ~/tmp");
+        passthru("touch ~/tmp/example.txt");
+
+        $commandProcessor = new ExternalCommandProcessor();
+
+        $out = $commandProcessor->wasUpdatedInTheLast(
+            \DateInterval::createFromDateString("+1 hour"),
+            "~/.bashrc"
+        );
+
+        $this->assertFalse($out);
+
+
+        // PHP is in a different timezone from Linux so we need 2 hours
+        $out = $commandProcessor->wasUpdatedInTheLast(
+            \DateInterval::createFromDateString("+2 hour"),
+            "~/tmp/example.txt"
+        );
+
+        $this->assertTrue($out);
     }
 }
