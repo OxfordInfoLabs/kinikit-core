@@ -5,6 +5,7 @@ namespace Kinikit\Core\Reflection;
 
 
 use Kinikit\Core\Annotation\Annotation;
+use Kinikit\Core\Binding\SimpleGetterSetterObj;
 
 class TestAnnotatedPOPO {
 
@@ -59,6 +60,14 @@ class TestAnnotatedPOPO {
      */
     public function isSpecial() {
         return true;
+    }
+
+    /**
+     * @param null|SimpleGetterSetterObj[] $objects
+     * @return SimpleGetterSetterObj
+     */
+    public function getFirstObject($objects){
+        return $objects[0] ?? new SimpleGetterSetterObj();
     }
 
     /**
