@@ -117,7 +117,9 @@ class DateTimeUtils {
     public static function wasUpdatedInTheLast(DateInterval $dateInterval, string $file) : bool {
         $file = str_replace("~", getenv("HOME"), $file);
         if (!file_exists($file)) return false;
-        $lastModifiedDate = date_create(filemtime($file));
+        $lastModifiedTimestamp = filemtime($file);
+        if ($lastModifiedTimestamp === false) return false;
+        $lastModifiedDate = date_create();
         return $lastModifiedDate > date_create()->sub($dateInterval);
     }
 

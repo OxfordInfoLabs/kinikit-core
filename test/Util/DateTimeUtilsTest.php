@@ -3,9 +3,9 @@
 namespace Kinikit\Core\Util;
 
 use Kinikit\Core\ExternalCommands\ExternalCommandProcessor;
-use Kinikit\Core\Logging\Logger;
 use PHPUnit\Framework\TestCase;
 
+include_once "autoloader.php";
 class DateTimeUtilsTest extends TestCase {
     /**
      * @group nontravis
@@ -30,5 +30,11 @@ class DateTimeUtilsTest extends TestCase {
             "~/tmp/example.txt"
         );
         $this->assertTrue($out);
+
+        $out = DateTimeUtils::wasUpdatedInTheLast(
+            \DateInterval::createFromDateString("+1 hour"),
+            "~/SOMETHING_WHICH_DOESNT_EXIST"
+        );
+        $this->assertFalse($out);
     }
 }
