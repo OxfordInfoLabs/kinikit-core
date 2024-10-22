@@ -53,12 +53,4 @@ class ExternalCommandProcessor {
         return $output;
     }
 
-    public function wasUpdatedInTheLast(DateInterval $dateInterval, string $file) : bool {
-        $file = str_replace("~", getenv("HOME"), $file);
-        if (!file_exists($file)) return false;
-        $command = "date -r $file -u \"+%Y-%m-%d %H:%M:%S\"";
-        $lastModifiedDateString = $this->processToOutput($command);
-        $lastModifiedDate = date_create_from_format("Y-m-d H:i:s", $lastModifiedDateString);
-        return $lastModifiedDate > date_create()->sub($dateInterval);
-    }
 }
