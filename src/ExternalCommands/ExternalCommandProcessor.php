@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\ExternalCommands;
 
+use DateInterval;
 use Exception;
 use Kinikit\Core\Logging\Logger;
 
@@ -50,5 +51,14 @@ class ExternalCommandProcessor {
             throw new ExternalCommandException("Command returned error code $resultCode at time $time. See logs for details.");
         }
         return $output;
+    }
+
+    public function wasUpdatedInTheLast(DateInterval $dateInterval, string $file) : bool {
+        $file = str_replace("~", getenv("HOME"), $file);
+        if (!file_exists($file)) return false;
+        $command = "date -r $file -u \"+%Y-%m-%d %H:%M:%S\"";
+        $lastModifiedDateString = $this->processToOutput($command);
+        $lastModifiedDate = date_create_from_format("Y-m-d H:i:s", $lastModifiedDateString);
+        return $lastModifiedDate > date_create()->sub($dateInterval);
     }
 }
