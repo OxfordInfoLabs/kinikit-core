@@ -1,6 +1,6 @@
 application.namespace = Kinikit\Core
 
-log.file = /tmp/ooacorelog.log
+log.file = /tmp/file_logging_test.log
 
 param1 = nissan
 param2 = toyota
