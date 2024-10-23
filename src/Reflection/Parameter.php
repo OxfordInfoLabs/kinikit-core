@@ -81,7 +81,7 @@ class Parameter {
             $this->explicitlyTyped = true;
         } else { // Untyped or array - refer to annotations
 
-            $methodAnnotations = isset($method->getMethodAnnotations()["param"]) ? $method->getMethodAnnotations()["param"] : [];
+            $methodAnnotations = $method->getMethodAnnotations()["param"] ?? [];
 
             foreach ($methodAnnotations as $annotation) {
                 if (preg_match("/.+?\\$" . $reflectionParameter->getName() . "($|\\[| )/", $annotation->getValue())) {
@@ -90,18 +90,29 @@ class Parameter {
                     $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
                     $type = explode(" ", $type)[0];
 
-                    list($type, $arraySuffix) = $this->stripArrayTypeSuffix($type);
 
-                    if (!Primitive::isStringPrimitiveType($type)) {
-                        if (isset($declaredNamespaceClasses[$type]))
-                            $type = $declaredNamespaceClasses[$type];
-                        else {
-                            if (substr($type, 0, 1) != "\\") {
-                                $type = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $type;
+                    // Deal with union types in annotations
+                    $possibleTypes = explode("|", $type);
+
+                    $prependNamespacesFn = function($possibleType) use ($declaredNamespaceClasses, $method) {
+                        [$possibleType, $arraySuffix] = $this->stripArrayTypeSuffix($possibleType);
+                        $namespacedType = $possibleType;
+                        if (!Primitive::isStringPrimitiveType($possibleType) && $possibleType !== "null") {
+                            if (isset($declaredNamespaceClasses[$possibleType]))
+                                $namespacedType = $declaredNamespaceClasses[$possibleType];
+                            else {
+                                if (!str_starts_with($possibleType, "\\")) { // Prepend namespace
+                                    $namespacedType = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $possibleType;
+                                }
                             }
                         }
+                        return $namespacedType . $arraySuffix;
+                    };
 
-                    }
+                    $possibleTypes = array_map($prependNamespacesFn, $possibleTypes);
+
+                    $type = join("|", $possibleTypes);
+
                     break;
                 }
             }
