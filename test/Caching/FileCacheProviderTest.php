@@ -19,7 +19,7 @@ class FileCacheProviderTest extends TestCase {
         $this->cacheDir = Configuration::readParameter("files.root") . "/cache";
 
         if (!file_exists($this->cacheDir)) {
-            mkdir($this->cacheDir);
+            mkdir($this->cacheDir, 777, true);
         }
     }
 
