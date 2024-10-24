@@ -12,14 +12,8 @@ class MemcacheCacheProvider implements CacheProvider {
 
     private $memcache;
 
-    private ObjectToJSONConverter $objectToJSONConverter;
-
-    private JSONToObjectConverter $JSONToObjectConverter;
-
     public function __construct(Memcache $memcache) {
         $this->memcache = $memcache;
-        $this->objectToJSONConverter = Container::instance()->get(ObjectToJSONConverter::class);
-        $this->JSONToObjectConverter = Container::instance()->get(JSONToObjectConverter::class);
     }
 
     public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null) {
