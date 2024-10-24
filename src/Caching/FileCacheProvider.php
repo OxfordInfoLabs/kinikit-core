@@ -2,26 +2,26 @@
 
 namespace Kinikit\Core\Caching;
 
+use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Serialisation\JSON\JSONToObjectConverter;
-use Kinikit\Core\Serialisation\JSON\ObjectToJSONConverter;
 
 class FileCacheProvider implements CacheProvider {
 
     private string $cacheDir;
 
-    private ObjectToJSONConverter $objectToJSONConverter;
-
-    private JSONToObjectConverter $JSONToObjectConverter;
+    private ObjectBinder $objectBinder;
 
     public function __construct() {
         $this->cacheDir = Configuration::readParameter("files.root") . "/cache";
-        $this->objectToJSONConverter = Container::instance()->get(ObjectToJSONConverter::class);
-        $this->JSONToObjectConverter = Container::instance()->get(JSONToObjectConverter::class);
+        $this->objectBinder = Container::instance()->get(ObjectBinder::class);
+
+        if (!file_exists($this->cacheDir)) {
+            mkdir($this->cacheDir);
+        }
     }
 
-    public function lookup(string $key, callable $generatorFunction, int $ttl, string $returnClass = null) {
+    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null) {
 
         // Check if it exists in the cache
         $value = $this->readCache($key, $returnClass);
@@ -32,7 +32,11 @@ class FileCacheProvider implements CacheProvider {
         }
 
         // Execute the callable
-        $value = $generatorFunction();
+        $value = $generatorFunction(...$params);
+
+        if ($value instanceof \Throwable) {
+            throw $value;
+        }
 
         // Cache the output
         $this->writeToCache($key, $value, $ttl);
@@ -55,7 +59,8 @@ class FileCacheProvider implements CacheProvider {
 
                 $valueString = file_get_contents($file);
                 if ($returnClass) {
-                    return $this->JSONToObjectConverter->convert($valueString, $returnClass);
+                    $json = json_decode($valueString, true);
+                    return $this->objectBinder->bindFromArray($json, $returnClass, false);
                 }
 
                 return $valueString;
@@ -71,7 +76,8 @@ class FileCacheProvider implements CacheProvider {
         $expiry = date_create("+{$ttl} seconds")->format("YmdHis");
 
         if (is_object($value)) {
-            $value = $this->objectToJSONConverter->convert($value);
+            $arr = $this->objectBinder->bindToArray($value, false, [], true);
+            $value = json_encode($arr);
         }
 
         file_put_contents($this->cacheDir . "/$key-$expiry.txt", $value);

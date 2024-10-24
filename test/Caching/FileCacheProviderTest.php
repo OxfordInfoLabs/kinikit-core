@@ -105,7 +105,7 @@ class FileCacheProviderTest extends TestCase {
             return new SimpleObject("green");
         };
 
-        $response = $this->cacheProvider->lookup("objectKey", $myFunction, 10, SimpleObject::class);
+        $response = $this->cacheProvider->lookup("objectKey", $myFunction, 10, [], SimpleObject::class);
 
         $this->assertInstanceOf(SimpleObject::class, $response);
         $this->assertEquals("blue", $response->getColour());

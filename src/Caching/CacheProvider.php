@@ -12,7 +12,7 @@ namespace Kinikit\Core\Caching;
  */
 interface CacheProvider {
 
-    public function lookup(string $key, callable $generatorFunction, int $ttl, string $returnClass = null);
+    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null);
 
     public function clearCache(): void;
 
