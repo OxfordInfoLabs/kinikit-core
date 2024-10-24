@@ -33,7 +33,8 @@ class FileCacheProviderTest extends TestCase {
 
         // Can it return and write to an empty cache?
         $expiryTime = date_create("+30 seconds")->format("YmdHis");
-        $cacheFile = $this->cacheDir . "/someKey-$expiryTime.txt";
+        $hashedKey = md5("someKey");
+        $cacheFile = $this->cacheDir . "/$hashedKey-$expiryTime.txt";
 
         $myFunction = function () {
             return "Hello!";
@@ -56,13 +57,14 @@ class FileCacheProviderTest extends TestCase {
 
         $this->assertEquals("Hello!", $response);
         $this->assertFileExists($cacheFile);
-        $this->assertFileDoesNotExist($this->cacheDir . "/someKey-$newExpiryTime.txt");
+        $this->assertFileDoesNotExist($this->cacheDir . "/$hashedKey-$newExpiryTime.txt");
 
         unlink($cacheFile);
 
         // Does it ignore a stale cache?
         $oldExpiryTime = date_create("-30 seconds")->format("YmdHis");
-        $cacheFile = $this->cacheDir . "/yetAnotherKey-$oldExpiryTime.txt";
+        $hashedKey = md5("yetAnotherKey");
+        $cacheFile = $this->cacheDir . "/$hashedKey-$oldExpiryTime.txt";
 
         file_put_contents($cacheFile, "My stale cached value.");
 
@@ -75,8 +77,8 @@ class FileCacheProviderTest extends TestCase {
 
         $this->assertEquals("I'm a new value!", $response);
         $this->assertFileDoesNotExist($cacheFile);
-        $this->assertFileExists($this->cacheDir . "/yetAnotherKey-$newExpiryTime.txt");
-        $this->assertEquals("I'm a new value!", file_get_contents($this->cacheDir . "/yetAnotherKey-$newExpiryTime.txt"));
+        $this->assertFileExists($this->cacheDir . "/$hashedKey-$newExpiryTime.txt");
+        $this->assertEquals("I'm a new value!", file_get_contents($this->cacheDir . "/$hashedKey-$newExpiryTime.txt"));
 
     }
 
@@ -85,7 +87,8 @@ class FileCacheProviderTest extends TestCase {
 
         // Does it return and write to the cache?
         $expiryTime = date_create("+30 seconds")->format("YmdHis");
-        $cacheFile = $this->cacheDir . "/objectKey-$expiryTime.txt";
+        $hashedKey = md5("objectKey");
+        $cacheFile = $this->cacheDir . "/$hashedKey-$expiryTime.txt";
 
         $myFunction = function () {
             return new SimpleObject("blue");
@@ -99,7 +102,7 @@ class FileCacheProviderTest extends TestCase {
 
         // Does it read from the cache and convert to the object?
         $newExpiryTime = date_create("+10 seconds")->format("YmdHis");
-        $wouldBeCacheFile = $this->cacheDir . "/objectKey-$newExpiryTime.txt";
+        $wouldBeCacheFile = $this->cacheDir . "/$hashedKey-$newExpiryTime.txt";
 
         $myFunction = function () {
             return new SimpleObject("green");

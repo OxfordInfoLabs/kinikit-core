@@ -3,12 +3,9 @@
 namespace Kinikit\Core\Caching;
 
 use Google\AppEngine\Api\Memcache\Memcache;
-use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Serialisation\JSON\JSONToObjectConverter;
-use Kinikit\Core\Serialisation\JSON\ObjectToJSONConverter;
 
-class MemcacheCacheProvider implements CacheProvider {
+class MemcacheCacheProvider extends BaseCachingProvider {
 
     private $memcache;
 
@@ -16,31 +13,15 @@ class MemcacheCacheProvider implements CacheProvider {
         $this->memcache = $memcache;
     }
 
-    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null) {
-
-        // Check if it exists in the cache
-        $value = $this->memcache->get($key);
-
-        // If so, return the output
-        if ($value) {
-            return $value;
-        }
-
-        // Execute the callable
-        $value = $generatorFunction(...$params);
-
-        // Cache the output
-        try {
-            $this->memcache->set($key, $value, null, $ttl);
-        } catch (\Exception $e) {
-            Logger::log($e);
-        }
-
-        return $value;
-    }
-
     public function clearCache(): void {
         $this->memcache->flush();
     }
 
+    public function set(string $key, mixed $value, int $ttl): void {
+        $this->memcache->set($key, $value, null, $ttl);
+    }
+
+    public function get(string $key, ?string $returnClass = null) {
+        return $this->memcache->get($key);
+    }
 }

@@ -6,7 +6,7 @@ use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 
-class FileCacheProvider implements CacheProvider {
+class FileCacheProvider extends BaseCachingProvider {
 
     private string $cacheDir;
 
@@ -21,31 +21,9 @@ class FileCacheProvider implements CacheProvider {
         }
     }
 
-    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null) {
+    public function get(string $key, ?string $returnClass = null) {
 
-        // Check if it exists in the cache
-        $value = $this->readCache($key, $returnClass);
-
-        // If so, return the output
-        if ($value) {
-            return $value;
-        }
-
-        // Execute the callable
-        $value = $generatorFunction(...$params);
-
-        if ($value instanceof \Throwable) {
-            throw $value;
-        }
-
-        // Cache the output
-        $this->writeToCache($key, $value, $ttl);
-
-        return $value;
-
-    }
-
-    private function readCache(string $key, ?string $returnClass): mixed {
+        $key = md5($key);
 
         foreach (glob($this->cacheDir . "/$key*") as $file) {
             if (str_starts_with(basename($file), "$key-")) {
@@ -70,7 +48,9 @@ class FileCacheProvider implements CacheProvider {
         return false;
     }
 
-    private function writeToCache(string $key, mixed $value, int $ttl): void {
+    public function set(string $key, mixed $value, int $ttl): void {
+
+        $key = md5($key);
 
         // Write the output to the cache
         $expiry = date_create("+{$ttl} seconds")->format("YmdHis");
@@ -91,5 +71,4 @@ class FileCacheProvider implements CacheProvider {
         }
 
     }
-
 }
