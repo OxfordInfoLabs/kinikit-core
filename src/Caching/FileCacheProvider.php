@@ -23,10 +23,10 @@ class FileCacheProvider extends BaseCachingProvider {
 
     public function get(string $key, ?string $returnClass = null) {
 
-        $key = md5($key);
+        $keyHash = md5($key);
 
-        foreach (glob($this->cacheDir . "/$key*") as $file) {
-            if (str_starts_with(basename($file), "$key-")) {
+        foreach (glob($this->cacheDir . "/$keyHash*") as $file) {
+            if (str_starts_with(basename($file), "$keyHash-")) {
                 $now = date("YmdHis");
                 $expiryTime = explode('-', substr(basename($file), 0, -4))[1];
 
@@ -50,17 +50,17 @@ class FileCacheProvider extends BaseCachingProvider {
 
     public function set(string $key, mixed $value, int $ttl): void {
 
-        $key = md5($key);
+        $keyHash = md5($key);
 
         // Write the output to the cache
         $expiry = date_create("+{$ttl} seconds")->format("YmdHis");
 
         if (is_object($value)) {
-            $arr = $this->objectBinder->bindToArray($value, false, [], true);
+            $arr = $this->objectBinder->bindToArray($value, false);
             $value = json_encode($arr);
         }
 
-        file_put_contents($this->cacheDir . "/$key-$expiry.txt", $value);
+        file_put_contents($this->cacheDir . "/$keyHash-$expiry.txt", $value);
 
     }
 
