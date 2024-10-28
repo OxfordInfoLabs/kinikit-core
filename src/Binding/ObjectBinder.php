@@ -239,15 +239,17 @@ class ObjectBinder {
 
         // Now work through members.
         $members = $classInspector->getProperties();
+        print_r($processedKeys);
         foreach ($members as $key => $member) {
+            print_r($key);
             if (!isset($processedKeys[$key]) && (!$publicOnly || $member->getVisibility() == Property::VISIBILITY_PUBLIC)) {
                 $value = $member->get($object);
-                $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
+                $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects, $ignoreGetters);
                 $processedKeys[$key] = 1;
             }
         }
 
-
+        print_r($targetArray);
         return $targetArray;
     }
 
