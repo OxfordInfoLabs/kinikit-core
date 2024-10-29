@@ -2,26 +2,21 @@
 
 namespace Kinikit\Core\Caching;
 
-use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\DependencyInjection\Container;
 
 class FileCacheProvider extends BaseCachingProvider {
 
     private string $cacheDir;
 
-    private ObjectBinder $objectBinder;
-
     public function __construct() {
         $this->cacheDir = Configuration::readParameter("files.root") . "/cache";
-        $this->objectBinder = Container::instance()->get(ObjectBinder::class);
 
         if (!file_exists($this->cacheDir)) {
             mkdir($this->cacheDir);
         }
     }
 
-    public function get(string $key, ?string $returnClass = null) {
+    public function get(string $key) {
 
         $keyHash = md5($key);
 
@@ -36,12 +31,8 @@ class FileCacheProvider extends BaseCachingProvider {
                 }
 
                 $valueString = file_get_contents($file);
-                if ($returnClass) {
-                    $json = json_decode($valueString, true);
-                    return $this->objectBinder->bindFromArray($json, $returnClass, false);
-                }
 
-                return $valueString;
+                return unserialize($valueString);
             }
         }
 
@@ -55,12 +46,7 @@ class FileCacheProvider extends BaseCachingProvider {
         // Write the output to the cache
         $expiry = date_create("+{$ttl} seconds")->format("YmdHis");
 
-        if (is_object($value)) {
-            $arr = $this->objectBinder->bindToArray($value, false);
-            $value = json_encode($arr);
-        }
-
-        file_put_contents($this->cacheDir . "/$keyHash-$expiry.txt", $value);
+        file_put_contents($this->cacheDir . "/$keyHash-$expiry.txt", serialize($value));
 
     }
 

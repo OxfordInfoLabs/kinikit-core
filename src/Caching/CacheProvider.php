@@ -16,10 +16,10 @@ interface CacheProvider {
     public function set(string $key, mixed $value, int $ttl): void;
 
     // Get a value from the cache
-    public function get(string $key, ?string $returnClass = null);
+    public function get(string $key);
 
     // Lookup a value - get if exists, else call the function and set.
-    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null);
+    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = []);
 
     // Flush the cache
     public function clearCache(): void;

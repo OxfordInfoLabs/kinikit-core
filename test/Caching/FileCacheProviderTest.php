@@ -44,7 +44,7 @@ class FileCacheProviderTest extends TestCase {
 
         $this->assertEquals("Hello!", $response);
         $this->assertFileExists($cacheFile);
-        $this->assertEquals("Hello!", file_get_contents($cacheFile));
+        $this->assertEquals('s:6:"Hello!";', file_get_contents($cacheFile));
 
 
         // Does it return an unexpired cache value
@@ -78,7 +78,7 @@ class FileCacheProviderTest extends TestCase {
         $this->assertEquals("I'm a new value!", $response);
         $this->assertFileDoesNotExist($cacheFile);
         $this->assertFileExists($this->cacheDir . "/$hashedKey-$newExpiryTime.txt");
-        $this->assertEquals("I'm a new value!", file_get_contents($this->cacheDir . "/$hashedKey-$newExpiryTime.txt"));
+        $this->assertEquals('s:16:"I\'m a new value!";', file_get_contents($this->cacheDir . "/$hashedKey-$newExpiryTime.txt"));
 
     }
 
@@ -98,7 +98,7 @@ class FileCacheProviderTest extends TestCase {
 
         $this->assertEquals(new SimpleObject("blue"), $response);
         $this->assertFileExists($cacheFile);
-        $this->assertEquals('{"colour":"blue"}', file_get_contents($cacheFile));
+        $this->assertEquals(serialize(new SimpleObject("blue")), file_get_contents($cacheFile));
 
         // Does it read from the cache and convert to the object?
         $newExpiryTime = date_create("+10 seconds")->format("YmdHis");

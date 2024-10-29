@@ -6,10 +6,10 @@ use Kinikit\Core\Logging\Logger;
 
 class BaseCachingProvider implements CacheProvider {
 
-    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = [], ?string $returnClass = null) {
+    public function lookup(string $key, callable $generatorFunction, int $ttl, array $params = []) {
 
         // Check if it exists in the cache
-        $value = $this->get($key, $returnClass);
+        $value = $this->get($key);
 
         // If so, return the output
         if ($value) {
@@ -32,16 +32,13 @@ class BaseCachingProvider implements CacheProvider {
 
     // Define in actual cache providers
     public function set(string $key, mixed $value, int $ttl): void {
-
     }
 
     // Define in actual cache providers
-    public function get(string $key, ?string $returnClass = null) {
-
+    public function get(string $key){
     }
 
     // Define in actual providers
     public function clearCache(): void {
-
     }
 }

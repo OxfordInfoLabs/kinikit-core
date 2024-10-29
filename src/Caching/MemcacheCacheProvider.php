@@ -3,7 +3,6 @@
 namespace Kinikit\Core\Caching;
 
 use Google\AppEngine\Api\Memcache\Memcache;
-use Kinikit\Core\Logging\Logger;
 
 class MemcacheCacheProvider extends BaseCachingProvider {
 
@@ -21,7 +20,7 @@ class MemcacheCacheProvider extends BaseCachingProvider {
         $this->memcache->set($key, $value, null, $ttl);
     }
 
-    public function get(string $key, ?string $returnClass = null) {
+    public function get(string $key) {
         return $this->memcache->get($key);
     }
 }
