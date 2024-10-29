@@ -2,12 +2,17 @@
 
 namespace Kinikit\Core\Stream\Http;
 
+
+use Kinikit\Core\Init;
 use Kinikit\Core\Stream\StreamException;
 
 include_once "autoloader.php";
 
 class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
 
+    public function setUp(): void {
+        new Init(); // Get the error handler set up so errors are raised as exceptions
+    }
 
     public function testStatusAndResponseHeadersCapturedCorrectlyForValidHTTPRequest() {
 
@@ -32,7 +37,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function testIfRedirectedDomainRedirectionStatusIsCapturedToo(){
+    public function testIfRedirectedDomainRedirectionStatusIsCapturedToo() {
         $stream = new ReadOnlyHttpStream("https://apple.co.uk");
         $this->assertTrue(count($stream->getResponseHeaders()) > 0);
         $this->assertEquals("301", $stream->getResponseCode());

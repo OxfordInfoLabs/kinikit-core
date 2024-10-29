@@ -39,7 +39,11 @@ class ClassInspectorTest extends TestCase {
     public function testDeclaredNamespaceClassesAlsoIncludeNamespacesFromParentClassesAndTraits() {
 
         $classInspector = new ClassInspector(TestExtendedPOPO::class);
-        $this->assertEquals(["Annotation" => "\Kinikit\Core\Annotation\Annotation"], $classInspector->getDeclaredNamespaceClasses());
+        $expectedNamespaces = [
+            "Annotation" => "\Kinikit\Core\Annotation\Annotation",
+            "SimpleGetterSetterObj" => "\Kinikit\Core\Binding\SimpleGetterSetterObj",
+        ];
+        $this->assertEquals($expectedNamespaces, $classInspector->getDeclaredNamespaceClasses());
 
         $classInspector = new ClassInspector(TestTraitedPOPO::class);
         $this->assertEquals(["Annotation" => "\Kinikit\Core\Annotation\Annotation"], $classInspector->getDeclaredNamespaceClasses());

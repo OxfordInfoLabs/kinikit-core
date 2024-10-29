@@ -78,16 +78,28 @@ class Parameter {
                     $type = trim(str_replace('$' . $reflectionParameter->getName(), "", $annotation->getValue()));
                     $type = explode(" ", $type)[0];
 
-                    [$type, $arraySuffix] = $this->stripArrayTypeSuffix($type);
+                    // Deal with union types in annotations
+                    $possibleTypes = explode("|", $type);
 
-                    if (!Primitive::isStringPrimitiveType($type)) {
-                        if (isset($declaredNamespaceClasses[$type])) {
-                            $type = $declaredNamespaceClasses[$type];
-                        } else if (!str_starts_with($type, "\\")) {
-                            $type = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $type;
+                    $prependNamespacesFn = function($possibleType) use ($declaredNamespaceClasses, $method) {
+                        [$possibleType, $arraySuffix] = $this->stripArrayTypeSuffix($possibleType);
+                        $namespacedType = $possibleType;
+                        if ($possibleType !== "null" && !Primitive::isStringPrimitiveType($possibleType)) {
+                            if (isset($declaredNamespaceClasses[$possibleType])) {
+                                $namespacedType = $declaredNamespaceClasses[$possibleType];
+                            }
+                            else if (!str_starts_with($possibleType, "\\")) { // Prepend namespace
+                                $namespacedType = "\\" . $method->getReflectionMethod()->getDeclaringClass()->getNamespaceName() . "\\" . $possibleType;
+                            }
+
                         }
+                        return $namespacedType . $arraySuffix;
+                    };
 
-                    }
+                    $possibleTypes = array_map($prependNamespacesFn, $possibleTypes);
+
+                    $type = implode("|", $possibleTypes);
+
                     break;
                 }
             }

@@ -2,11 +2,16 @@
 
 namespace Kinikit\Core\Stream\File;
 
+use Kinikit\Core\Init;
 use Kinikit\Core\Stream\StreamException;
 
 include_once "autoloader.php";
 
 class ReadOnlyFileStreamTest extends \PHPUnit\Framework\TestCase {
+
+    public function setUp(): void {
+        new Init(); // Get the error handler set up so errors are raised as exceptions
+    }
 
 
     public function testExceptionRaisedIfAttemptToOpenStreamForNonExistentFile() {

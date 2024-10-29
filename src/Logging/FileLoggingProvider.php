@@ -8,7 +8,7 @@ class FileLoggingProvider implements LoggingProvider {
 
     public function log(mixed $message, int $severity = 7): void {
 
-        if ($message instanceof \Exception) {
+        if ($message instanceof \Throwable) {
 
             if ($severity > 4)
                 $severity = 4; // Exceptions have a minimum severity of 4
@@ -22,13 +22,11 @@ class FileLoggingProvider implements LoggingProvider {
             $this->writeLog($message, $severity);
 
         } else if (is_object($message)) {
-
             $message = get_class($message) . "\n" . var_export($message, true);
             $this->writeLog($message, $severity);
 
         } else
-
-            $this->writeLog($message, $severity);
+            $this->writeLog($message ?? "null", $severity);
 
 
     }
