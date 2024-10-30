@@ -20,10 +20,12 @@ class BaseCachingProvider implements CacheProvider {
         $value = $generatorFunction(...$params);
 
         // Cache the output
-        try {
-            $this->set($key, $value, $ttl);
-        } catch (\Exception $e) {
-            Logger::log($e);
+        if ($ttl > 0) {
+            try {
+                $this->set($key, $value, $ttl);
+            } catch (\Exception $e) {
+                Logger::log($e);
+            }
         }
 
         return $value;
