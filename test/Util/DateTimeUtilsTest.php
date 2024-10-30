@@ -11,20 +11,20 @@ class DateTimeUtilsTest extends TestCase {
      * @group nontravis
      */
     public function testWasUpdatedInTheLast() {
-        passthru("touch -c ~/.bashrc", $rc1);
         passthru("mkdir -p ~/tmp", $rc2);
         passthru("touch ~/tmp/example.txt", $rc3);
-        $this->assertSame(0, $rc1);
         $this->assertSame(0, $rc2);
         $this->assertSame(0, $rc3);
 
         $out = DateTimeUtils::wasUpdatedInTheLast(
             \DateInterval::createFromDateString("+1 hour"),
-            "~/.bashrc"
+            "/etc/hosts"
         );
+        $this->assertTrue(file_exists("/etc/hosts"));
         $this->assertFalse($out);
 
         // PHP is in a different timezone from Linux so we need 2 hours
+        $this->assertTrue(file_exists(getenv('HOME')."/tmp/example.txt"));
         $out = DateTimeUtils::wasUpdatedInTheLast(
             \DateInterval::createFromDateString("+2 hour"),
             "~/tmp/example.txt"
