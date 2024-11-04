@@ -15,7 +15,7 @@ class Configuration extends ConfigFile {
     // private only constructor here, since we should only access this through other instance methods.
     public function __construct() {
         $envVariable = getenv("KINIKIT_CONFIG_FILE");
-        parent::__construct("Config/" . ($envVariable ? $envVariable : "config.txt"));
+        parent::__construct("Config/" . ($envVariable ?: "config.txt"));
     }
 
     /**

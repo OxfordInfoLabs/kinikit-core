@@ -1,10 +1,11 @@
 application.namespace = Kinikit\Core
 
-log.file = /tmp/ooacorelog.log
+log.file = /tmp/application.log
 
 param1 = ford
 param2 = vauxhall
 param3 = bmw
 param4 = porsche
 
+amp.http.max.response.bytes = 1000000000
 files.root = Files

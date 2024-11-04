@@ -11,6 +11,17 @@ include_once "autoloader.php";
  */
 class ConfigurationTest extends \PHPUnit\Framework\TestCase {
 
+    private string $configuration;
+    protected function setUp(): void {
+        $this->configuration = getenv("KINIKIT_CONFIG_FILE");
+        parent::setUp();
+    }
+
+    protected function tearDown(): void {
+        putenv("KINIKIT_CONFIG_FILE=$this->configuration");
+        parent::tearDown();
+    }
+
     public function testStaticallyCallingConfigurationReadParameterUsesConfigTxtFileInConfigDirectory() {
 
 
@@ -43,5 +54,3 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase {
     }
 
 }
-
-?>

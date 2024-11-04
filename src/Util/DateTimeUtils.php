@@ -2,6 +2,8 @@
 
 namespace Kinikit\Core\Util;
 
+use DateInterval;
+
 /**
  * Generic helpful date time utils
  *
@@ -110,6 +112,15 @@ class DateTimeUtils {
         }, $format);
 
         return $format;
+    }
+
+    public static function wasUpdatedInTheLast(DateInterval $dateInterval, string $file) : bool {
+        $file = str_replace("~", getenv("HOME"), $file);
+        if (!file_exists($file)) return false;
+        $lastModifiedTimestamp = filemtime($file);
+        if ($lastModifiedTimestamp === false) return false;
+        $lastModifiedDate = date_create_from_format('U', $lastModifiedTimestamp);
+        return $lastModifiedDate > date_create()->sub($dateInterval);
     }
 
 }

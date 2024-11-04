@@ -6,7 +6,7 @@ use Exception;
 use Kinikit\Core\Logging\Logger;
 
 class ExternalCommandProcessor {
-    const WhiteListedCommands = ["rsync", "echo", "false", "docker", "date", "mkdir"];
+    const WhiteListedCommands = ["rsync", "echo", "false", "docker", "date", "mkdir", "find", "unzip"];
 
     /**
      * Beware!! Do not allow user input to this (or risk unlimited access to your server)
@@ -51,4 +51,5 @@ class ExternalCommandProcessor {
         }
         return $output;
     }
+
 }
