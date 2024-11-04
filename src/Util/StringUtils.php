@@ -2,6 +2,12 @@
 
 namespace Kinikit\Core\Util;
 
+
+function println($object) : void {
+    print_r($object);
+    echo "\n";
+}
+
 /**
  * Static string utilities
  *
