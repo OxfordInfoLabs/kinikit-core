@@ -5,7 +5,6 @@ namespace Kinikit\Core\Logging;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Reflection\TestAttributePOPO;
 use PHPUnit\Framework\TestCase;
-use PSpell\Config;
 
 include_once "autoloader.php";
 
