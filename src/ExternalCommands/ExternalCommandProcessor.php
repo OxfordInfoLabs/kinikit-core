@@ -2,7 +2,6 @@
 
 namespace Kinikit\Core\ExternalCommands;
 
-use DateInterval;
 use Exception;
 use Kinikit\Core\Logging\Logger;
 
