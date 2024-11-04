@@ -125,8 +125,13 @@ class ParameterTest extends \PHPUnit\Framework\TestCase {
         }
 
         $this->assertEquals("\\".TestTypedPOPO::class."[]", $arrayParam->getType());
+    }
 
-
+    public function testAnnotationWorksForUnionTypes(){
+        $classInspector = new ClassInspector(TestAnnotatedPOPO::class);
+        $methodInspector = $classInspector->getPublicMethod("getFirstObject");
+        $objectParam = $methodInspector->getParameters();
+        $this->assertEquals("null|\\Kinikit\\Core\\Binding\\SimpleGetterSetterObj[]", $objectParam[0]->getType());
     }
 
 

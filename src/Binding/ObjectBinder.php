@@ -3,7 +3,6 @@
 
 namespace Kinikit\Core\Binding;
 
-use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Exception\InsufficientParametersException;
 use Kinikit\Core\Exception\WrongParametersException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -68,13 +67,12 @@ class ObjectBinder {
         if (count($targetClasses) > 1) {
             foreach ($targetClasses as $possibleClass) {
                 try {
-                    $bound = $this->bindFromArray($data, $possibleClass);
-                    return $bound;
-                } catch (\Exception $exception){
+                    return $this->bindFromArray($data, $possibleClass);
+                } catch (\Exception $exception) {
                     // Not this type
                 }
             }
-            throw new ObjectBindingException("Couldn't bind union type $targetClass to any of ".join(", ", $targetClasses));
+            throw new ObjectBindingException("Couldn't bind union type $targetClass to any of " . join(", ", $targetClasses));
         }
 
         if (enum_exists($targetClass)) {
@@ -174,7 +172,7 @@ class ObjectBinder {
      * @param $object
      * @return array|string
      */
-    public function bindToArray($object, $publicOnly = true, $seenObjects = []) {
+    public function bindToArray($object, $publicOnly = true, $seenObjects = [], $ignoreGetters = false) {
 
 
         if ($object === null) {
@@ -224,16 +222,18 @@ class ObjectBinder {
         $targetArray = [];
 
         // Work through getters first of all
-        $getters = $classInspector->getGetters();
-        foreach ($getters as $key => $getter) {
+        if (!$ignoreGetters) {
+            $getters = $classInspector->getGetters();
+            foreach ($getters as $key => $getter) {
 
-            try {
-                $value = $getter->call($object, []);
+                try {
+                    $value = $getter->call($object, []);
 
-                $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
-                $processedKeys[$key] = 1;
-            } catch (\Throwable $e) {
-                // Continue if exception on getter - omit from array.
+                    $targetArray[$key] = $this->bindToArray($value, $publicOnly, $seenObjects);
+                    $processedKeys[$key] = 1;
+                } catch (\Throwable $e) {
+                    // Continue if exception on getter - omit from array.
+                }
             }
         }
 

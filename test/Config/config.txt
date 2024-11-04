@@ -8,3 +8,4 @@ param3 = bmw
 param4 = porsche
 
 amp.http.max.response.bytes = 1000000000
+files.root = Files
