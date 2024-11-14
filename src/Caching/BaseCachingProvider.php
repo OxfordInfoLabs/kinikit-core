@@ -13,6 +13,8 @@ class BaseCachingProvider implements CacheProvider {
 
         // If so, return the output
         if ($value) {
+            Logger::log("Cache Returned:");
+            Logger::log($value);
             return $value;
         }
 
