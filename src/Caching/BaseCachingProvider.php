@@ -25,6 +25,8 @@ class BaseCachingProvider implements CacheProvider {
         // Cache the output
         if ($ttl > 0) {
             try {
+                Logger::log("Setting key $key with value:");
+                Logger::log($value);
                 $this->set($key, $value, $ttl);
             } catch (\Exception $e) {
                 Logger::log($e);
