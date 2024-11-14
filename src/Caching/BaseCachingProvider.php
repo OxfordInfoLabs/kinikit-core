@@ -21,6 +21,7 @@ class BaseCachingProvider implements CacheProvider {
 
         // Execute the callable
         $value = $generatorFunction(...$params);
+        Logger::log("Executed callback - ttl is $ttl");
 
         // Cache the output
         if ($ttl > 0) {
@@ -42,7 +43,7 @@ class BaseCachingProvider implements CacheProvider {
     }
 
     // Define in actual cache providers
-    public function get(string $key){
+    public function get(string $key) {
     }
 
     // Define in actual providers
