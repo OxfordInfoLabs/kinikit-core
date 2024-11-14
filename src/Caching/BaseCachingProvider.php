@@ -10,7 +10,7 @@ class BaseCachingProvider implements CacheProvider {
 
         // Check if it exists in the cache
         $value = $this->get($key);
-        Logger::log("Attempting to read cache key" . $key);
+        Logger::log("Attempting to read cache key: " . $key);
 
         // If so, return the output
         if ($value) {
