@@ -82,7 +82,7 @@ class ObjectValueFunctionTest extends TestCase {
         $function = new ObjectValueFunction();
         $this->assertTrue($function->doesFunctionApply("wrapAsArray"));
 
-        $this->assertEquals(["dummy"], $function->applyFunction("wrapAsArray", ["dummy"], null));
+        $this->assertEquals([["dummy"]], $function->applyFunction("wrapAsArray", ["dummy"], null));
 
     }
 }
