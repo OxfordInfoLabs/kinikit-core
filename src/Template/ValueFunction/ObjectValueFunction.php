@@ -69,11 +69,7 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
                     return $value;
 
                 case "wrapAsArray":
-                    if (is_array($value)) {
-                        return $value;
-                    } else {
-                        return [$value];
-                    }
+                    return [$value];
                 default:
                     return $value;
             }
