@@ -34,6 +34,8 @@ class BaseCachingProvider implements CacheProvider {
             }
         }
 
+        Logger::log("Cached.");
+
         return $value;
 
     }
