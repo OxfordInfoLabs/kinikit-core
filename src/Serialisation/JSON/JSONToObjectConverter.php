@@ -16,20 +16,9 @@ use Kinikit\Core\Util\Logging\Logger;
  */
 class JSONToObjectConverter implements FormatToObjectConverter {
 
-    /**
-     * @var ObjectBinder $objectBinder
-     */
-    private $objectBinder;
-
-    /**
-     * Construct an JSON to object converter with autowired ObjectBinder
-     *
-     * ObjectToJSONConverter constructor.
-     *
-     * @param ObjectBinder $objectBinder
-     */
-    public function __construct($objectBinder) {
-        $this->objectBinder = $objectBinder;
+    public function __construct(
+        private ObjectBinder $objectBinder
+    ) {
     }
 
 
@@ -40,13 +29,13 @@ class JSONToObjectConverter implements FormatToObjectConverter {
      * @param string $jsonString
      * @param string $mapToClass
      */
-    public function convert($jsonString, $mapToClass = null) {
+    public function convert($jsonString, $mapToClass = null, $throwOnExtraFields = false) {
 
         // Decode the string using PHP JSON Decode routine
         $converted = json_decode($jsonString, true);
 
         if ($mapToClass && $converted !== null) {
-            $converted = $this->objectBinder->bindFromArray($converted, $mapToClass);
+            $converted = $this->objectBinder->bindFromArray($converted, $mapToClass, throwOnExtraFields: $throwOnExtraFields);
         }
 
         // Now convert to objects and return

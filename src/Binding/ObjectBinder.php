@@ -39,14 +39,19 @@ class ObjectBinder {
      * @param array $data
      * @return mixed
      */
-    public function bindFromArray($data, $targetClass, $publicOnly = true) {
-
-        $result = null;
+    public function bindFromArray($data, $targetClass, $publicOnly = true, $throwOnExtraFields = false) {
+        if (is_array($data)) {
+            $originalKeys = array_keys($data);
+        }
 
         $targetClass = str_replace("?", "", $targetClass);
 
         //Remove array suffix
         $arrayTrimmed = preg_replace("/\[[a-z]*\]$/", "", $targetClass);
+        $arrayWithAngleBrackets = preg_match("/array<.+,\s*(.+)>$/", $targetClass, $matches);
+        if (count($matches) > 1){
+            $arrayTrimmed = $matches[1];
+        }
 
         // If an array of objects, process these next.
         if ($arrayTrimmed != $targetClass) {
@@ -54,7 +59,7 @@ class ObjectBinder {
 
             if (is_array($data)) {
                 foreach ($data as $key => $dataItem) {
-                    $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly);
+                    $result[$key] = $this->bindFromArray($dataItem, $arrayTrimmed, $publicOnly, throwOnExtraFields: $throwOnExtraFields);
                 }
             }
 
@@ -67,7 +72,7 @@ class ObjectBinder {
         if (count($targetClasses) > 1) {
             foreach ($targetClasses as $possibleClass) {
                 try {
-                    return $this->bindFromArray($data, $possibleClass);
+                    return $this->bindFromArray($data, $possibleClass, $publicOnly, throwOnExtraFields: $throwOnExtraFields);
                 } catch (\Exception $exception) {
                     // Not this type
                 }
@@ -120,7 +125,7 @@ class ObjectBinder {
 
                     $key = $parameter->getName();
                     if (isset($data[$key])) {
-                        $data[$key] = $this->bindFromArray($data[$key], $parameter->getType(), $publicOnly);
+                        $data[$key] = $this->bindFromArray($data[$key], $parameter->getType(), $publicOnly, throwOnExtraFields: $throwOnExtraFields);
                         $processedKeys[] = $key;
                     }
 
@@ -133,7 +138,7 @@ class ObjectBinder {
                 if (!in_array($key, $processedKeys) && isset($data[$key]) && sizeof($setter->getParameters()) > 0) {
                     $parameter = $setter->getParameters()[0];
                     $parameterType = $parameter->getType();
-                    $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly);
+                    $data[$key] = $this->bindFromArray($data[$key], $parameterType, $publicOnly, throwOnExtraFields: $throwOnExtraFields);
                     $processedKeys[] = $key;
                 }
             }
@@ -143,11 +148,19 @@ class ObjectBinder {
             foreach ($classInspector->getProperties() as $key => $property) {
                 if (!in_array($key, $processedKeys) && isset($data[$key])) {
                     $propertyType = $property->getType();
-                    $data[$key] = $this->bindFromArray($data[$key], $propertyType, $publicOnly);
+                    $data[$key] = $this->bindFromArray($data[$key], $propertyType, $publicOnly, throwOnExtraFields: $throwOnExtraFields);
                     $processedKeys[] = $key;
                 }
             }
 
+            if ($throwOnExtraFields) {
+                sort($originalKeys);
+                sort($processedKeys);
+                if ($originalKeys != $processedKeys) {
+                    throw new ObjectBindingException(
+                        "Failed to bind all the given keys in array. Bound keys: [" . join(", ", $processedKeys) . "] Keys to bind: [". join(", ", array_keys($data)) . "]");
+                }
+            }
 
             // Construct the class first and then call setters
             $instance = $classInspector->createInstance($data);
