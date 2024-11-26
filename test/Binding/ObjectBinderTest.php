@@ -11,7 +11,6 @@ use Kinikit\Core\Reflection\TestNullableTypedPOPO;
 use Kinikit\Core\Reflection\TestPropertyPOPO;
 use Kinikit\Core\Reflection\TestTypedPOPO;
 use Kinikit\Core\Reflection\TestUnionTypedPropertyPOPO;
-use function Kinikit\Core\Util\println;
 
 include "autoloader.php";
 
