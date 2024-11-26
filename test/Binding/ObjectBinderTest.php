@@ -7,6 +7,7 @@ use Kinikit\Core\Exception\StatusException;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Reflection\TestAnnotatedPOPO;
 use Kinikit\Core\Reflection\TestEnum;
+use Kinikit\Core\Reflection\TestNullableTypedPOPO;
 use Kinikit\Core\Reflection\TestPropertyPOPO;
 use Kinikit\Core\Reflection\TestTypedPOPO;
 use Kinikit\Core\Reflection\TestUnionTypedPropertyPOPO;
@@ -468,5 +469,43 @@ class ObjectBinderTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testThrowsOnExtraFields(){
+        try {
+            $object = $this->objectBinder->bindFromArray(["name" => "Peter", "x" => 1], SimpleConstructorObject::class, throwOnExtraFields: true);
+            $this->fail();
+        } catch (\Kinikit\Core\Binding\ObjectBindingException $e) {
+            // Success
+            $object = $this->objectBinder->bindFromArray(["name" => "Peter", "age" => 23], SimpleConstructorObject::class, throwOnExtraFields: true);
+        }
+        $this->assertEquals(new SimpleConstructorObject("Peter", 23, null), $object);
+
+        $badObjectArray = [
+            "hat" => "beanie",
+            "testTypedPOPO" => [
+                "id" => 1,
+                "nome" => "Pete"
+            ],
+        ];
+
+        $goodObjectArray = [
+            "hat" => "beanie",
+            "testTypedPOPO" => [
+                "id" => 1,
+                "name" => "Pete"
+            ],
+        ];
+
+        try {
+            $object = $this->objectBinder->bindFromArray($badObjectArray, TestNullableTypedPOPO::class, throwOnExtraFields: true);
+            $this->fail();
+        } catch (\Kinikit\Core\Binding\ObjectBindingException $e) {
+            // Success
+            $object = $this->objectBinder->bindFromArray($goodObjectArray, TestNullableTypedPOPO::class, throwOnExtraFields: true);
+            $this->assertEquals(
+                new TestNullableTypedPOPO("beanie", testTypedPOPO: new TestTypedPOPO(1, "Pete")),
+                $object
+            );
+        }
+    }
 
 }
