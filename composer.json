@@ -26,7 +26,7 @@
     "amphp/socket": "*",
     "amphp/http": "*",
     "amphp/http-client": "*",
-    "google/cloud-logging": "dev-main",
+    "google/cloud-logging": "*",
     "google/appengine-php-sdk": "*"
   },
   "autoload": {
