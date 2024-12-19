@@ -18,7 +18,8 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
         "date",
         "dateAdd",
         "dateSub",
-        "formattedDuration"
+        "formattedDuration",
+        "now"
     ];
 
     const DURATIONS = [
@@ -71,6 +72,8 @@ class DateFormatValueFunction extends ValueFunctionWithArguments {
             case "ensureDateFormat":
                 $date = date_create_from_format($functionArgs[0] ?? "", $value);
                 return $date ? $value : null;
+            case "now":
+                return date($functionArgs[0] ?? 'Y-m-d H:i:s');
             case "dateConvert":
                 $date = date_create_from_format($functionArgs[0] ?? "", $value);
                 return $date && ($functionArgs[1] ?? null) ? $date->format($functionArgs[1]) : null;

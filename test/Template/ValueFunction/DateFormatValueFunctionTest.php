@@ -16,6 +16,7 @@ class DateFormatValueFunctionTest extends TestCase {
 
         $this->assertTrue($function->doesFunctionApply("dateConvert 'd/m/y' 'Y-m-d'"));
         $this->assertTrue($function->doesFunctionApply("ensureDateFormat 'd/m/Y'"));
+        $this->assertTrue($function->doesFunctionApply("now 'd/m/Y'"));
         $this->assertTrue($function->doesFunctionApply("dayOfMonth"));
         $this->assertTrue($function->doesFunctionApply("dayOfWeek"));
         $this->assertTrue($function->doesFunctionApply("dayName"));
@@ -117,6 +118,13 @@ class DateFormatValueFunctionTest extends TestCase {
         $this->assertEquals("1 Day", $function->applyFunction("formattedDuration seconds", 86400, null));
         $this->assertEquals("1 Minute", $function->applyFunction("formattedDuration milliseconds 1", 80123, null));
         $this->assertEquals("2 Days 4 Hours 3 Seconds", $function->applyFunction("formattedDuration", 187203000, null));
+
+    }
+
+    public function testCanFormatCurrentDateUsingNow(){
+        $function = new DateFormatValueFunction();
+        $this->assertEquals(date("Y-m-d"), $function->applyFunction("now 'Y-m-d'", "1", []));
+        $this->assertEquals(date("Y-m-d H:i:s"), $function->applyFunction("now 'Y-m-d H:i:s'", "1", []));
 
     }
 
