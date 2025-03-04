@@ -2,6 +2,7 @@
 
 namespace Kinikit\Core\Template;
 
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Template\ValueFunction\ValueFunctionEvaluator;
 
 /**
@@ -106,7 +107,7 @@ class KinibindTemplateParser implements TemplateParser {
 
                     case $this->prefix . "-text":
                         // Inserts text into the tag content
-                        $text = $model[$attr->value] ?? "";
+                        $text = $this->parseFormatters($attr->value ?? "", $model);
                         $newNode = new \DOMText($text);
                         $fragment->appendChild($newNode);
                         $fragment->removeAttributeNode($attr);
@@ -114,7 +115,7 @@ class KinibindTemplateParser implements TemplateParser {
 
                     case $this->prefix . "-html":
                         // Inserts html into the tag content
-                        $html = $model[$attr->value] ?? "";
+                        $html =  $this->parseFormatters($attr->value ?? "", $model);
                         $newFragment = $fragment->ownerDocument->createDocumentFragment();
                         $newFragment->appendXML($html);
                         // Remove inner HTML and replace with new
