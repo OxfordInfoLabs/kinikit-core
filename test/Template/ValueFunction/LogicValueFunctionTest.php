@@ -9,6 +9,17 @@ include_once "autoloader.php";
 class LogicValueFunctionTest extends TestCase {
 
 
+    public function testNotFunctionEvaluatesCorrectly(){
+        $function = new LogicValueFunction();
+        $this->assertTrue($function->doesFunctionApply("not"));
+
+        // Check pass through if text set
+        $this->assertTrue($function->applyFunction("not", "", ["text" => "Buffalo"]));
+        $this->assertFalse($function->applyFunction("not", "Bingo", ["text" => "Buffalo"]));
+
+    }
+
+
     public function testIfNotFunctionEvaluatesCorrectly() {
 
         $function = new LogicValueFunction();

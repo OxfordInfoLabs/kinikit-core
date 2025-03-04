@@ -5,6 +5,7 @@ namespace Kinikit\Core\Template\ValueFunction;
 class LogicValueFunction extends ValueFunctionWithArguments {
 
     const supportedFunctions = [
+        "not",
         "ifNot",
         "ternary",
         "equals",
@@ -45,6 +46,10 @@ class LogicValueFunction extends ValueFunctionWithArguments {
     protected function applyFunctionWithArgs($functionName, $functionArgs, $value, $model) {
 
         switch ($functionName) {
+
+            case "not":
+                return $value ? false : true;
+
             case "ifNot":
                 if (!$value) {
                     return $functionArgs[0] ?? "";
