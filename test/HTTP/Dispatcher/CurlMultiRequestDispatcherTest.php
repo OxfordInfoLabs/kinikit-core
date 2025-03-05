@@ -59,7 +59,7 @@ class CurlMultiRequestDispatcherTest extends \PHPUnit\Framework\TestCase {
 
 
         $request1 = new Request("https://jsonplaceholder.typicode.com/posts", Request::METHOD_GET);
-        $request2 = new Request("https://idontexist.xyz/bingo", Request::METHOD_GET);
+        $request2 = new Request("https://idontexist-2.xyz/bingo", Request::METHOD_GET);
         $request3 = new Request("https://jsonplaceholder.typicode.com/posts/101", Request::METHOD_GET);
 
         $responses = $this->dispatcher->dispatch([$request1, $request2, $request3]);
