@@ -108,10 +108,10 @@ class AMPRequestDispatcherTest extends TestCase {
     }
 
     public function testGzippedRequest(){
-        $url = "compress.zlib://http://ftp.afrinic.net/dbase/afrinic.db.gz";
+        $url = "compress.zlib://https://ftp.ripe.net/ripe/dbase/split/ripe.db.aut-num.gz";
         $request = new Request($url, Request::METHOD_GET);
         $result = $this->dispatcher->dispatch($request);
         $top = substr($result->getBody(), 0, 1000);
-        $this->assertStringContainsString("AFRINIC", $top);
+        $this->assertStringContainsString("RIPE", $top);
     }
 }
