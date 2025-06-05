@@ -146,6 +146,20 @@ class StringUtilsTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    public function testCanTrimStringWithCustomDepth() {
+
+        // No depth supplied - classic trim
+        $this->assertEquals("bing", StringUtils::trim("  bing   "));
+        $this->assertEquals("bing", StringUtils::trim("'bing'", "'"));
+        $this->assertEquals("bing", StringUtils::trim("[[bing]]", "[]"));
+
+        // Custom depth
+        $this->assertEquals("[bing]", StringUtils::trim("[[bing]]", "[]", 1));
+        $this->assertEquals("hi\"", StringUtils::trim("'\"hi\"\"'", "'\"", 2));
+        $this->assertEquals("bin", StringUtils::trim("[[bing]]", "[]g", 7));
+
+    }
+
 }
 
 ?>

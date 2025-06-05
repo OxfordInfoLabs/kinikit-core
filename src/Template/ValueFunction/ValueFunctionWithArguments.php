@@ -2,6 +2,8 @@
 
 namespace Kinikit\Core\Template\ValueFunction;
 
+use Kinikit\Core\Util\StringUtils;
+
 /**
  * Field value function with arguments in classic function(arg1,arg2) format
  *
@@ -61,7 +63,7 @@ abstract class ValueFunctionWithArguments implements ValueFunction {
         if (is_numeric($expression))
             return $expression;
 
-        $trimmed = trim($expression, "'\"");
+        $trimmed = StringUtils::trim($expression, "'\"", 1);
         if ($trimmed !== $expression) {
             return $trimmed;
         }

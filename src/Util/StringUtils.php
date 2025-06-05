@@ -3,7 +3,7 @@
 namespace Kinikit\Core\Util;
 
 
-function println($object) : void {
+function println($object): void {
     print_r($object);
     echo "\n";
 }
@@ -118,6 +118,32 @@ class StringUtils {
 
         return strtolower($newString);
 
+    }
+
+    /**
+     * Trim a string by a custom amount
+     *
+     * @param string $string
+     * @param string $characters
+     * @param int $depth
+     * @return string
+     */
+    public static function trim(string $string, string $characters = " \t\n\r\0\x0B", int $depth = null): string {
+
+        if (!$depth) {
+            return trim($string, $characters);
+        }
+
+        for ($i = 0; $i < $depth; $i++) {
+            if (is_int(strpos($characters, $string[0]))) {
+                $string = substr($string, 1);
+            }
+            if (is_int(strpos($characters, $string[-1]))) {
+                $string = substr($string, 0, -1);
+            }
+        }
+
+        return $string;
     }
 
 }
