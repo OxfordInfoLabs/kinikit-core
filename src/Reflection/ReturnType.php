@@ -40,7 +40,8 @@ class ReturnType {
                 if (!Primitive::isStringPrimitiveType($type))
                     $type = "\\" . ltrim($type, "\\");
 
-                $type = $reflectionMethod->getReturnType()->allowsNull() ? "?".$type : $type;
+                if ($type !== "mixed")
+                    $type = $reflectionMethod->getReturnType()->allowsNull() ? "?" . $type : $type;
             }
             $this->explicitlyTyped = true;
         } else {
