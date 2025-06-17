@@ -85,4 +85,38 @@ class ObjectValueFunctionTest extends TestCase {
         $this->assertEquals([["dummy"]], $function->applyFunction("wrapAsArray", ["dummy"], null));
 
     }
+
+    public function testCanReturnModel() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("model"));
+
+        $this->assertEquals(["bing" => "bong"], $function->applyFunction("model", 1, ["bing" => "bong"]));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("model", 1, ["name" => "Gerald", "age" => 46]));
+
+    }
+
+    public function testCanSetMemberOnObject() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("setMember"));
+
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'name' 'Gerald'", [], []));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald"], []));
+
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald"], []));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => 17], []));
+
+    }
+
+    public function testCanUnsetMemberOnObject() {
+
+        $function = new ObjectValueFunction();
+        $this->assertTrue($function->doesFunctionApply("unsetMember"));
+
+        $this->assertEquals([], $function->applyFunction("unsetMember 'name'", ["name" => "Gerald"], []));
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("unsetMember 'age'", ["name" => "Gerald"], []));
+        $this->assertEquals(["age" => 46], $function->applyFunction("unsetMember 'name'", ["name" => "Gerald", "age" => 46], []));
+
+    }
 }
