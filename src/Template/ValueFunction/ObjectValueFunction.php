@@ -10,7 +10,10 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
         "keys",
         "values",
         "combine",
-        "wrapAsArray"
+        "wrapAsArray",
+        "setMember",
+        "unsetMember",
+        "model"
     ];
 
     /**
@@ -33,6 +36,11 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
      * @return mixed|void
      */
     protected function applyFunctionWithArgs($functionName, $functionArgs, $value, $model) {
+
+        // Special case for model
+        if ($functionName === "model") {
+            return $model;
+        }
 
         if (is_array($value)) {
             switch ($functionName) {
@@ -70,6 +78,24 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
 
                 case "wrapAsArray":
                     return [$value];
+
+                case "setMember":
+                    $key = $functionArgs[0];
+                    $val = $functionArgs[1];
+                    $notNullOnly = $functionArgs[2] ?? false;
+
+                    if ($notNullOnly && (is_null($val) || $val === "")) {
+
+                    } else {
+                        $value[$key] = $val;
+                    }
+
+                    return $value;
+
+                case "unsetMember":
+                    unset($value[$functionArgs[0]]);
+                    return $value;
+
                 default:
                     return $value;
             }
