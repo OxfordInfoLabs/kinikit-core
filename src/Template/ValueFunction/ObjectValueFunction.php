@@ -84,8 +84,8 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
                     $val = $functionArgs[1];
                     $notNullOnly = $functionArgs[2] ?? false;
 
-                    if ($notNullOnly && (!isset($value[$key]) || ($value[$key] === "" || $value[$key] === null))) {
-                        unset($value[$key]);
+                    if ($notNullOnly && (is_null($val) || $val === "")) {
+
                     } else {
                         $value[$key] = $val;
                     }

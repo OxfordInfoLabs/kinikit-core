@@ -101,18 +101,22 @@ class ObjectValueFunctionTest extends TestCase {
         $function = new ObjectValueFunction();
         $this->assertTrue($function->doesFunctionApply("setMember"));
 
-        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'name' 'Gerald'", [], []));
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald"], []));
+        // Try setting a sensible value on various initial objects
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'name' 'Gerald'", [], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 0], $function->applyFunction("setMember 'age' 0", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 ", ["name" => "Gerald", "age" => 17], null));
 
-        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald"], []));
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => 17], []));
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => 0], []));
+        // Try setting a sensible value on various initial objects with ifNotNull flag
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'name' 'Gerald' true", [], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 0], $function->applyFunction("setMember 'age' 0 true", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true ", ["name" => "Gerald", "age" => 17], null));
 
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald", "age" => ""], []));
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald", "age" => null], []));
-        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald", "age" => 0], []));
-        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => ""], []));
-        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => null], []));
+        // Try setting some non-sensible values
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' '' true", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' null true", ["name" => "Gerald"], null));
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' bing true", ["name" => "Gerald"], ["bing" => ""]));
 
     }
 
