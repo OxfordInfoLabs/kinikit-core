@@ -84,8 +84,10 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
                     $val = $functionArgs[1];
                     $notNullOnly = $functionArgs[2] ?? false;
 
-                    if (!$notNullOnly || isset($value[$key])) {
-                        $value[$key] = $val;
+                    if ($notNullOnly && !($value[$key] ?? false)) {
+                        unset($value[$key]);    // Ensure doesn't exist if notNullOnly true and value is falsey
+                    } else {
+                        $value[$key]  = $val;
                     }
 
                     return $value;

@@ -107,6 +107,11 @@ class ObjectValueFunctionTest extends TestCase {
         $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald"], []));
         $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => 17], []));
 
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald", "age" => ""], []));
+        $this->assertEquals(["name" => "Gerald", "age" => 46], $function->applyFunction("setMember 'age' 46", ["name" => "Gerald", "age" => null], []));
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => ""], []));
+        $this->assertEquals(["name" => "Gerald"], $function->applyFunction("setMember 'age' 46 true", ["name" => "Gerald", "age" => null], []));
+
     }
 
     public function testCanUnsetMemberOnObject() {
