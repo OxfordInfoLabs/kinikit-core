@@ -93,7 +93,9 @@ class ObjectValueFunction extends ValueFunctionWithArguments {
                     return $value;
 
                 case "unsetMember":
-                    unset($value[$functionArgs[0]]);
+                    foreach ($functionArgs as $arg) {
+                        unset($value[$arg]);
+                    }
                     return $value;
 
                 default:

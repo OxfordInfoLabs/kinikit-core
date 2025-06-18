@@ -128,6 +128,7 @@ class ObjectValueFunctionTest extends TestCase {
         $this->assertEquals([], $function->applyFunction("unsetMember 'name'", ["name" => "Gerald"], []));
         $this->assertEquals(["name" => "Gerald"], $function->applyFunction("unsetMember 'age'", ["name" => "Gerald"], []));
         $this->assertEquals(["age" => 46], $function->applyFunction("unsetMember 'name'", ["name" => "Gerald", "age" => 46], []));
+        $this->assertEquals([], $function->applyFunction("unsetMember 'name' 'age'", ["name" => "Gerald", "age" => 46], []));
 
     }
 }
