@@ -43,7 +43,7 @@ class SerialisableException extends \Exception {
             $this->sourceException["line"] = $sourceException->getLine();
             $this->sourceException["trace"] = $sourceException->getTraceAsString();
         }
-        parent::__construct($message, $code);
+        parent::__construct($message, $code ?? 0);
 
 
     }

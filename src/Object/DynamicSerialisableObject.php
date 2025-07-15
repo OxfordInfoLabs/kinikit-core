@@ -210,7 +210,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->__getSerialisablePropertyMap());
     }
@@ -224,7 +224,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * </p>
      * @return mixed Can return all value types.
      */
-    public function &offsetGet($offset)
+    public function &offsetGet(mixed $offset): mixed
     {
 
         if (isset($this->__dynamicPropertyMap[$offset])) {
@@ -247,7 +247,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * </p>
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
 
 
@@ -263,7 +263,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * </p>
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         $this->__set($offset, null);
     }
@@ -274,7 +274,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
      */
-    public function current()
+    public function current(): mixed
     {
         $map = $this->__getSerialisablePropertyMap();
         $mapKeys = array_keys($map);
@@ -287,7 +287,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * @link http://php.net/manual/en/iterator.next.php
      * @return void Any returned value is ignored.
      */
-    public function next()
+    public function next(): void
     {
         $this->iteratorPosition++;
     }
@@ -298,7 +298,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * @link http://php.net/manual/en/iterator.key.php
      * @return mixed scalar on success, or null on failure.
      */
-    public function key()
+    public function key(): mixed
     {
         $map = $this->__getSerialisablePropertyMap();
         $mapKeys = array_keys($map);
@@ -312,7 +312,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * @return boolean The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
-    public function valid()
+    public function valid(): bool
     {
         $map = $this->__getSerialisablePropertyMap();
         $mapKeys = array_keys($map);
@@ -325,7 +325,7 @@ class DynamicSerialisableObject extends SerialisableObject implements \ArrayAcce
      * @link http://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->iteratorPosition = 0;
     }
