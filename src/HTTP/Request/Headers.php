@@ -40,6 +40,8 @@ class Headers {
     const PREFER = "Prefer";
     const PROXY_AUTHORISATION = "Proxy-Authorisation";
     const REFERER = "Referer";
+    const SIGNATURE = "Signature";
+    const SIGNATURE_INPUT = "Signature-Input";
     const TRANSFER_ENCODING = "Transfer-Encoding";
     const USER_AGENT = "User-Agent";
 
