@@ -24,7 +24,7 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @nontravis
+     * @group nontravis
      */
     public function testIfStreamTimesOutStreamExceptionRaisedWithTimeoutMessage() {
 
