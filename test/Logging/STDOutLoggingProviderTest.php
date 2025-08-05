@@ -50,7 +50,7 @@ class STDOutLoggingProviderTest extends TestCase {
         $obj = new TestAttributePOPO(1, "Jim");
         $this->logger->log($obj);
 
-        $this->assertEquals('{"severity":"Debug","message":"Kinikit\\\Core\\\Reflection\\\TestAttributePOPO::__set_state(array(\n   \'id\' => 1,\n   \'name\' => \'Jim\',\n   \'dob\' => \'01\/01\/2016\',\n   \'publicPOPO\' => NULL,\n))"}', StreamIntercept::$cache);
+        $this->assertEquals('{"severity":"Debug","message":"\\\Kinikit\\\Core\\\Reflection\\\TestAttributePOPO::__set_state(array(\n   \'id\' => 1,\n   \'name\' => \'Jim\',\n   \'dob\' => \'01\/01\/2016\',\n   \'publicPOPO\' => NULL,\n))"}', StreamIntercept::$cache);
 
     }
 
