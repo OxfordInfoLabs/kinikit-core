@@ -76,13 +76,10 @@ class ClassAnnotationParserTest extends \PHPUnit\Framework\TestCase {
         $classAnnotations = $this->classAnnotationParser->parse(TestNullableTypedPOPO::class);
 
 
-        $str = "";
-
         [$a, $b] = [false, false];
         foreach ($classAnnotations->getMethodAnnotations() as $fieldAnnotationGroup){
             foreach ($fieldAnnotationGroup as $annotations){
                 foreach ($annotations as $annotation) {
-                    $str .= print_r($annotation, true);
                     if ($annotation->getValue() === "?string \$hat") {
                         $a = true;
                     }

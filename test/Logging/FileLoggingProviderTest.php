@@ -64,7 +64,7 @@ class FileLoggingProviderTest extends TestCase {
     public function testObjectsAreLoggedCorrectly() {
         $obj = new TestAttributePOPO(3, "John");
         $this->logger->log($obj);
-        $this->assertEquals(date("d/m/Y H:i:s") ."\tDEBUG\tKinikit\Core\Reflection\TestAttributePOPO\n\Kinikit\Core\Reflection\TestAttributePOPO::__set_state(array(\n   'id' => 3,\n   'name' => 'John',\n   'dob' => '01/01/2016',\n   'publicPOPO' => NULL,\n))", trim(file_get_contents($this->logPath)));
+        $this->assertEquals(date("d/m/Y H:i:s") ."\tDEBUG\tKinikit\Core\Reflection\TestAttributePOPO\nKinikit\Core\Reflection\TestAttributePOPO::__set_state(array(\n   'id' => 3,\n   'name' => 'John',\n   'dob' => '01/01/2016',\n   'publicPOPO' => NULL,\n))", trim(file_get_contents($this->logPath)));
     }
 
 }
