@@ -36,7 +36,7 @@ class ObjectToJSONConverter implements ObjectToFormatConverter {
     private function normaliseToArrayForm($object, $ignoreNonSerialisables = false) {
 
         // If object input, deal with it now.
-        if (is_object($object)) {
+        if (is_object($object) && (get_class($object) !== \__PHP_Incomplete_Class::class)) {
 
             $className = get_class($object);
 
