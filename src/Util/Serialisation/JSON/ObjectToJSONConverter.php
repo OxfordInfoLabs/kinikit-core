@@ -45,7 +45,7 @@ class ObjectToJSONConverter implements ObjectToFormatConverter {
                 if ($ignoreNonSerialisables) {
                     return null;
                 } else {
-                    throw new ClassNotSerialisableException ($className);
+                    throw new \Exception("Can't serialise $className" . print_r($object, true));
                 }
             }
 
