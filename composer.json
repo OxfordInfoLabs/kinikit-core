@@ -29,6 +29,9 @@
     "google/cloud-logging": "*",
     "google/appengine-php-sdk": "*"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
   "autoload": {
     "psr-4": {
       "Kinikit\\Core\\": "src/"
