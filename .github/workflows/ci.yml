@@ -12,4 +12,5 @@ jobs:
     with:
       php-version: "8.2"
       coverage: false
-      test-directory: "test"
+      working-directory: "test"
+      root-directory: "."
