@@ -7,9 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 include_once "autoloader.php";
 class DateTimeUtilsTest extends TestCase {
-    /**
-     * @group nontravis
-     */
+
+    
     public function testWasUpdatedInTheLast() {
         passthru("mkdir -p ~/tmp", $rc2);
         passthru("touch ~/tmp/example.txt", $rc3);

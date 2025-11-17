@@ -23,9 +23,6 @@ class ReadOnlyHttpStreamTest extends \PHPUnit\Framework\TestCase {
 
     }
 
-    /**
-     * @group nontravis
-     */
     public function testIfStreamTimesOutStreamExceptionRaisedWithTimeoutMessage() {
 
         $contextOptions["http"]["timeout"] = 0.25;
