@@ -9,6 +9,20 @@ include_once "autoloader.php";
 
 class DateTimeUtilsTest extends TestCase {
 
+    public function testCanConvertDate() {
+
+        $t1 = DateTimeUtils::convertDate("U", "Y-m-d H:i:s", "1763377990");
+        $this->assertEquals("2025-11-17 11:13:10", $t1);
+
+        $t2 = DateTimeUtils::convertDate("Y-m-d H:i:s", "Y-m-d", $t1);
+        $this->assertEquals("2025-11-17", $t2);
+
+        // Mismatch of format
+        $t3 = DateTimeUtils::convertDate("Ymd", "Y", "2025-11-17");
+        $this->assertNull($t3);
+
+    }
+
 //    public function testWasUpdatedInTheLast() {
 //        passthru("mkdir -p ~/tmp", $rc2);
 //        passthru("touch ~/tmp/example.txt", $rc3);
