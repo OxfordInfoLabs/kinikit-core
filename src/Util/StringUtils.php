@@ -128,7 +128,7 @@ class StringUtils {
      * @param int $depth
      * @return string
      */
-    public static function trim(string $string, string $characters = " \t\n\r\0\x0B", int $depth = null): string {
+    public static function trim(string $string, string $characters = " \t\n\r\0\x0B", ?int $depth = null): string {
 
         if (!$depth) {
             return trim($string, $characters);
