@@ -21,7 +21,7 @@ class GCloudLoggingProvider implements LoggingProvider {
         ]);
 
         $loggerName = Configuration::readParameter("log.name") ?? "app";
-        $this->logger = $logging::psrBatchLogger("$loggerName");
+        $this->logger = $logging->psrLogger($loggerName, ["batchEnabled" => false]);
 
         $this->objectBinder = Container::instance()->get(ObjectBinder::class);
     }
