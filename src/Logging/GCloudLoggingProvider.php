@@ -17,7 +17,7 @@ class GCloudLoggingProvider implements LoggingProvider {
     public function __construct() {
 
         $logging = new LoggingClient([
-            'projectId' => Configuration::readParameter("log.gcloud.project"),
+            'projectId' => Configuration::readParameter("log.gcloud.project")
         ]);
 
         $loggerName = Configuration::readParameter("log.name") ?? "app";
