@@ -12,7 +12,8 @@ include_once __DIR__ . "/../../../autoloader.php";
 class PHPMailerProviderTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanSendBasicEmailUsingPHPMailer() {
-
+        
+//        // Will need to set up your credentials to Mailgun and use them to send test messages
 //        $phpMailer = new PHPMailerProvider("localhost", 25);
 //
 //        // Send simple email
