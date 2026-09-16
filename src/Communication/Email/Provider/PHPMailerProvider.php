@@ -159,7 +159,7 @@ class PHPMailerProvider implements EmailProvider {
             $phpMailer->Body = $email->getTextBody();
 
 
-            // Finally manage attachments
+            // Finally, manage attachments
             foreach ($email->getAttachments() as $attachment) {
                 $phpMailer->addStringAttachment($attachment->getContent(), $attachment->getAttachmentFilename(), PHPMailer::ENCODING_BASE64, $attachment->getContentMimeType());
             }
@@ -182,12 +182,22 @@ class PHPMailerProvider implements EmailProvider {
         }
 
         $addressAndNames = array();
+
         foreach ($address as $addressComponent) {
-            preg_match("/<(.*)>/", $addressComponent, $matches);
-            if (sizeof($matches) == 2) {
-                $addressAndNames[] = array($matches[1], trim(str_replace($matches[0], "", $addressComponent)));
+
+            $addressComponent = trim($addressComponent);
+
+
+            if (preg_match('/^(.*?)\s*<([^>]+)>$/', $addressComponent, $matches)) {
+                $addressAndNames[] = array(
+                    $matches[2],
+                    trim($matches[1])
+                );
             } else {
-                $addressAndNames[] = array($address[0], null);
+                $addressAndNames[] = array(
+                    $addressComponent,
+                    null
+                );
             }
         }
 
