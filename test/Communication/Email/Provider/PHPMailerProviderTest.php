@@ -4,7 +4,7 @@ namespace Kinikit\Core\Communication\Email\Provider;
 
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\EmailSendResult;
-use Kinikit\Core\Communication\Email\FileEmailAttachment;
+use Kinikit\Core\Communication\Email\Attachment\FileEmailAttachment;
 
 
 include_once __DIR__ . "/../../../autoloader.php";
@@ -13,6 +13,7 @@ class PHPMailerProviderTest extends \PHPUnit\Framework\TestCase {
 
     public function testCanSendBasicEmailUsingPHPMailer() {
 
+//        // Will need to set up your credentials to Mailgun and use them to send test messages
 //        $phpMailer = new PHPMailerProvider("localhost", 25);
 //
 //        // Send simple email
