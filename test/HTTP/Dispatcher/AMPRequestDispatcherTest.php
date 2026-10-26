@@ -107,11 +107,12 @@ class AMPRequestDispatcherTest extends TestCase {
         $this->assertTrue($array["gzipped"]);
     }
 
-    public function testGzippedRequest(){
-        $url = "compress.zlib://https://ftp.ripe.net/ripe/dbase/split/ripe.db.aut-num.gz";
-        $request = new Request($url, Request::METHOD_GET);
-        $result = $this->dispatcher->dispatch($request);
-        $top = substr($result->getBody(), 0, 1000);
-        $this->assertStringContainsString("RIPE", $top);
-    }
+//    Causes memory issues - response far too large
+//    public function testGzippedRequest(){
+//        $url = "compress.zlib://https://ftp.ripe.net/ripe/dbase/split/ripe.db.aut-num.gz";
+//        $request = new Request($url, Request::METHOD_GET);
+//        $result = $this->dispatcher->dispatch($request);
+//        $top = substr($result->getBody(), 0, 1000);
+//        $this->assertStringContainsString("RIPE", $top);
+//    }
 }

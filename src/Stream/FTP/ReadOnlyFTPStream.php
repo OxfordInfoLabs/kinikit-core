@@ -7,8 +7,8 @@ namespace Kinikit\Core\Stream\FTP;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\FileNotFoundException;
 use Kinikit\Core\Stream\Resource\ReadOnlyFilePointerResourceStream;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Net\SFTP;
+use phpseclib4\Crypt\PublicKeyLoader;
+use phpseclib4\Net\SFTP;
 
 /**
  * Read only FTP stream

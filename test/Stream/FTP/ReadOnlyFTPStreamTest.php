@@ -1,9 +1,7 @@
 <?php
 
 
-namespace Kinikit\Core\Stream\Http;
-
-use Kinikit\Core\Stream\FTP\ReadOnlyFTPStream;
+namespace Kinikit\Core\Stream\FTP;
 
 include_once "autoloader.php";
 
