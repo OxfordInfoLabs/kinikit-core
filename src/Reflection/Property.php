@@ -173,10 +173,6 @@ class Property {
      */
     public function set($object, $value) {
 
-        // Ensure the reflection property is accessible.
-        $this->reflectionProperty->setAccessible(true);
-
-
         // If a primitive and not of right type, throw now.
         $wrongType = false;
         $rawType = $this->getType();
@@ -221,7 +217,6 @@ class Property {
      * @param $object
      */
     public function get($object) {
-        $this->reflectionProperty->setAccessible(true);
         return $this->reflectionProperty->getValue($object);
     }
 
